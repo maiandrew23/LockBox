@@ -1,7 +1,7 @@
 # LockBox
 
 
-Team Members: 
+Team  Members: 
 Andrew Mai - am8760@nyu.edu  phone: 347-325-0485
 Daniel Hunte - djh459@nyu.edu phone: 631-464-7701
 
