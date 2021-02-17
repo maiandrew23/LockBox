@@ -4,9 +4,7 @@ def info():
 
 
 class Lockbox:
-  def __init__(self):
-    #initialize
-  
+ 
   class Solenoid:
     def __init__(self):
     
@@ -18,7 +16,7 @@ class Lockbox:
 
   class Keypad:
     def __init__(self):
-
+      
     def readKey():
       return "String"
 
@@ -36,5 +34,8 @@ class Lockbox:
     def sendText(word):
       pass
 
-
-
+  def __init__(self):
+    keypad = Keypad()
+    printer = Printer()
+    display = Display()
+    solenoid = Solenoid()
