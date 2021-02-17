@@ -1,43 +1,46 @@
-def info():  
+def info():
   '''Prints a basic library description'''
   print("Software library for the Lockbox project.")
 
+class Solenoid:
+  def __init__(self):
+    pass
+  def open(self):
+    return True
+
+  def close(self):
+    return True
+
+class Keypad:
+  def __init__(self):
+    pass
+  def readKey(self):
+    return "String"
+
+class Display:
+  def __init__(self):
+    pass
+
+  def on(self):
+    pass
+
+  def off(self):
+    pass
+
+  def showText(self, text):
+    print(text)
+
+class Printer:
+  def __init__(self):
+    pass
+  def sendText(self, word):
+    print(word)
+
+
 
 class Lockbox:
- 
-  class Solenoid:
-    def __init__(self):
-      pass    
-    def open():
-      return True
-
-    def close():
-      return True
-
-  class Keypad:
-    def __init__(self):
-      
-    def readKey():
-      return "String"
-
-  class Display:
-    
-    def __init__(self):
-
-    def on():
-
-    def off():
-    
-    def showText():
-      
-  class Printer:
-    def __init__(self):
-      pass
-    def sendText(word):
-      pass
-
   def __init__(self):
-    keypad = Keypad()
-    printer = Printer()
-    display = Display()
-    solenoid = Solenoid()
+    self.keypad = Keypad()
+    self.printer = Printer()
+    self.display = Display()
+    self.solenoid = Solenoid()
