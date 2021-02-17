@@ -7,7 +7,7 @@ class Lockbox:
  
   class Solenoid:
     def __init__(self):
-    
+      pass    
     def open():
       return True
 
