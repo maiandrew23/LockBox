@@ -28,6 +28,8 @@ class Lockbox:
 
     def off():
     
+    def showText():
+      
   class Printer:
     def __init__(self):
       pass
