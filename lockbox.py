@@ -22,10 +22,10 @@ class Display:
     pass
 
   def on(self):
-    pass
+    return True
 
   def off(self):
-    pass
+    return True
 
   def showText(self, text):
     print(text)
