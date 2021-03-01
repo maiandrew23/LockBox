@@ -4,37 +4,37 @@ def info():
 
 class Solenoid:
   def __init__(self):
-    pass
+    print("Solenoid setup fininshed")
   def open(self):
-    return True
+    print("Solenoid is open")
 
   def close(self):
-    return True
+    print("Solenoid is closed")
 
 class Keypad:
   def __init__(self):
-    pass
+    print("Keypad setup finished")
   def readKey(self):
-    return "String"
+    return "3"
 
 class Display:
   def __init__(self):
-    pass
+    print("Display setup finished")
 
   def on(self):
-    return True
+    print("Display is on")
 
   def off(self):
-    return True
+    print("Display is off")
 
   def showText(self, text):
-    print(text)
+    print("'" + text + "'", "on display")
 
 class Printer:
   def __init__(self):
-    pass
+    print("Printer setup finished")
   def sendText(self, word):
-    print(word)
+    print(word, "is being printed")
 
 
 

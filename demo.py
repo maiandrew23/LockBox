@@ -5,7 +5,7 @@ lb = lockbox.Lockbox()
 lb.solenoid.open()
 lb.solenoid.close()
 
-lb.keypad.readKey()
+print(lb.keypad.readKey())
 
 lb.display.on()
 lb.display.off()
