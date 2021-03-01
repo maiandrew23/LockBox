@@ -6,6 +6,7 @@ setup(name='lockbox',
       author='Daniel Hunte',
       author_email='djh459@nyu.edu',
       url='https://github.com/maiandrew23/lockbox',
+      install_requires=['Adafruit_SSD1306', 'spi','mfrc522'],
       py_modules=['lockbox'],
      )
 
