@@ -1,12 +1,8 @@
-<<<<<<< HEAD
 
-=======
->>>>>>> 319163a8ae1a955b6c6735fe60244b97790ae8fa
 import RPi.GPIO as GPIO
 import sys
 import time
 
-<<<<<<< HEAD
 # LCD Globals
 LCD_RS = 6
 LCD_E  = 5
@@ -30,9 +26,6 @@ LCD_ENTRY = [0,0,0,0,0,1,1,0]
 
 E_PULSE = 0.0005
 E_DELAY = 0.0005
-=======
-GPIO.setmode(GPIO.BCM)
->>>>>>> 319163a8ae1a955b6c6735fe60244b97790ae8fa
 
 def info():
   '''Prints a basic library description'''
@@ -49,11 +42,9 @@ class Solenoid:
 
 class Keypad:
   def __init__(self):
-    GPIO.setup(17, GPIO.IN, GPIO.PUD_DOWN)
-
     print("Keypad setup finished")
   def readKey(self):
-    return GPIO.input(17)
+    return "3"
 
 class Display:
   def __init__(self):
