@@ -20,7 +20,7 @@ lb.display.off()
 time.sleep(5)
 lb.display.on()
 lb.display.showText("Test1")
-
+ 
 lb.printer.sendText("Test2")
 
 print("Demo complete!")
