@@ -1,3 +1,9 @@
+import RPi.GPIO as GPIO
+import sys
+import time
+
+GPIO.setmode(GPIO.BCM)
+
 def info():
   '''Prints a basic library description'''
   print("Software library for the Lockbox project.")
@@ -13,9 +19,11 @@ class Solenoid:
 
 class Keypad:
   def __init__(self):
+    GPIO.setup(17, GPIO.IN, GPIO.PUD_DOWN)
+
     print("Keypad setup finished")
   def readKey(self):
-    return "3"
+    return GPIO.input(17)
 
 class Display:
   def __init__(self):
