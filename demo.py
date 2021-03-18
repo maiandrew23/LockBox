@@ -1,26 +1,46 @@
+
+
 import lockbox
 import time
+from threading import Thread, Event
 
 lb = lockbox.Lockbox()
+print("")
 
+print("TESTING SOLENOID")
 lb.solenoid.open()
 lb.solenoid.close()
-print("Try pressing button 3 ")
-for i in range(50):
-  input = lb.keypad.readKey()
-  if input:
-    print("Button IS pressed")
-  else:
-    print("Button is NOT pressed")
-  time.sleep(0.1)
+print("==============================\n")
 
-print(lb.keypad.readKey())
-
+print("TESTING DISPLAY\n")
 lb.display.off()
 time.sleep(5)
 lb.display.on()
-lb.display.showText("Test1")
- 
-lb.printer.sendText("Test2")
+print("Sending \"Hello\" to display...")
+lb.display.show_text("Hello")
+print("==============================\n")
+
+print("TESTING PRINTER\n")
+print("Sending \"Hello\" to be printed")
+lb.printer.send_text("Hello")
+print("==============================\n")
+
+def start_keypad():
+  while lb.keypad.is_on():
+    key = lb.keypad.read_key()
+    if key != None:
+      print(key)
+    time.sleep(0.2)
+
+print("TESTING KEYPAD\n")
+lb.keypad.on()
+print("Try pressing buttons on keypad for the next 10 seconds")
+t1 = Thread(target=start_keypad)
+t1.start()
+time.sleep(10)
+lb.keypad.off()
+t1.join()
+print("==============================\n")
+
 
 print("Demo complete!")

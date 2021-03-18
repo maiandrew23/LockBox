@@ -1,12 +1,9 @@
-<<<<<<< HEAD
 
-=======
->>>>>>> 319163a8ae1a955b6c6735fe60244b97790ae8fa
 import RPi.GPIO as GPIO
 import sys
 import time
+from threading import Thread, Event
 
-<<<<<<< HEAD
 # LCD Globals
 LCD_RS = 6
 LCD_E  = 5
@@ -30,9 +27,18 @@ LCD_ENTRY = [0,0,0,0,0,1,1,0]
 
 E_PULSE = 0.0005
 E_DELAY = 0.0005
-=======
+#===========================
+
+# Keypad Globals
+MATRIX = [['1','2','3'],
+          ['4','5','6'],
+          ['7','8','9'],
+          ['*','0','#']]
+ROW = [2,3,17,27]
+COL = [22,23,24]
+#===========================
+
 GPIO.setmode(GPIO.BCM)
->>>>>>> 319163a8ae1a955b6c6735fe60244b97790ae8fa
 
 def info():
   '''Prints a basic library description'''
@@ -49,11 +55,38 @@ class Solenoid:
 
 class Keypad:
   def __init__(self):
-    GPIO.setup(17, GPIO.IN, GPIO.PUD_DOWN)
+    self.activated = False
 
+    for i in range(len(COL)):
+      GPIO.setup(COL[i], GPIO.IN, GPIO.PUD_DOWN)
+    for i in range(len(ROW)):
+      GPIO.setup(ROW[i], GPIO.OUT)
+      GPIO.output(ROW[i], GPIO.LOW)
     print("Keypad setup finished")
-  def readKey(self):
-    return GPIO.input(17)
+
+  def on(self):
+    self.activated = True
+    print("Keypad is on")
+
+  def off(self):
+    self.activated = False
+    print("Keypad is off")
+
+  def is_on(self):
+    return self.activated
+
+  def read_key(self):
+    while(self.activated):
+      for i in range(len(ROW)):
+        GPIO.output(ROW[i], GPIO.HIGH)
+        for j in range(len(COL)):
+          if GPIO.input(COL[j]) == GPIO.HIGH:
+            while GPIO.input(COL[j]) == GPIO.HIGH:
+              pass
+            GPIO.output(ROW[i], GPIO.LOW)
+            return MATRIX[i][j]
+        GPIO.output(ROW[i], GPIO.LOW)
+    return None
 
 class Display:
   def __init__(self):
@@ -117,7 +150,7 @@ class Display:
       GPIO.output(p,GPIO.LOW)
 
 
-  def showText(self, text):
+  def show_text(self, text):
     for c in text:
       arr = self.char_to_arr(c)
       self.write_arr_4bit(arr, LCD_CHR)
@@ -126,7 +159,7 @@ class Display:
 class Printer:
   def __init__(self):
     print("Printer setup finished")
-  def sendText(self, word):
+  def send_text(self, word):
     print(word, "is being printed")
 
 
