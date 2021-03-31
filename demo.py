@@ -1,5 +1,3 @@
-
-
 import lockbox
 import time
 from threading import Thread, Event
@@ -22,7 +20,7 @@ print("==============================\n")
 
 print("TESTING PRINTER\n")
 print("Sending \"Hello\" to be printed")
-lb.printer.send_text("Hello")
+lb.printer.print_text("Hello")
 print("==============================\n")
 
 def start_keypad():

@@ -1,4 +1,4 @@
-
+from Adafruit_Thermal import *
 import RPi.GPIO as GPIO
 import sys
 import time
@@ -158,8 +158,10 @@ class Display:
 
 class Printer:
   def __init__(self):
+    self.printer_device = Adafruit_Thermal("/dev/serial0", 9600, timeout=5)
     print("Printer setup finished")
-  def send_text(self, word):
+  def print_text(self, word):
+    self.printer_device.println(word)
     print(word, "is being printed")
 
 
