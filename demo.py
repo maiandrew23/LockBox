@@ -24,7 +24,7 @@ print("==============================\n")
 
 print("TESTING PRINTER\n")
 print("Sending \"Hello\" to be printed")
-lb.printer.print_text("Hello\n\n\n\n\n")
+lb.printer.print_text("Hello")
 print("==============================\n")
 
 def start_keypad():

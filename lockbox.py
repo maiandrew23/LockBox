@@ -38,6 +38,11 @@ ROW = [2,3,17,27]
 COL = [22,23,24]
 #===========================
 
+<<<<<<< HEAD
+=======
+GPIO.setmode(GPIO.BCM)
+
+>>>>>>> 59a524dc220f768731282f326c1756eabdd70832
 def info():
   '''Prints a basic library description'''
   print("Software library for the Lockbox project.")
@@ -56,8 +61,11 @@ class Keypad:
   def __init__(self):
     self.activated = False
 
+<<<<<<< HEAD
   def setup(self):
     GPIO.setmode(GPIO.BCM)
+=======
+>>>>>>> 59a524dc220f768731282f326c1756eabdd70832
     for i in range(len(COL)):
       GPIO.setup(COL[i], GPIO.IN, GPIO.PUD_DOWN)
     for i in range(len(ROW)):
@@ -90,7 +98,12 @@ class Keypad:
     return None
 
 class Display:
+<<<<<<< HEAD
   def setup(self):
+=======
+  def __init__(self):
+    GPIO.setwarnings(False)
+>>>>>>> 59a524dc220f768731282f326c1756eabdd70832
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(LCD_RS, GPIO.OUT)
     GPIO.setup(LCD_E, GPIO.OUT)
@@ -133,6 +146,7 @@ class Display:
     time.sleep(E_PULSE)
     GPIO.output(LCD_E, GPIO.LOW)
     time.sleep(E_DELAY)
+<<<<<<< HEAD
 
     #set lease significant bits on data lines
     for p, b in zip(pins, bits[4:]):
@@ -145,6 +159,20 @@ class Display:
     GPIO.output(LCD_E, GPIO.LOW)
     time.sleep(E_DELAY)
 
+=======
+
+    #set lease significant bits on data lines
+    for p, b in zip(pins, bits[4:]):
+      GPIO.setup(p, GPIO.OUT)
+      GPIO.output(p,b)
+      # pulse clock
+    time.sleep(E_DELAY)
+    GPIO.output(LCD_E, GPIO.HIGH)
+    time.sleep(E_PULSE)
+    GPIO.output(LCD_E, GPIO.LOW)
+    time.sleep(E_DELAY)
+
+>>>>>>> 59a524dc220f768731282f326c1756eabdd70832
     #reset pins to 0
     for p in pins:
       GPIO.output(p,GPIO.LOW)
@@ -158,16 +186,23 @@ class Display:
 
 class Printer:
   def __init__(self):
+<<<<<<< HEAD
     self.printer_device = None
 
   def setup(self):
     self.printer_device = Adafruit_Thermal("/dev/serial0", 9600, timeout=5)
     print("Printer setup finished")
+=======
+    self.printer_device = Adafruit_Thermal("/dev/serial0", 9600, timeout=5)
+    print("Printer setup finished")
+  def print_text(self, word):
+    self.printer_device.println(word)
+    print(word, "is being printed")
+>>>>>>> 59a524dc220f768731282f326c1756eabdd70832
 
   def print_text(self, word):
     self.printer_device.println(word)
     print(word, "is being printed")
-
 
 class Lockbox:
   def __init__(self):
