@@ -1,0 +1,11 @@
+#adminBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: black;
+}
+
+
+#adminBtn:hover {
+  background-color: green;
+}
