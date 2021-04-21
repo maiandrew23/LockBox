@@ -20,7 +20,7 @@ time.sleep(5)
 lb.display.on()
 print("Sending \"Hello World!\" to display...")
 lb.display.show_text("Hello", 1)
-lb.display.show_text_line2("World!", 2)
+lb.display.show_text("World!", 2)
 print("==============================\n")
 
 print("TESTING PRINTER\n")
