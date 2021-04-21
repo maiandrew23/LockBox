@@ -185,7 +185,7 @@ def menu():
                     lock(lb)
                     menu = 1
             elif input == '#':#Down
-                menu = 4
+                menu = 5
         #Display Points
         elif menu == 5:
             lb.display.show_text("Display Points")
