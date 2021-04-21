@@ -151,6 +151,7 @@ class Display:
 
 
   def show_text(self, text, line=1):
+    self.write_arr_4bit(LCD_CLEAR, LCD_CMD)
     if line == 1:
       self.write_arr_4bit(LCD_LINE_1, LCD_CMD)
     elif line == 2:
