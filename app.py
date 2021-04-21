@@ -2,16 +2,6 @@ import lockbox
 import time
 from flask import Flask, redirect, render_template
 
-lb = lockbox.Lockbox()
-lb.solenoid.setup()
-lb.display.setup()
-lb.printer.setup()
-lb.keypad.setup()
-print("")
-
-lb.keypad.on()
-lb.display.on()
-
 app = Flask(__name__, static_folder='')
 
 @app.route("/")
@@ -110,41 +100,51 @@ def unlock(lb):
     lb.solenoid.open()
 
 def menu():
-    menu = 1
+    menu = 0
     while(True):
+        #Create Event
+        if menu == 0:
+            lb.display.show_text("    Welcome!", 1)
+            lb.display.show_text(" * Create Event", 2)
+            input = ""
+            while input != "*":#Create Event
+                input = lb.keypad.read_key()
+            #TODO: Setup event
+            menu = 1
         #Register New Device
         if menu == 1:
-            lb.display.show_text("Register New Device")
+            lb.display.show_text("Register Device", 1)
+            lb.display.show_text("* Enter   # Down", 2)
             input = lb.keypad.read_key()
-            if input == '*':#Selected
-                lb.display.show_text("Are You Sure?")
-                #TODO: Display second line
+            if input == '*':#Enter
+                lb.display.show_text(" Are You Sure?", 1)
+                lb.display.show_text("* Yes       # No", 2)
                 input = lb.keypad.read_key()
-                if input == '*':#Verified Yes
+                if input == '*':#Yes
                     #TODO: Register device and print receipt
                     menu = 2
-                elif input == '#':#Verified No
+                elif input == '#':#No
                     menu == 2
             elif input == '#':#Down
                 menu = 2
         #Lock Device
         elif menu == 2:
-            lb.display.show_text("Lock Device")
-            #TODO: Display second line
+            lb.display.show_text("  Lock Device", 1)
+            lb.display.show_text("* Enter   # Down", 2)
             input = lb.keypad.read_key()
-            if input == '*':#Selected
+            if input == '*':#Enter
                 device_num = validate_device(devices)
                 if device_num:
                     unlock(lb)
-                    lb.display.show_text("Insert Your Device")
-                    #TODO: Display second line
+                    lb.display.show_text(" Insert Device", 1)
+                    lb.display.show_text("    * Lock    ", 2)
                     input = lb.keypad.read_key()
                     while input != "*":#Lock
                         input = lb.keypad.read_key()
                     #TODO: Start timer for device
                     lock(lb)
-                    lb.display.show_text("Locked!")
-                    #TODO: Display second line
+                    lb.display.show_text("    Locked!", 1)
+                    lb.display.show_text("  * Main Menu", 2)
                     input = ""
                     while input != "*":#Back to Main Menu
                         input = lb.keypad.read_key()
@@ -153,16 +153,16 @@ def menu():
                 menu = 3
         #Take Out Device
         elif menu == 3:
-            lb.display.show_text("Take Out Device")
-            #TODO: Display second line
+            lb.display.show_text("Take Out Device", 1)
+            lb.display.show_text("* Enter   # Down", 2)
             input = lb.keypad.read_key()
-            if input == '*':#Selected
+            if input == '*':#Enter
                 device_num = validate_device(devices)
                 if device_num:
-                    lb.display.show_text("Door Unlocked!")
-                    #TODO: Display second line
+                    lb.display.show_text("   Unlocked!", 1)
+                    lb.display.show_text("    * Lock    ", 2)
                     input = ""
-                    while input != "*":#Lock Door
+                    while input != "*":#Lock
                         input = lb.keypad.read_key()
                     lock(lb)
                     menu = 1
@@ -170,17 +170,17 @@ def menu():
                 menu = 4
         #Checkout Device
         elif menu == 4:
-            lb.display.show_text("Checkout Device")
-            #TODO: Display second line
+            lb.display.show_text("Checkout Device", 1)
+            lb.display.show_text("* Enter   # Down", 2)
             input = lb.keypad.read_key()
-            if input == '*':#Selected
+            if input == '*':#Enter
                 device_num = validate_device(devices)
                 if device_num:
                     #TODO: Print receipt
-                    lb.display.show_text("Door Unlocked, Printing Receipt!")
-                    #TODO: Display second line
+                    lb.display.show_text("Printing Receipt", 1)
+                    lb.display.show_text("    * Lock    ", 2)
                     input = ""
-                    while input != "*":#Lock Door
+                    while input != "*":#Lock
                         input = lb.keypad.read_key()
                     lock(lb)
                     menu = 1
@@ -188,10 +188,10 @@ def menu():
                 menu = 5
         #Display Points
         elif menu == 5:
-            lb.display.show_text("Display Points")
-            #TODO: Display second line
+            lb.display.show_text(" Display Points", 1)
+            lb.display.show_text("* Enter   # Down", 2)
             input = lb.keypad.read_key()
-            if input == '*':#Selected
+            if input == '*':#Enter
                 device_num = validate_device(devices)
                 if device_num:
                     #TODO: Display points
@@ -202,28 +202,28 @@ def menu():
                 menu = 6
         #Admin Unlock
         elif menu == 6:
-            lb.display.show_text("Admin Unlock")
-            #TODO: Display second line
+            lb.display.show_text("  Admin Unlock", 1)
+            lb.display.show_text("* Enter   # Down", 2)
             input = lb.keypad.read_key()
-            if input == '*':#Selected
+            if input == '*':#Enter
                 if validate_admin(lb):
                     unlock(lb)
-                    lb.display.show_text("Unlocked!")
-                    #TODO: Display second line
+                    lb.display.show_text("   Unlocked!", 1)
+                    lb.display.show_text("    * Lock    ", 2)
                     input = ""
-                    while input != "*":#Lock selected
+                    while input != "*":#Lock
                         input = lb.keypad.read_key()
                     lock(lb)
                 else:
                     menu = 1
             elif input == '#':#Down
                 menu = 7
-        #Admin Display All
+        #Display All
         elif menu == 7:
-            lb.display.show_text("Admin Display All")
-            #TODO: Display second line
+            lb.display.show_text("Display All")
+            lb.display.show_text("* Enter   # Down", 2)
             input = lb.keypad.read_key()
-            if input == '*':#Selected
+            if input == '*':#Enter
                 if validate_admin(lb):
                    #TODO:Display devices and points in searchable list
                    pass
@@ -233,5 +233,15 @@ def menu():
                 menu = 1
             
 if __name__ == "__main__":
-    #app.run(host='0.0.0.0', port=80, debug=True, threaded=True)
+    lb = lockbox.Lockbox()
+    lb.solenoid.setup()
+    lb.display.setup()
+    lb.printer.setup()
+    lb.keypad.setup()
+    print("")
+
+    lb.keypad.on()
+    lb.display.on()
+    
+    app.run(host='0.0.0.0', port=80, debug=True, threaded=True)
     menu()
