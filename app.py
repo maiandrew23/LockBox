@@ -104,6 +104,7 @@ def menu():
     while(True):
         #Create Event
         if menu == 0:
+            lb.display.clear()
             lb.display.show_text("    Welcome!", 1)
             lb.display.show_text(" * Create Event", 2)
             input = ""
@@ -113,10 +114,12 @@ def menu():
             menu = 1
         #Register New Device
         if menu == 1:
+            lb.display.clear()
             lb.display.show_text("Register Device", 1)
             lb.display.show_text("* Enter   # Down", 2)
             input = lb.keypad.read_key()
             if input == '*':#Enter
+                lb.display.clear()
                 lb.display.show_text(" Are You Sure?", 1)
                 lb.display.show_text("* Yes       # No", 2)
                 input = lb.keypad.read_key()
@@ -129,6 +132,7 @@ def menu():
                 menu = 2
         #Lock Device
         elif menu == 2:
+            lb.display.clear()
             lb.display.show_text("  Lock Device", 1)
             lb.display.show_text("* Enter   # Down", 2)
             input = lb.keypad.read_key()
@@ -136,6 +140,7 @@ def menu():
                 device_num = validate_device(devices)
                 if device_num:
                     unlock(lb)
+                    lb.display.clear()
                     lb.display.show_text(" Insert Device", 1)
                     lb.display.show_text("    * Lock    ", 2)
                     input = lb.keypad.read_key()
@@ -143,6 +148,7 @@ def menu():
                         input = lb.keypad.read_key()
                     #TODO: Start timer for device
                     lock(lb)
+                    lb.display.clear()
                     lb.display.show_text("    Locked!", 1)
                     lb.display.show_text("  * Main Menu", 2)
                     input = ""
@@ -153,12 +159,14 @@ def menu():
                 menu = 3
         #Take Out Device
         elif menu == 3:
+            lb.display.clear()
             lb.display.show_text("Take Out Device", 1)
             lb.display.show_text("* Enter   # Down", 2)
             input = lb.keypad.read_key()
             if input == '*':#Enter
                 device_num = validate_device(devices)
                 if device_num:
+                    lb.display.clear()
                     lb.display.show_text("   Unlocked!", 1)
                     lb.display.show_text("    * Lock    ", 2)
                     input = ""
@@ -170,6 +178,7 @@ def menu():
                 menu = 4
         #Checkout Device
         elif menu == 4:
+            lb.display.clear()
             lb.display.show_text("Checkout Device", 1)
             lb.display.show_text("* Enter   # Down", 2)
             input = lb.keypad.read_key()
@@ -177,6 +186,7 @@ def menu():
                 device_num = validate_device(devices)
                 if device_num:
                     #TODO: Print receipt
+                    lb.display.clear()
                     lb.display.show_text("Printing Receipt", 1)
                     lb.display.show_text("    * Lock    ", 2)
                     input = ""
@@ -188,6 +198,7 @@ def menu():
                 menu = 5
         #Display Points
         elif menu == 5:
+            lb.display.clear()
             lb.display.show_text(" Display Points", 1)
             lb.display.show_text("* Enter   # Down", 2)
             input = lb.keypad.read_key()
@@ -202,12 +213,14 @@ def menu():
                 menu = 6
         #Admin Unlock
         elif menu == 6:
+            lb.display.clear()
             lb.display.show_text("  Admin Unlock", 1)
             lb.display.show_text("* Enter   # Down", 2)
             input = lb.keypad.read_key()
             if input == '*':#Enter
                 if validate_admin(lb):
                     unlock(lb)
+                    lb.display.clear()
                     lb.display.show_text("   Unlocked!", 1)
                     lb.display.show_text("    * Lock    ", 2)
                     input = ""
@@ -220,6 +233,7 @@ def menu():
                 menu = 7
         #Display All
         elif menu == 7:
+            lb.display.clear()
             lb.display.show_text("Display All")
             lb.display.show_text("* Enter   # Down", 2)
             input = lb.keypad.read_key()
@@ -242,6 +256,6 @@ if __name__ == "__main__":
 
     lb.keypad.on()
     lb.display.on()
-    
+
     app.run(host='0.0.0.0', port=80, debug=True, threaded=True)
     menu()

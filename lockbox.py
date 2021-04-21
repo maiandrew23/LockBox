@@ -149,9 +149,10 @@ class Display:
     for p in pins:
       GPIO.output(p,GPIO.LOW)
 
-
-  def show_text(self, text, line=1):
+  def clear(self):
     self.write_arr_4bit(LCD_CLEAR, LCD_CMD)
+    
+  def show_text(self, text, line=1):
     if line == 1:
       self.write_arr_4bit(LCD_LINE_1, LCD_CMD)
     elif line == 2:
