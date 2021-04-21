@@ -150,17 +150,13 @@ class Display:
       GPIO.output(p,GPIO.LOW)
 
 
-  def show_text_line1(self, text):
-    for c in text:
-      arr = self.char_to_arr(c)
+  def show_text(self, text, line):
+    if line == 1:
       self.write_arr_4bit(LCD_LINE_1, LCD_CMD)
-      self.write_arr_4bit(arr, LCD_CHR)
-    print("'" + text + "'", "on line 1 of display")
-
-  def show_text_line2(self, text):
+    elif line == 2:
+      self.write_arr_4bit(LCD_LINE_2, LCD_CMD)
     for c in text:
       arr = self.char_to_arr(c)
-      self.write_arr_4bit(LCD_LINE_2, LCD_CMD)
       self.write_arr_4bit(arr, LCD_CHR)
     print("'" + text + "'", "on line 1 of display")
 
