@@ -45,9 +45,74 @@ if __name__ == "__main__":
 
 devices = {}
 
-def verify():
-    lb.display.show_text("Are You Sure?")
-    return lb.Keypad.read_key()
+def validate_admin(lb):
+    count = 0
+    while count < 2:
+        lb.display.show_text("Enter Passcode")
+        passcode = ""
+        for i in range(4):
+            passcode += lb.Keypad.read_key()
+        if passcode == lb.admin_passcode:
+            return True
+        else:
+            lb.display.show_text("Wrong Passcode!")
+            #TODO: Display second line
+            if count == 0:
+                input = lb.Keypad.read_key()
+                if input == "*":#Try Again selected
+                    count += 1
+                elif input == "#":#Back to Main Menu
+                    return False
+            else:
+                lb.display.show_text("Wrong Passcode!")
+                #TODO: Display second line
+                input = ""
+                while input != "*":#Back to Main Menu
+                    input = lb.Keypad.read_key()
+                return False
+    return False
+
+def validate_device(devices):
+    lb.display.show_text("Enter Device #")
+    device_num = ""
+    for i in range(4):
+        device_num += lb.Keypad.read_key()
+    if device_num in devices:#Valid Device Number
+        count = 0
+        while count < 2:
+            lb.display.show_text("Enter Passcode")
+            passcode = ""
+            for i in range(4):
+                passcode += lb.Keypad.read_key()
+            if devices[device_num] == passcode:#Correct passcode
+               return device_num
+            else:#Incorrect passcode
+                lb.display.show_text("Wrong Passcode")
+                if count == 0:
+                    #TODO: Display second line
+                    input = lb.Keypad.read_key()
+                    if input == "*":#Try Again selected
+                        count += 1
+                    elif input == "#":#Back to Main Menu
+                        return None
+                else:
+                    #TODO: Display second line
+                    input = ""
+                    while input != "*":#Back to Main Menu
+                        input = lb.Keypad.read_key()
+                    return None
+    else:
+        lb.display.show_text("Device Not Found")
+        input = ""
+        while input != "*":#Back to Main Menu
+            input = lb.Keypad.read_key()
+        menu = 1
+
+def lock(lb):
+    lb.solenoid.close()
+
+def unlock(lb):
+    lb.solenoid.open()
 
 def menu():
     menu = 1
@@ -57,58 +122,118 @@ def menu():
             lb.display.show_text("Register New Device")
             input = lb.Keypad.read_key()
             if input == '*':#Selected
-                input = verify()
+                lb.display.show_text("Are You Sure?")
+                #TODO: Display second line
+                input = lb.Keypad.read_key()
                 if input == '*':#Verified Yes
                     #TODO: Register device and print receipt
                     menu = 2
                 elif input == '#':#Verified No
-                    menu == 1
+                    menu == 2
             elif input == '#':#Down
                 menu = 2
         #Lock Device
         elif menu == 2:
             lb.display.show_text("Lock Device")
+            #TODO: Display second line
             input = lb.Keypad.read_key()
             if input == '*':#Selected
-                lb.display.show_text("Enter Device #")
-                device_num = ""
-                for i in range(4):
-                    device_num += lb.Keypad.read_key()
-                if device_num in devices:#Valid Device Number
-                    count = 0
-                    while count < 2:
-                        lb.display.show_text("Enter Passcode")
-                        passcode = ""
-                        for i in range(4):
-                            passcode += lb.Keypad.read_key()
-                        if devices[device_num] == passcode:#Correct passcode
-                            lb.display.show_text("Insert Your Device")
-                            input = lb.Keypad.read_key()
-                            if input == '*':#Lock was selected
-                                #TODO: Start timer for device
-                                lb.solenoid.close()
-                                lb.display.show_text("Locked!")
-                                input = ""
-                                while input != "*":#Back to Main Menu
-                                    input = lb.Keypad.read_key()
-                                menu = 1
-                            elif input == '#':#Cancel
-                                menu = 1
-                            count = 2
-                        else:#Incorrect passcode
-                            lb.display.show_text("Wrong Passcode")
-                            input = lb.Keypad.read_key()
-                            if input == "*":#Try Again selected
-                                count += 1
-                            elif input == "#":#Back to Main Menu
-                                menu = 1
-                else:
-                    lb.display.show_text("Device Not Found")
+                device_num = validate_device(devices)
+                if device_num:
+                    unlock(lb)
+                    lb.display.show_text("Insert Your Device")
+                    #TODO: Display second line
+                    input = lb.Keypad.read_key()
+                    while input != "*":#Lock
+                        input = lb.Keypad.read_key()
+                    #TODO: Start timer for device
+                    lock(lb)
+                    lb.display.show_text("Locked!")
+                    #TODO: Display second line
                     input = ""
                     while input != "*":#Back to Main Menu
                         input = lb.Keypad.read_key()
                     menu = 1
             elif input == '#':#Down
                 menu = 3
+        #Take Out Device
         elif menu == 3:
-            pass
+            lb.display.show_text("Take Out Device")
+            #TODO: Display second line
+            input = lb.Keypad.read_key()
+            if input == '*':#Selected
+                device_num = validate_device(devices)
+                if device_num:
+                    lb.display.show_text("Door Unlocked!")
+                    #TODO: Display second line
+                    input = ""
+                    while input != "*":#Lock Door
+                        input = lb.Keypad.read_key()
+                    lock(lb)
+                    menu = 1
+            elif input == '#':#Down
+                menu = 4
+        #Checkout Device
+        elif menu == 4:
+            lb.display.show_text("Checkout Device")
+            #TODO: Display second line
+            input = lb.Keypad.read_key()
+            if input == '*':#Selected
+                device_num = validate_device(devices)
+                if device_num:
+                    #TODO: Print receipt
+                    lb.display.show_text("Door Unlocked, Printing Receipt!")
+                    #TODO: Display second line
+                    input = ""
+                    while input != "*":#Lock Door
+                        input = lb.Keypad.read_key()
+                    lock(lb)
+                    menu = 1
+            elif input == '#':#Down
+                menu = 4
+        #Display Points
+        elif menu == 5:
+            lb.display.show_text("Display Points")
+            #TODO: Display second line
+            input = lb.Keypad.read_key()
+            if input == '*':#Selected
+                device_num = validate_device(devices)
+                if device_num:
+                    #TODO: Display points
+                    #TODO: Display second line
+
+                    menu = 1
+            elif input == '#':#Down
+                menu = 6
+        #Admin Unlock
+        elif menu == 6:
+            lb.display.show_text("Admin Unlock")
+            #TODO: Display second line
+            input = lb.Keypad.read_key()
+            if input == '*':#Selected
+                if validate_admin(lb):
+                    unlock(lb)
+                    lb.display.show_text("Unlocked!")
+                    #TODO: Display second line
+                    input = ""
+                    while input != "*":#Lock selected
+                        input = lb.Keypad.read_key()
+                    lock(lb)
+                else:
+                    menu = 1
+            elif input == '#':#Down
+                menu = 7
+        #Admin Display All
+        elif menu == 7:
+            lb.display.show_text("Admin Display All")
+            #TODO: Display second line
+            input = lb.Keypad.read_key()
+            if input == '*':#Selected
+                if validate_admin(lb):
+                   #TODO:Display devices and points in searchable list
+                   pass
+                else:
+                    menu = 1
+            elif input == '#':#Down
+                menu = 1
+            
