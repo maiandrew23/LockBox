@@ -13,8 +13,6 @@ LCD_D6 = 26
 LCD_D7 = 1
 LCD_CHR = GPIO.HIGH   # High in data (character) mode
 LCD_CMD = GPIO.LOW    # Low in instruction (command) mode
-LCD_LINE_1 = [1,0,0,0,0,0,0,0]
-LCD_LINE_2 = [1,1,0,0,0,0,0,0]
 
 # Important commands
 LCD_CLEAR = [0,0,0,0,0,0,0,1]
@@ -24,6 +22,8 @@ LCD_4BIT1 = [0,0,1,1,0,0,1,1]
 LCD_4BIT2 = [0,0,1,1,0,0,1,0]
 LCD_ON_NC = [0,0,0,0,1,1,0,0]
 LCD_ENTRY = [0,0,0,0,0,1,1,0]
+LCD_LINE_1 = [1,0,0,0,0,0,0,0]
+LCD_LINE_2 = [1,1,0,0,0,0,0,0]
 
 E_PULSE = 0.0005
 E_DELAY = 0.0005
@@ -150,11 +150,19 @@ class Display:
       GPIO.output(p,GPIO.LOW)
 
 
-  def show_text(self, text):
+  def show_text_line1(self, text):
     for c in text:
       arr = self.char_to_arr(c)
+      self.write_arr_4bit(LCD_LINE_1, LCD_CMD)
       self.write_arr_4bit(arr, LCD_CHR)
-    print("'" + text + "'", "on display")
+    print("'" + text + "'", "on line 1 of display")
+
+  def show_text_line2(self, text):
+    for c in text:
+      arr = self.char_to_arr(c)
+      self.write_arr_4bit(LCD_LINE_2, LCD_CMD)
+      self.write_arr_4bit(arr, LCD_CHR)
+    print("'" + text + "'", "on line 1 of display")
 
 class Printer:
   def __init__(self):
