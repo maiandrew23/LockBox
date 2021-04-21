@@ -25,10 +25,7 @@ def admin():
 
 @app.route("/admin/<int:menu>")
 def menu():
-  if menu == 1:
-  	#print receipt
-  if menu == 2:
-  	pass
+  pass
   return redirect("/admin")
 
 @app.route("/admin/displayAll")
@@ -37,11 +34,12 @@ def displayAll():
 
 @app.route("/admin/displayAll/delete/<string:item>")
 def deleteDevice():
-  print("Delete " + item)
+  #print("Delete " + item)
   return app.render_template("html/displayAll.html", devices=devices)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=80, debug=True, threaded=True)
+    menu()
 
 devices = {}
 
