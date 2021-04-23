@@ -16,68 +16,68 @@ def admin():
   #Pass list of events to table on page
   return app.render_template("admin.html", events = events)
 
-@app.route("/admin/createEvent")
+@app.route("/createEvent")
 def createEvent():
   #Create an event. Sends user to form page where user enters Event name and date
   return app.send_static_file("create.html")
 
-@app.route("/admin/createEventPOST")
+@app.route("/createEventPOST")
 def createEventPOST():
   #Create an event. Sends user to form page where user enters Event name and date
-  return app.render_template("admint.html", events = events)
+  return app.render_template("admin.html", events = events)
 
-@app.route("/admin/deleteEvent/<string:eventName")
+@app.route("/deleteEvent/<string:eventName>")
 def deleteEvent():
   #Delete Event name
-  return app.render_template("admint.html", events = events)
+  return app.render_template("admin.html", events = events)
 
 #Event Pages
-@app.route("/admin/event/<string:eventName>")
-def admin():
+@app.route("/event/<string:eventName>")
+def displayEvent():
   print("Event")
   #query eventName
   #search for eventName and render event.html with event info
   #Send list of registered devices under events
   return app.render_template("event.html", eventName = eventName)
 
-@app.route("/admin/event/rename<string:eventName>")
+@app.route("/event/rename/<string:eventName>")
 def rename():
   print("Rename " + eventName)
   #Send form for user to enter new name
   return app.send_static_file("rename.html")
   
-@app.route("/admin/event/renamePOST<string:eventName>")
+@app.route("/event/renamePOST/<string:eventName>")
 def renamePOST():
   print("Rename " + eventName)
   return app.render_template("event.html", eventName = eventName)
 
-@app.route("/admin/event/deleteDevice/<string:deviceName>")
-def rename():
+@app.route("/event/deleteDevice/<string:eventName>/<string:deviceName>")
+def deleteDevice():
   deleteDevice("Delete " + deviceName)
   return app.render_template("event.html", eventName = eventName)
 
-@app.route("/admin/event/lockDevice/<string:deviceName>")
+@app.route("/event/lockDevice/<string:eventName>/<string:deviceName>")
 def lock():
   print("Lock " + deviceName)
   #Close solenoid, log device
   return app.render_template("event.html", eventName = eventName)
 
-@app.route("/admin/event/unlockDevice/<string:deviceName>")
+@app.route("/event/unlockDevice/<string:eventName>/<string:deviceName>")
 def unlock():
   print("Unlock " + deviceName)
   #Open solenoid, log device
   #Set saftey timer
   return app.render_template("event.html", eventName = eventName)
 
-@app.route("/admin/event/checkout/<string:deviceName>")
+@app.route("/event/checkout/<string:eventName>/<string:deviceName>")
 def checkout():
   print("Checkout " + deviceName)
 
   return app.render_template("event.html", eventName = eventName)
 
 #Device Pages
-@app.route("/admin/event/device/<string:deviceName>")
-def admin():
+@app.route("/event/device/<string:eventName>/<string:deviceName>")
+def guestDevice():
   print("GET"+deviceName)
   #query deviceName and get device log info, render in device.html
   return app.render_template('device.html', deviceName = deviceName)
