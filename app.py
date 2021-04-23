@@ -2,17 +2,17 @@ import lockbox
 import time
 from flask import Flask, redirect, render_template
 
-app = Flask(__name__, static_folder='')
+app = Flask(__name__, static_folder='html')
 
 @app.route("/")
 def home():
   print("Home page")
-  return app.send_static_file('html/index.html')
+  return app.send_static_file('index.html')
 
 @app.route("/admin")
 def admin():
   print("Admin")
-  return app.send_static_file('html/admin.html')
+  return app.send_static_file('admin.html')
 
 @app.route("/admin/<int:menu>")
 def menu():
@@ -21,12 +21,12 @@ def menu():
 
 @app.route("/admin/displayAll")
 def displayAll():
-	return app.render_template("html/displayAll.html", devices=devices)
+	return app.render_template("displayAll.html", devices=devices)
 
 @app.route("/admin/displayAll/delete/<string:item>")
 def deleteDevice():
   #print("Delete " + item)
-  return app.render_template("html/displayAll.html", devices=devices)
+  return app.render_template("displayAll.html", devices=devices)
 
 devices = {}
 
