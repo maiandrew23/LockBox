@@ -4,6 +4,9 @@ import sys
 import time
 from threading import Thread, Event
 
+#Solenoid Globals
+SOL_CONTROL = 16
+
 # LCD Globals
 LCD_RS = 6
 LCD_E  = 5
@@ -44,12 +47,15 @@ def info():
 
 class Solenoid:
   def setup(self):
+    GPIO.setup(SOL_CONTROL, GPIO.OUT)
     print("Solenoid setup fininshed")
 
   def open(self):
+    GPIO.output(SOL_CONTROL, GPIO.HIGH)
     print("Solenoid is open")
 
   def close(self):
+    GPIO.output(SOL_CONTROL, GPIO.HIGH)
     print("Solenoid is closed")
 
 class Keypad:
