@@ -47,6 +47,7 @@ def info():
 
 class Solenoid:
   def setup(self):
+    GPIO.setmode(GPIO.BCM)
     GPIO.setup(SOL_CONTROL, GPIO.OUT)
     print("Solenoid setup fininshed")
 
