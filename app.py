@@ -234,7 +234,7 @@ def unlock_box(lb):
 
 def create_session(name):
     #TODO: fix session name
-    cursor.execute('''INSERT INTO session (name, start_date,start_time) VALUES ('?',CURDATE(), CURTIME())''', (name))
+    cursor.execute('''INSERT INTO session (name, start_date,start_time) VALUES ('?',DATE(), TIME())''', (name))
 
 def create_device():
     passcode = ''.join(random.choice(string.digits) for i in range(4))
@@ -244,15 +244,15 @@ def create_device():
 
 def lock_device(device_num):
     cursor.execute('''INSERT INTO event (session_ID, device_number,action, datetime) 
-                        VALUES ((SELECT LAST_INSERT_ID() FROM session),?,'Locked',CURDATETIME())''', (device_num))
+                        VALUES ((SELECT LAST_INSERT_ID() FROM session),?,'Locked',DATETIME())''', (device_num))
 
 def unlock_device(device_num):
     cursor.execute('''INSERT INTO event (session_ID, device_number,action, datetime) 
-                        VALUES ((SELECT LAST_INSERT_ID() FROM session),?,'Unlocked',CURDATETIME())''', (device_num))
+                        VALUES ((SELECT LAST_INSERT_ID() FROM session),?,'Unlocked',DATETIME())''', (device_num))
 
 def checkout_device(device_num):
     cursor.execute('''INSERT INTO event (session_ID, device_number,action, datetime) 
-                        VALUES ((SELECT LAST_INSERT_ID() FROM session),?,'Checked out',CURDATETIME())''', (device_num))
+                        VALUES ((SELECT LAST_INSERT_ID() FROM session),?,'Checked out',DATETIME())''', (device_num))
 
 def update_score(device_num):
     #TODO: make points addition be based on time between last lock and unlock
