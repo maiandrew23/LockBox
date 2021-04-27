@@ -191,8 +191,10 @@ def validate_admin(lb):
 def validate_device(devices):
     lb.display.show_text("Enter Device #")
     device_num = ""
-    for i in range(4):
-        device_num += lb.keypad.read_key()
+    input = ""
+    while input != "*":
+        input += lb.keypad.read_key()
+        device_num = device_num + input
     if device_num in devices:#Valid Device Number
         count = 0
         while count < 2:
@@ -267,16 +269,16 @@ def finalize_score(device_num):
 def menu():
     menu = 0
     while(True):
-        #Create Event
+        #Create Session
         if menu == 0:
             lb.display.clear()
             lb.display.show_text("    Welcome!", 1)
-            lb.display.show_text(" * Create Session", 2)
+            lb.display.show_text("* Create Session", 2)
             input = ""
             while input != "*":#Create session
                 input = lb.keypad.read_key()
             #TODO: Setup session
-            create_session(cursor, "Party")
+            create_session("Party")
             menu = 1
         #Register New Device
         if menu == 1:
