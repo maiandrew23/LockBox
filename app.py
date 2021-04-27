@@ -234,11 +234,11 @@ def unlock_box(lb):
 
 def create_session(name):
     #TODO: fix session name
-    cursor.execute('''INSERT INTO session (?, start_date,start_time) VALUES (Party,CURDATE(), CURTIME())''', (name))
+    cursor.execute('''INSERT INTO session (name, start_date,start_time) VALUES ('?',CURDATE(), CURTIME())''', (name))
 
 def create_device():
     passcode = ''.join(random.choice(string.digits) for i in range(4))
-    cursor.execute('''INSERT INTO device (passcode) VALUES (?)''', (passcode))
+    cursor.execute('''INSERT INTO device (passcode) VALUES ('?')''', (str(passcode)))
     cursor.execute('''INSERT INTO score (session_ID, device_number,points)
                         VALUES ((SELECT LAST_INSERT_ID() FROM session),(SELECT LAST_INSERT_ID() FROM device),0)''')
 
