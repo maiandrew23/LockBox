@@ -238,9 +238,9 @@ def create_session(name):
     #TODO: fix session name
     cursor.execute('''INSERT INTO session (name, start_date,start_time) VALUES (?,DATE(), TIME())''', (name,))
 
-def create_device():
+def create_device(name):
     passcode = ''.join(random.choice(string.digits) for i in range(4))
-    cursor.execute('''INSERT INTO device (passcode) VALUES (?)''', (str(passcode),))
+    cursor.execute('''INSERT INTO device (name,passcode) VALUES (?,?)''', (name,str(passcode),))
     cursor.execute('''INSERT INTO score (session_ID, device_number,points)
                         VALUES ((SELECT LAST_INSERT_ID() FROM session),(SELECT LAST_INSERT_ID() FROM device),0)''')
 
@@ -295,7 +295,7 @@ def menu():
                 input = lb.keypad.read_key()
                 if input == '*':#Yes
                     #TODO: Print receipt
-                    create_device()
+                    create_device("N/A")
                     menu = 2
                 elif input == '#':#No
                     menu == 2
