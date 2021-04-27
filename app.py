@@ -16,7 +16,7 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS admin (
 
 # Create session table
 cursor.execute('''CREATE TABLE IF NOT EXISTS session (
-                    ID varchar(255) NOT NULL AUTO_INCREMENT,
+                    ID integer,
                     name varchar(255) NOT NULL,
                     start_date date NOT NULL,
                     start_time time (0) NOT NULL,
@@ -27,7 +27,7 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS session (
 
 # Create device table
 cursor.execute('''CREATE TABLE IF NOT EXISTS device (
-                    device_number varchar(4) NOT NULL AUTO_INCREMENT,
+                    device_number integer,
                     name varchar(255) NOT NULL,
                     passcode varchar(255) NOT NULL,
                     PRIMARY KEY (device_number)
@@ -35,8 +35,8 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS device (
 
 # Create event table
 cursor.execute('''CREATE TABLE IF NOT EXISTS event (
-                    session_ID varchar(255),
-                    device_number varchar(4) NOT NULL,
+                    session_ID integer,
+                    device_number integer,
                     action varchar(255) NOT NULL,
                     datetime datetime NOT NULL,
                     PRIMARY KEY (session_ID, device_number)
@@ -44,16 +44,16 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS event (
 
 # Create score table
 cursor.execute('''CREATE TABLE IF NOT EXISTS score (
-                    session_ID varchar(255),
-                    device_number varchar(4) NOT NULL,
+                    session_ID integer,
+                    device_number integer,
                     points integer NOT NULL,
                     PRIMARY KEY (session_ID, device_number)
                   )''')
 
 # Create feedback table
 cursor.execute('''CREATE TABLE IF NOT EXISTS feedback (
-                    session_ID varchar(255),
-                    device_number varchar(4) NOT NULL,
+                    session_ID integer,
+                    device_number integer,
                     comment varchar(255) NOT NULL,
                     PRIMARY KEY (session_ID, device_number)
                   )''')
@@ -230,7 +230,7 @@ def lock_box(lb):
 def unlock_box(lb):
     lb.solenoid.open()
 
-def create_seesion(cursor, name):
+def create_session(name):
     #TODO: fix session name
     cursor.execute('''INSERT INTO session (%s, start_date,start_time) VALUES (Party,CURDATE(), CURTIME())''', (name))
 
@@ -253,13 +253,13 @@ def checkout_device(device_num):
                         VALUES ((SELECT LAST_INSERT_ID() FROM session),%s,'Checked out',CURDATETIME())''', (device_num))
 
 def update_score(device_num):
-    #TODO: make points addition be based time between last lock and unlock
+    #TODO: make points addition be based on time between last lock and unlock
     points = 10
     cursor.execute('''UPDATE score SET points = points + %s
                       WHERE session_ID = (SELECT LAST_INSERT_ID() FROM session) AND device_number = %s)''', (points), (device_num))
 
 def finalize_score(device_num):
-    #TODO: make points addition be based time between last lock and checkout
+    #TODO: make points addition be based on time between last lock and checkout
     points = 10
     cursor.execute('''UPDATE score SET points = points + %s
                       WHERE session_ID = (SELECT LAST_INSERT_ID() FROM session) AND device_number = %s)''', (points), (device_num))
@@ -276,7 +276,7 @@ def menu():
             while input != "*":#Create session
                 input = lb.keypad.read_key()
             #TODO: Setup session
-            create_seesion(cursor, "Party")
+            create_session(cursor, "Party")
             menu = 1
         #Register New Device
         if menu == 1:
