@@ -8,6 +8,15 @@ from flask import Flask, redirect, render_template
 connection = sqlite3.connect("lockbox.db")
 cursor = connection.cursor()
 
+def clear_database():
+    cursor.execute('''DROP TABLE session''')
+    cursor.execute('''DROP TABLE device''')
+    cursor.execute('''DROP TABLE event''')
+    cursor.execute('''DROP TABLE score''')
+    cursor.execute('''DROP TABLE feedback''')
+
+clear_database()
+
 # Create admin table
 cursor.execute('''CREATE TABLE IF NOT EXISTS admin (
                     passcode varchar(255) NOT NULL,
@@ -57,13 +66,6 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS feedback (
                     comment varchar(255) NOT NULL,
                     PRIMARY KEY (session_ID, device_number)
                   )''')
-
-def clear_database():
-    cursor.execute('''DROP TABLE session''')
-    cursor.execute('''DROP TABLE device''')
-    cursor.execute('''DROP TABLE event''')
-    cursor.execute('''DROP TABLE score''')
-    cursor.execute('''DROP TABLE feedback''')
 
 app = Flask(__name__, static_folder='html')
 
