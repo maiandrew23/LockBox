@@ -1,6 +1,69 @@
 import lockbox
 import time
+import sqlite3
+import random
+import string
 from flask import Flask, redirect, render_template
+
+connection = sqlite3.connect("lockbox.db")
+cursor = connection.cursor()
+
+# Create admin table
+cursor.execute('''CREATE TABLE IF NOT EXISTS admin (
+                    passcode varchar(255) NOT NULL,
+                    PRIMARY KEY (passcode)
+                  )''')
+
+# Create session table
+cursor.execute('''CREATE TABLE IF NOT EXISTS session (
+                    ID varchar(255) NOT NULL AUTO_INCREMENT,
+                    name varchar(255) NOT NULL,
+                    start_date date NOT NULL,
+                    start_time time (0) NOT NULL,
+                    end_date date NOT NULL,
+                    end_time time (0) NOT NULL,
+                    PRIMARY KEY (ID)
+                  )''')
+
+# Create device table
+cursor.execute('''CREATE TABLE IF NOT EXISTS device (
+                    device_number varchar(4) NOT NULL AUTO_INCREMENT,
+                    name varchar(255) NOT NULL,
+                    passcode varchar(255) NOT NULL,
+                    PRIMARY KEY (device_number)
+                  )''')
+
+# Create event table
+cursor.execute('''CREATE TABLE IF NOT EXISTS event (
+                    session_ID varchar(255),
+                    device_number varchar(4) NOT NULL,
+                    action varchar(255) NOT NULL,
+                    datetime datetime NOT NULL,
+                    PRIMARY KEY (session_ID, device_number)
+                  )''')
+
+# Create score table
+cursor.execute('''CREATE TABLE IF NOT EXISTS score (
+                    session_ID varchar(255),
+                    device_number varchar(4) NOT NULL,
+                    points integer NOT NULL,
+                    PRIMARY KEY (session_ID, device_number)
+                  )''')
+
+# Create feedback table
+cursor.execute('''CREATE TABLE IF NOT EXISTS feedback (
+                    session_ID varchar(255),
+                    device_number varchar(4) NOT NULL,
+                    comment varchar(255) NOT NULL,
+                    PRIMARY KEY (session_ID, device_number)
+                  )''')
+
+def clear_database():
+    cursor.execute('''DROP TABLE session''')
+    cursor.execute('''DROP TABLE device''')
+    cursor.execute('''DROP TABLE event''')
+    cursor.execute('''DROP TABLE score''')
+    cursor.execute('''DROP TABLE feedback''')
 
 app = Flask(__name__, static_folder='html')
 
@@ -161,11 +224,45 @@ def validate_device(devices):
             input = lb.keypad.read_key()
         menu = 1
 
-def lock(lb):
+def lock_box(lb):
     lb.solenoid.close()
 
-def unlock(lb):
+def unlock_box(lb):
     lb.solenoid.open()
+
+def create_seesion(cursor, name):
+    #TODO: fix session name
+    cursor.execute('''INSERT INTO session (%s, start_date,start_time) VALUES (Party,CURDATE(), CURTIME())''', (name))
+
+def create_device():
+    passcode = ''.join(random.choice(string.digits) for i in range(4))
+    cursor.execute('''INSERT INTO device (passcode) VALUES (%s)''', (passcode))
+    cursor.execute('''INSERT INTO score (session_ID, device_number,points)
+                        VALUES ((SELECT LAST_INSERT_ID() FROM session),(SELECT LAST_INSERT_ID() FROM device),0)''')
+
+def lock_device(device_num):
+    cursor.execute('''INSERT INTO event (session_ID, device_number,action, datetime) 
+                        VALUES ((SELECT LAST_INSERT_ID() FROM session),%s,'Locked',CURDATETIME())''', (device_num))
+
+def unlock_device(device_num):
+    cursor.execute('''INSERT INTO event (session_ID, device_number,action, datetime) 
+                        VALUES ((SELECT LAST_INSERT_ID() FROM session),%s,'Unlocked',CURDATETIME())''', (device_num))
+
+def checkout_device(device_num):
+    cursor.execute('''INSERT INTO event (session_ID, device_number,action, datetime) 
+                        VALUES ((SELECT LAST_INSERT_ID() FROM session),%s,'Checked out',CURDATETIME())''', (device_num))
+
+def update_score(device_num):
+    #TODO: make points addition be based time between last lock and unlock
+    points = 10
+    cursor.execute('''UPDATE score SET points = points + %s
+                      WHERE session_ID = (SELECT LAST_INSERT_ID() FROM session) AND device_number = %s)''', (points), (device_num))
+
+def finalize_score(device_num):
+    #TODO: make points addition be based time between last lock and checkout
+    points = 10
+    cursor.execute('''UPDATE score SET points = points + %s
+                      WHERE session_ID = (SELECT LAST_INSERT_ID() FROM session) AND device_number = %s)''', (points), (device_num))
 
 def menu():
     menu = 0
@@ -174,11 +271,12 @@ def menu():
         if menu == 0:
             lb.display.clear()
             lb.display.show_text("    Welcome!", 1)
-            lb.display.show_text(" * Create Event", 2)
+            lb.display.show_text(" * Create Session", 2)
             input = ""
-            while input != "*":#Create Event
+            while input != "*":#Create session
                 input = lb.keypad.read_key()
-            #TODO: Setup event
+            #TODO: Setup session
+            create_seesion(cursor, "Party")
             menu = 1
         #Register New Device
         if menu == 1:
@@ -192,7 +290,8 @@ def menu():
                 lb.display.show_text("* Yes       # No", 2)
                 input = lb.keypad.read_key()
                 if input == '*':#Yes
-                    #TODO: Register device and print receipt
+                    #TODO: Print receipt
+                    create_device()
                     menu = 2
                 elif input == '#':#No
                     menu == 2
@@ -207,15 +306,15 @@ def menu():
             if input == '*':#Enter
                 device_num = validate_device(devices)
                 if device_num:
-                    unlock(lb)
+                    unlock_box(lb)
                     lb.display.clear()
                     lb.display.show_text(" Insert Device", 1)
                     lb.display.show_text("    * Lock    ", 2)
                     input = lb.keypad.read_key()
                     while input != "*":#Lock
                         input = lb.keypad.read_key()
-                    #TODO: Start timer for device
-                    lock(lb)
+                    lock_device(device_num)
+                    lock_box(lb)
                     lb.display.clear()
                     lb.display.show_text("    Locked!", 1)
                     lb.display.show_text("  * Main Menu", 2)
@@ -234,13 +333,16 @@ def menu():
             if input == '*':#Enter
                 device_num = validate_device(devices)
                 if device_num:
+                    #Unlock device and update score
+                    unlock_device(device_num)
+                    update_score(device_num)
                     lb.display.clear()
                     lb.display.show_text("   Unlocked!", 1)
                     lb.display.show_text("    * Lock    ", 2)
                     input = ""
                     while input != "*":#Lock
                         input = lb.keypad.read_key()
-                    lock(lb)
+                    lock_box(lb)
                     menu = 1
             elif input == '#':#Down
                 menu = 4
@@ -253,6 +355,9 @@ def menu():
             if input == '*':#Enter
                 device_num = validate_device(devices)
                 if device_num:
+                    #Checkout device and finalize score
+                    checkout_device(device_num)
+                    finalize_score(device_num)
                     #TODO: Print receipt
                     lb.display.clear()
                     lb.display.show_text("Printing Receipt", 1)
@@ -260,7 +365,7 @@ def menu():
                     input = ""
                     while input != "*":#Lock
                         input = lb.keypad.read_key()
-                    lock(lb)
+                    lock_box(lb)
                     menu = 1
             elif input == '#':#Down
                 menu = 5
@@ -270,7 +375,7 @@ def menu():
             lb.display.show_text(" Display Points", 1)
             lb.display.show_text("* Enter   # Down", 2)
             input = lb.keypad.read_key()
-            if input == '*':#Enter
+            if input == '*':#Enter  
                 device_num = validate_device(devices)
                 if device_num:
                     #TODO: Display points
@@ -287,14 +392,14 @@ def menu():
             input = lb.keypad.read_key()
             if input == '*':#Enter
                 if validate_admin(lb):
-                    unlock(lb)
+                    unlock_box(lb)
                     lb.display.clear()
                     lb.display.show_text("   Unlocked!", 1)
                     lb.display.show_text("    * Lock    ", 2)
                     input = ""
                     while input != "*":#Lock
                         input = lb.keypad.read_key()
-                    lock(lb)
+                    lock_box(lb)
                 else:
                     menu = 1
             elif input == '#':#Down
