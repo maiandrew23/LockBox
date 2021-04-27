@@ -45,5 +45,5 @@ lb.keypad.off()
 t1.join()
 print("==============================\n")
 
-
+lb.display.clear()
 print("Demo complete!")
