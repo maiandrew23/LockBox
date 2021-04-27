@@ -19,9 +19,9 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS session (
                     ID integer,
                     name varchar(255) NOT NULL,
                     start_date date NOT NULL,
-                    start_time time (0) NOT NULL,
-                    end_date date NOT NULL,
-                    end_time time (0) NOT NULL,
+                    start_time time NOT NULL,
+                    end_date date,
+                    end_time time,
                     PRIMARY KEY (ID)
                   )''')
 
@@ -234,11 +234,11 @@ def unlock_box(lb):
 
 def create_session(name):
     #TODO: fix session name
-    cursor.execute('''INSERT INTO session (name, start_date,start_time) VALUES ('?',DATE(), TIME())''', (name,))
+    cursor.execute('''INSERT INTO session (name, start_date,start_time) VALUES (?,DATE(), TIME())''', (name,))
 
 def create_device():
     passcode = ''.join(random.choice(string.digits) for i in range(4))
-    cursor.execute('''INSERT INTO device (passcode) VALUES ('?')''', (str(passcode),))
+    cursor.execute('''INSERT INTO device (passcode) VALUES (?)''', (str(passcode),))
     cursor.execute('''INSERT INTO score (session_ID, device_number,points)
                         VALUES ((SELECT LAST_INSERT_ID() FROM session),(SELECT LAST_INSERT_ID() FROM device),0)''')
 
