@@ -253,7 +253,7 @@ def get_winner(session_id):
     cursor.execute('''SELECT device_number,MAX(points) FROM score WHERE session_ID = ?''', (session_id,))
     result = cursor.fetchone()
     print("Result: ", result)
-    if len(result) != 0:
+    if result[0]:
         return result
     return None
 
