@@ -24,9 +24,6 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS admin (
                     PRIMARY KEY (passcode)
                   )''')
 
-#Default passcode for debugging
-cursor.execute('''INSERT INTO admin (passcode) VALUES (1234)''')
-
 # Create session table
 cursor.execute('''CREATE TABLE IF NOT EXISTS session (
                     ID integer,
@@ -169,6 +166,24 @@ def lock_box(lb):
 
 def unlock_box(lb):
     lb.solenoid.open()
+
+def create_admin_passcode(passcode):
+    cursor.execute('''SELECT * FROM admin WHERE passcode = ?''', (passcode,))
+    if cursor.fetchone()[0] == None:
+        cursor.execute('''INSERT INTO admin (passcode) VALUES (?)''', (passcode,))
+
+def setup_admin_passcode():
+    lb.display.clear()
+    lb.display.show_text("Admin Passcode", 1)
+    lb.display.show_text("     * Done", 2)
+    passcode = ""
+    input = lb.keypad.read_key()
+    time.sleep(0.2) # To prevent bounce
+    while input != "*":
+        passcode = passcode + input
+        input = lb.keypad.read_key()
+        time.sleep(0.2) # To prevent bounce
+    create_admin_passcode(passcode)
 
 def create_session(name):
     #TODO: fix session name
@@ -577,4 +592,5 @@ if __name__ == "__main__":
     lb.display.on()
 
     #app.run(host='0.0.0.0', port=80, debug=True, threaded=True)
+    setup_admin_passcode()
     menu()
