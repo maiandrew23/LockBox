@@ -243,7 +243,7 @@ def check_all_scores(session_id):
                                 WHERE session_ID = ? AND device_number = ? AND action = \'Locked\')''', (session_id, row[0],))
         result = cursor.fetchone()
         if result:
-            all_points.append((int(row[0]), result[0]))
+            all_points.append((int(row[0]), int(result[0])))
         else:
             all_points.append((int(row[0]), 0))
     return all_points
