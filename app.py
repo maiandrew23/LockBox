@@ -179,6 +179,7 @@ def create_device(session_id, name):
     print("Passcode = ", passcode)
     cursor.execute('''INSERT INTO score (session_ID, device_number,points)
                         VALUES (?,?,0)''', (session_id,device_number))
+    return device_number, passcode
 
 def lock_device(session_id, device_num):
     cursor.execute('''INSERT INTO event (session_ID, device_number, action, datetime) 
@@ -328,10 +329,11 @@ def menu():
                 time.sleep(0.2) # To prevent bounce
                 if input == '*':#Yes
                     #TODO: Print receipt
-                    create_device(session_id, "N/A")
+                    device_num, passcode = create_device(session_id, "N/A")
                     lb.display.clear()
-                    lb.display.show_text("    Success!", 1)
-                    time.sleep(3)
+                    lb.display.show_text("Device #: " + device_num, 1)
+                    lb.display.show_text("Passcode: " + passcode, 2)
+                    time.sleep(5)
                     menu = 2
                 elif input == '#':#No
                     menu == 2
