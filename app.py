@@ -16,7 +16,7 @@ def clear_database():
     cursor.execute('''DROP TABLE IF EXISTS score''')
     cursor.execute('''DROP TABLE IF EXISTS feedback''')
 
-clear_database()
+#clear_database()
 
 # Create admin table
 cursor.execute('''CREATE TABLE IF NOT EXISTS admin (
