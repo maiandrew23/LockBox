@@ -234,6 +234,7 @@ def validate_admin(lb):
     return False
 
 def validate_device():
+    lb.display.clear()
     lb.display.show_text("Enter Device #", 1)
     lb.display.show_text("     * Done", 2)
     device_num = ""
@@ -245,10 +246,14 @@ def validate_device():
     if cursor.fetchone():#Valid Device Number
         count = 0
         while count < 2:
-            lb.display.show_text("Enter Passcode")
+            lb.display.clear()
+            lb.display.show_text("Enter Passcode", 1)
+            lb.display.show_text("     * Done", 2)
             passcode = ""
-            for i in range(4):
-                passcode += lb.keypad.read_key()
+            input = lb.keypad.read_key()
+            while input != "*":
+                passcode = passcode + input
+                input = lb.keypad.read_key()
             cursor.execute('''SELECT * FROM device WHERE device_number = ? AND passcode = ?''', (device_num, passcode,))
             if cursor.fetchone():#Correct passcode
                return device_num
