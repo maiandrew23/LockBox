@@ -72,6 +72,8 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS feedback (
                     PRIMARY KEY (session_ID, device_number)
                   )''')
 
+cursor.close()
+
 app = Flask(__name__, static_folder='html')
 
 @app.route("/")
@@ -242,7 +244,7 @@ def check_all_scores(session_id):
                                 FROM event 
                                 WHERE session_ID = ? AND device_number = ? AND action = \'Locked\')''', (session_id, row[0],))
         result2 = cursor.fetchone()
-        if result2:
+        if result2[0]:
             all_points.append((int(row[0]), int(result2[0])))
         else:
             all_points.append((int(row[0]), 0))
@@ -363,7 +365,6 @@ def menu():
             while input != "*":#Create session
                 input = lb.keypad.read_key()
                 time.sleep(0.2) # To prevent bounce
-            #TODO: Setup session
             session_id = create_session("Party")
             menu = 1
         #Register New Device
@@ -551,10 +552,10 @@ def menu():
             if input == '*':#Enter
                 if validate_admin():
                     row = get_winner(session_id)
-                    cursor.close()
+                    connection.commit()
                     lb.display.clear()
                     if row:
-                        lb.display.show_text("*D#: " + row[0] + " Pts: " + str(row[1]), 1)
+                        lb.display.show_text("*D#: " + str(row[0]) + " Pts: " + str(row[1]), 1)
                     lb.display.show_text("  * Main Menu", 2)
                     input = ""
                     while input != "*":#Back to Main Menu
