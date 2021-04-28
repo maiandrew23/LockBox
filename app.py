@@ -234,16 +234,16 @@ def check_score(session_id, device_num):
 
 def check_all_scores(session_id):
     cursor.execute('''SELECT device_number,points FROM score WHERE session_ID = ?''', (session_id,))
-    result = cursor.fetchall()
+    result1 = cursor.fetchall()
     all_points = []
-    for row in result:
+    for row in result1:
         cursor.execute('''SELECT ROUND((JULIANDAY(DATETIME()) - JULIANDAY(t)) * 86400)
                         FROM (SELECT MAX(datetime) as t 
                                 FROM event 
                                 WHERE session_ID = ? AND device_number = ? AND action = \'Locked\')''', (session_id, row[0],))
-        result = cursor.fetchone()
-        if result:
-            all_points.append((int(row[0]), int(result[0])))
+        result2 = cursor.fetchone()
+        if result2:
+            all_points.append((int(row[0]), int(result2[0])))
         else:
             all_points.append((int(row[0]), 0))
     return all_points
@@ -251,8 +251,11 @@ def check_all_scores(session_id):
 def get_winner(session_id):
     #TODO: will return name if needed
     cursor.execute('''SELECT device_number,MAX(points) FROM score WHERE session_ID = ?''', (session_id,))
-    return cursor.fetchone()
-
+    result = cursor.fetchone()
+    if len(result) != 0:
+        return result
+    else:
+        return None
 
 def validate_admin_passcode(passcode):
     cursor.execute('''SELECT * FROM admin WHERE passcode = ?''', (passcode,))
