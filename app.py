@@ -171,6 +171,7 @@ def create_admin_passcode(passcode):
     cursor.execute('''SELECT * FROM admin WHERE passcode = ?''', (passcode,))
     if cursor.fetchone() == None:
         cursor.execute('''INSERT INTO admin (passcode) VALUES (?)''', (passcode,))
+        connection.commit()
 
 def setup_admin_passcode():
     lb.display.clear()
