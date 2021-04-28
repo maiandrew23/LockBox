@@ -219,41 +219,44 @@ def check_score(session_id, device_num):
     print("Current points: ", str(points))
     return points
 
+def validate_admin_passcode(passcode):
+    cursor.execute('''SELECT * FROM admin WHERE passcode = ?''', (passcode,))
+    if cursor.fetchone():
+        return True
+    return False
+
+def validate_device_number(device_num):
+    pass
+
+def validate_device_passcode(device_num, passcode):
+    cursor.execute('''SELECT * FROM device WHERE deivice_number = ? AND passcode = ?''', (device_num, passcode,))
+    if cursor.fetchone():
+        return True
+    return False
+
 def validate_admin():
-    count = 0
-    while count < 2:
-        lb.display.clear()
-        lb.display.show_text("Enter Passcode", 1)
-        lb.display.show_text("     * Done", 2)
-        passcode = ""
+    lb.display.clear()
+    lb.display.show_text("Enter Passcode", 1)
+    lb.display.show_text("     * Done", 2)
+    passcode = ""
+    input = lb.keypad.read_key()
+    time.sleep(0.2) # To prevent bounce
+    while input != "*":
+        passcode = passcode + input
         input = lb.keypad.read_key()
         time.sleep(0.2) # To prevent bounce
-        while input != "*":
-            passcode = passcode + input
-            input = lb.keypad.read_key()
-            time.sleep(0.2) # To prevent bounce
-        cursor.execute('''SELECT * FROM admin WHERE passcode = ?''', (passcode,))
-        if cursor.fetchone():
-            return True
-        else:
-            lb.display.clear()
-            lb.display.show_text("Wrong Passcode!", 1)
-            #TODO: Display second line
-            if count == 0:
-                input = lb.keypad.read_key()
-                time.sleep(0.2) # To prevent bounce
-                if input == "*":#Try Again selected
-                    count += 1
-                elif input == "#":#Back to Main Menu
-                    return False
-            else:
-                lb.display.show_text("Wrong Passcode!")
-                lb.display.show_text("*Try Again #Back", 2)
-                input = ""
-                while input != "*":#Back to Main Menu
-                    input = lb.keypad.read_key()
-                    time.sleep(0.2) # To prevent bounce
-                return False
+    if validate_admin_passcode(passcode):
+        return True
+    else:
+        lb.display.clear()
+        lb.display.show_text("Wrong Passcode!", 1)
+        lb.display.show_text("*Try Again #Back", 2)
+        input = lb.keypad.read_key()
+        time.sleep(0.2) # To prevent bounce
+        if input == "*":#Try Again selected
+            pass
+        elif input == "#":#Back to Main Menu
+            return False
     return False
 
 def validate_device():
@@ -267,8 +270,7 @@ def validate_device():
         device_num = device_num + input
         input = lb.keypad.read_key()
         time.sleep(0.2) # To prevent bounce
-    cursor.execute('''SELECT * FROM device WHERE device_number = ?''', (device_num,))
-    if cursor.fetchone():#Valid Device Number
+    if validate_device_number(device_num):#Valid Device Number
         count = 0
         while count < 2:
             lb.display.clear()
@@ -281,8 +283,7 @@ def validate_device():
                 passcode = passcode + input
                 input = lb.keypad.read_key()
                 time.sleep(0.2) # To prevent bounce
-            cursor.execute('''SELECT * FROM device WHERE device_number = ? AND passcode = ?''', (device_num, passcode,))
-            if cursor.fetchone():#Correct passcode
+            if validate_device_passcode(device_num, passcode):#Correct passcode
                return device_num
             else:#Incorrect passcode
                 lb.display.clear()
