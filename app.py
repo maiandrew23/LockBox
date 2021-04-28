@@ -249,7 +249,8 @@ def check_all_scores(session_id):
     return all_points
 
 def get_winner(session_id):
-    cursor.execute('''SELECT device_number,name,MAX(points) FROM score WHERE session_ID = ?''', (session_id,))
+    #TODO: will return name if needed
+    cursor.execute('''SELECT device_number,MAX(points) FROM score WHERE session_ID = ?''', (session_id,))
     return cursor.fetchone()
 
 
@@ -550,7 +551,7 @@ def menu():
                     cursor.close()
                     lb.display.clear()
                     if row:
-                        lb.display.show_text("*D#: " + row[0] + " Pts: " + str(row[2]), 1)
+                        lb.display.show_text("*D#: " + row[0] + " Pts: " + str(row[1]), 1)
                     lb.display.show_text("  * Main Menu", 2)
                     input = ""
                     while input != "*":#Back to Main Menu
