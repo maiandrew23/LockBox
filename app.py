@@ -248,6 +248,11 @@ def check_all_scores(session_id):
             all_points.append((int(row[0]), 0))
     return all_points
 
+def get_winner(session_id):
+    cursor.execute('''SELECT device_number,name,MAX(points) FROM score WHERE session_ID = ?''', (session_id,))
+    return cursor.fetchone()
+
+
 def validate_admin_passcode(passcode):
     cursor.execute('''SELECT * FROM admin WHERE passcode = ?''', (passcode,))
     if cursor.fetchone():
@@ -508,7 +513,7 @@ def menu():
         #Display All
         elif menu == 7:
             lb.display.clear()
-            lb.display.show_text("Display All Pnts")
+            lb.display.show_text("Display All Pnts", 1)
             lb.display.show_text("* Enter   # Down", 2)
             input = lb.keypad.read_key()
             time.sleep(0.2) # To prevent bounce
@@ -522,15 +527,38 @@ def menu():
                     if len(rows) != 0:
                         row = next(row_cycle)
                         lb.display.show_text("D#: " + str(row[0]) + " Pts: " + str(row[1]), 1)
-                    input = lb.keypad.read_key()
-                    time.sleep(0.2) # To prevent bounce
-                    if input == "#":#Back to Main Menu
-                        menu = 1
+                        input = lb.keypad.read_key()
+                        time.sleep(0.2) # To prevent bounce
+                        if input == "#":#Back to Main Menu
+                            menu = 1
                 if len(rows) == 0:
                     input = lb.keypad.read_key()
                     time.sleep(0.2) # To prevent bounce
                     if input == "#":#Back to Main Menu
                         menu = 1
+            elif input == '#':#Down
+                menu = 8
+        elif menu == 8:# End Session
+            lb.display.clear()
+            lb.display.show_text("  End Session", 1)
+            lb.display.show_text("* Enter   # Down", 2)
+            input = lb.keypad.read_key()
+            time.sleep(0.2) # To prevent bounce
+            if input == '*':#Enter
+                if validate_admin():
+                    row = get_winner(session_id)
+                    cursor.close()
+                    lb.display.clear()
+                    if row:
+                        lb.display.show_text("*D#: " + row[0] + " Pts: " + str(row[2]), 1)
+                    lb.display.show_text("  * Main Menu", 2)
+                    input = ""
+                    while input != "*":#Back to Main Menu
+                        input = lb.keypad.read_key()
+                        time.sleep(0.2) # To prevent bounce
+                    menu = 0
+                else:#Back to Main Menu
+                    menu = 1
             elif input == '#':#Down
                 menu = 1
             
