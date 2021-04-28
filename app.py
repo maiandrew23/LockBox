@@ -592,5 +592,7 @@ if __name__ == "__main__":
     lb.display.on()
 
     #app.run(host='0.0.0.0', port=80, debug=True, threaded=True)
-    setup_admin_passcode()
+    cursor.execute('''SELECT * FROM admin''')
+    if cursor.fetchone() == None:
+        setup_admin_passcode()
     menu()
