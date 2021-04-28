@@ -209,7 +209,14 @@ def finalize_score(session_id, device_num):
     cursor.execute('''SELECT points FROM score WHERE session_ID = ? AND device_number = ?''', (session_id, device_num,))
     print("Final points = ", cursor.fetchone()[0])
 
-def validate_admin(lb):
+def check_score(session_id, device_num):
+    #TODO: Add points earned up until the current time
+    cursor.execute('''SELEC points FROM score WHERE session_ID = ? AND device_number = ?''', (session_id, device_num,))
+    points = cursor.fetchone()[0]
+    print("Current points: ", str(points))
+    return points
+
+def validate_admin():
     count = 0
     while count < 2:
         lb.display.show_text("Enter Passcode", 1)
@@ -293,12 +300,11 @@ def validate_device():
     else:
         lb.display.clear()
         lb.display.show_text("Device Not Found",1)
-        lb.display.show_text("*Try Again #Back", 2)
+        lb.display.show_text("  * Main Menu", 2)
         input = ""
         while input != "*":#Back to Main Menu
             input = lb.keypad.read_key()
             time.sleep(0.2) # To prevent bounce
-        menu = 1
 
 def menu():
     menu = 0
@@ -431,9 +437,14 @@ def menu():
             if input == '*':#Enter  
                 device_num = validate_device()
                 if device_num:
-                    #TODO: Display points
-                    #TODO: Display second line
-
+                    points = check_score(session_id, device_num)
+                    lb.display.clear()
+                    lb.display.show_text("Points: ", str(points), 1)
+                    lb.display.show_text("  * Main Menu", 2)
+                    input = ""
+                    while input != "*":#Lock
+                        input = lb.keypad.read_key()
+                        time.sleep(0.2) # To prevent bounce
                     menu = 1
             elif input == '#':#Down
                 menu = 6
@@ -445,7 +456,7 @@ def menu():
             input = lb.keypad.read_key()
             time.sleep(0.2) # To prevent bounce
             if input == '*':#Enter
-                if validate_admin(lb):
+                if validate_admin():
                     unlock_box(lb)
                     lb.display.clear()
                     lb.display.show_text("   Unlocked!", 1)
@@ -467,7 +478,7 @@ def menu():
             input = lb.keypad.read_key()
             time.sleep(0.2) # To prevent bounce
             if input == '*':#Enter
-                if validate_admin(lb):
+                if validate_admin():
                    #TODO:Display devices and points in searchable list
                    pass
                 else:
