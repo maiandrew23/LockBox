@@ -159,18 +159,59 @@ def guestLoginPOST():
   #gathers POST data and query deviceName
   return app.render_template('guestDevice.html', deviceName = deviceName)
 
+def lock_box(lb):
+    lb.solenoid.close()
 
+def unlock_box(lb):
+    lb.solenoid.open()
 
-devices = {}
+def create_session(name):
+    #TODO: fix session name
+    cursor.execute('''INSERT INTO session (name, start_date,start_time) VALUES (?,DATE(), TIME())''', (name,))
+    return cursor.lastrowid
+
+def create_device(session_id, name):
+    passcode = ''.join(random.choice(string.digits) for i in range(4))
+    cursor.execute('''INSERT INTO device (name,passcode) VALUES (?,?)''', (name,str(passcode),))
+    device_number = cursor.lastrowid
+    cursor.execute('''INSERT INTO score (session_ID, device_number,points)
+                        VALUES (?,?,0)''', (session_id,device_number))
+
+def lock_device(session_id, device_num):
+    cursor.execute('''INSERT INTO event (session_ID, device_number,action, datetime) 
+                        VALUES (?,?,'Locked',DATETIME())''', (session_id, device_num,))
+
+def unlock_device(session_id, device_num):
+    cursor.execute('''INSERT INTO event (session_ID, device_number,action, datetime) 
+                        VALUES (?,?,'Unlocked',DATETIME())''', (session_id, device_num,))
+
+def checkout_device(session_id, device_num):
+    cursor.execute('''INSERT INTO event (session_ID, device_number,action, datetime) 
+                        VALUES (?,?,'Checked out',DATETIME())''', (session_id, device_num,))
+
+def update_score(session_id, device_num):
+    #TODO: make points addition be based on time between last lock and unlock
+    points = 10
+    cursor.execute('''UPDATE score SET points = points + ?
+                      WHERE session_ID = ? AND device_number = ?)''', (points, session_id, device_num,))
+
+def finalize_score(session_id, device_num):
+    #TODO: make points addition be based on time between last lock and checkout
+    points = 10
+    cursor.execute('''UPDATE score SET points = points + ?
+                      WHERE session_ID = ? AND device_number = ?)''', (points, session_id, device_num,))
 
 def validate_admin(lb):
     count = 0
     while count < 2:
         lb.display.show_text("Enter Passcode", 1)
         passcode = ""
-        for i in range(4):
-            passcode += lb.keypad.read_key()
-        if passcode == lb.admin_passcode:
+        input = lb.keypad.read_key()
+        while input != "*":
+            passcode = passcode + input
+            input = lb.keypad.read_key()
+        cursor.execute('''SELECT * FROM admin WHERE passcode = ?''', (passcode,))
+        if cursor.fetchone():
             return True
         else:
             lb.display.show_text("Wrong Passcode!", 1)
@@ -190,21 +231,23 @@ def validate_admin(lb):
                 return False
     return False
 
-def validate_device(devices):
+def validate_device():
     lb.display.show_text("Enter Device #")
     device_num = ""
-    input = ""
+    input = lb.keypad.read_key()
     while input != "*":
-        input += lb.keypad.read_key()
         device_num = device_num + input
-    if device_num in devices:#Valid Device Number
+        input = lb.keypad.read_key()
+    cursor.execute('''SELECT * FROM device WHERE device_number = ?''', (device_num,))
+    if cursor.fetchone():#Valid Device Number
         count = 0
         while count < 2:
             lb.display.show_text("Enter Passcode")
             passcode = ""
             for i in range(4):
                 passcode += lb.keypad.read_key()
-            if devices[device_num] == passcode:#Correct passcode
+            cursor.execute('''SELECT * FROM device WHERE device_number = ? AND passcode = ?''', (device_num, passcode,))
+            if cursor.fetchone():#Correct passcode
                return device_num
             else:#Incorrect passcode
                 lb.display.show_text("Wrong Passcode")
@@ -228,48 +271,9 @@ def validate_device(devices):
             input = lb.keypad.read_key()
         menu = 1
 
-def lock_box(lb):
-    lb.solenoid.close()
-
-def unlock_box(lb):
-    lb.solenoid.open()
-
-def create_session(name):
-    #TODO: fix session name
-    cursor.execute('''INSERT INTO session (name, start_date,start_time) VALUES (?,DATE(), TIME())''', (name,))
-
-def create_device(name):
-    passcode = ''.join(random.choice(string.digits) for i in range(4))
-    cursor.execute('''INSERT INTO device (name,passcode) VALUES (?,?)''', (name,str(passcode),))
-    cursor.execute('''INSERT INTO score (session_ID, device_number,points)
-                        VALUES ((SELECT LAST_INSERT_ID() FROM session),(SELECT LAST_INSERT_ID() FROM device),0)''')
-
-def lock_device(device_num):
-    cursor.execute('''INSERT INTO event (session_ID, device_number,action, datetime) 
-                        VALUES ((SELECT LAST_INSERT_ID() FROM session),?,'Locked',DATETIME())''', (device_num,))
-
-def unlock_device(device_num):
-    cursor.execute('''INSERT INTO event (session_ID, device_number,action, datetime) 
-                        VALUES ((SELECT LAST_INSERT_ID() FROM session),?,'Unlocked',DATETIME())''', (device_num,))
-
-def checkout_device(device_num):
-    cursor.execute('''INSERT INTO event (session_ID, device_number,action, datetime) 
-                        VALUES ((SELECT LAST_INSERT_ID() FROM session),?,'Checked out',DATETIME())''', (device_num,))
-
-def update_score(device_num):
-    #TODO: make points addition be based on time between last lock and unlock
-    points = 10
-    cursor.execute('''UPDATE score SET points = points + ?
-                      WHERE session_ID = (SELECT LAST_INSERT_ID() FROM session) AND device_number = ?)''', (points, device_num,))
-
-def finalize_score(device_num):
-    #TODO: make points addition be based on time between last lock and checkout
-    points = 10
-    cursor.execute('''UPDATE score SET points = points + ?
-                      WHERE session_ID = (SELECT LAST_INSERT_ID() FROM session) AND device_number = ?)''', (points, device_num,))
-
 def menu():
     menu = 0
+    session_id = 0
     while(True):
         #Create Session
         if menu == 0:
@@ -280,7 +284,7 @@ def menu():
             while input != "*":#Create session
                 input = lb.keypad.read_key()
             #TODO: Setup session
-            create_session("Party")
+            session_id = create_session("Party")
             menu = 1
         #Register New Device
         if menu == 1:
@@ -295,7 +299,7 @@ def menu():
                 input = lb.keypad.read_key()
                 if input == '*':#Yes
                     #TODO: Print receipt
-                    create_device("N/A")
+                    create_device(session_id, "N/A")
                     menu = 2
                 elif input == '#':#No
                     menu == 2
@@ -308,7 +312,7 @@ def menu():
             lb.display.show_text("* Enter   # Down", 2)
             input = lb.keypad.read_key()
             if input == '*':#Enter
-                device_num = validate_device(devices)
+                device_num = validate_device()
                 if device_num:
                     unlock_box(lb)
                     lb.display.clear()
@@ -317,7 +321,7 @@ def menu():
                     input = lb.keypad.read_key()
                     while input != "*":#Lock
                         input = lb.keypad.read_key()
-                    lock_device(device_num)
+                    lock_device(session_id, device_num)
                     lock_box(lb)
                     lb.display.clear()
                     lb.display.show_text("    Locked!", 1)
@@ -335,11 +339,11 @@ def menu():
             lb.display.show_text("* Enter   # Down", 2)
             input = lb.keypad.read_key()
             if input == '*':#Enter
-                device_num = validate_device(devices)
+                device_num = validate_device()
                 if device_num:
                     #Unlock device and update score
-                    unlock_device(device_num)
-                    update_score(device_num)
+                    unlock_device(session_id, device_num)
+                    update_score(session_id, device_num)
                     lb.display.clear()
                     lb.display.show_text("   Unlocked!", 1)
                     lb.display.show_text("    * Lock    ", 2)
@@ -357,11 +361,11 @@ def menu():
             lb.display.show_text("* Enter   # Down", 2)
             input = lb.keypad.read_key()
             if input == '*':#Enter
-                device_num = validate_device(devices)
+                device_num = validate_device()
                 if device_num:
                     #Checkout device and finalize score
-                    checkout_device(device_num)
-                    finalize_score(device_num)
+                    checkout_device(session_id, device_num)
+                    finalize_score(session_id, device_num)
                     #TODO: Print receipt
                     lb.display.clear()
                     lb.display.show_text("Printing Receipt", 1)
@@ -380,7 +384,7 @@ def menu():
             lb.display.show_text("* Enter   # Down", 2)
             input = lb.keypad.read_key()
             if input == '*':#Enter  
-                device_num = validate_device(devices)
+                device_num = validate_device()
                 if device_num:
                     #TODO: Display points
                     #TODO: Display second line

@@ -188,6 +188,5 @@ class Lockbox:
     self.printer = Printer()
     self.display = Display()
     self.solenoid = Solenoid()
-    self.admin_passcode = "1234"
 
 
