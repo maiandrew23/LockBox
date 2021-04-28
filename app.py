@@ -225,7 +225,9 @@ def check_score(session_id, device_num):
                       FROM (SELECT MAX(datetime) as t 
                             FROM event 
                             WHERE session_ID = ? AND device_number = ? AND action = \'Locked\')''', (session_id, device_num,))
-    points += cursor.fetchone()[0]
+    additional_points = cursor.fetchone()[0]
+    if additional_points:
+        points += additional_points
     print("Current points: ", str(int(points)))
     return points
 
