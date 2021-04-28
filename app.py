@@ -252,10 +252,10 @@ def get_winner(session_id):
     #TODO: will return name if needed
     cursor.execute('''SELECT device_number,MAX(points) FROM score WHERE session_ID = ?''', (session_id,))
     result = cursor.fetchone()
+    print("Result: ", result)
     if len(result) != 0:
         return result
-    else:
-        return None
+    return None
 
 def validate_admin_passcode(passcode):
     cursor.execute('''SELECT * FROM admin WHERE passcode = ?''', (passcode,))
