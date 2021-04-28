@@ -3,6 +3,7 @@ import time
 import sqlite3
 import random
 import string
+from itertools import cycle
 from flask import Flask, redirect, render_template
 
 connection = sqlite3.connect("lockbox.db")
@@ -229,7 +230,14 @@ def check_score(session_id, device_num):
     if additional_points:
         points += additional_points
     print("Current points: ", str(int(points)))
-    return points
+    return int(points)
+
+def check_all_scores(session_id):
+    cursor.execute('''SELECT device_number,points FROM score WHERE session_ID = ?''', (session_id,))
+    all_points = []
+    for row in cursor.fetchall():
+        all_points.append((row[0], row[1]))
+    return all_points
 
 def validate_admin_passcode(passcode):
     cursor.execute('''SELECT * FROM admin WHERE passcode = ?''', (passcode,))
@@ -260,19 +268,20 @@ def validate_admin():
         passcode = passcode + input
         input = lb.keypad.read_key()
         time.sleep(0.2) # To prevent bounce
-    if validate_admin_passcode(passcode):
-        return True
-    else:
-        lb.display.clear()
-        lb.display.show_text("Wrong Passcode!", 1)
-        lb.display.show_text("*Try Again #Back", 2)
-        input = lb.keypad.read_key()
-        time.sleep(0.2) # To prevent bounce
-        if input == "*":#Try Again selected
-            pass
-        elif input == "#":#Back to Main Menu
-            return False
-    return False
+    while True:
+        if validate_admin_passcode(passcode):
+            return True
+        else:
+            lb.display.clear()
+            lb.display.show_text("Wrong Passcode!", 1)
+            lb.display.show_text("*Try Again #Back", 2)
+            input = lb.keypad.read_key()
+            time.sleep(0.2) # To prevent bounce
+            if input == "*":#Try Again selected
+                continue
+            elif input == "#":#Back to Main Menu
+                return False
+        return False
 
 def validate_device(device_num_only=False):
     lb.display.clear()
@@ -285,50 +294,43 @@ def validate_device(device_num_only=False):
         device_num = device_num + input
         input = lb.keypad.read_key()
         time.sleep(0.2) # To prevent bounce
-    if validate_device_number(device_num):#Valid Device Number
-        if device_num_only:
-            return device_num
-        count = 0
-        while count < 2:
-            lb.display.clear()
-            lb.display.show_text("Enter Passcode", 1)
-            lb.display.show_text("     * Done", 2)
-            passcode = ""
-            input = lb.keypad.read_key()
-            time.sleep(0.2) # To prevent bounce
-            while input != "*":
-                passcode = passcode + input
+    while True:
+        if validate_device_number(device_num):#Valid Device Number
+            if device_num_only:
+                return device_num
+            while True:
+                lb.display.clear()
+                lb.display.show_text("Enter Passcode", 1)
+                lb.display.show_text("     * Done", 2)
+                passcode = ""
                 input = lb.keypad.read_key()
                 time.sleep(0.2) # To prevent bounce
-            if validate_device_passcode(device_num, passcode):#Correct passcode
-               return device_num
-            else:#Incorrect passcode
-                lb.display.clear()
-                lb.display.show_text("Wrong Passcode", 1)
-                lb.display.show_text("*Try Again #Back", 2)
-                if count == 0:
-                    #TODO: Display second line
+                while input != "*":
+                    passcode = passcode + input
+                    input = lb.keypad.read_key()
+                    time.sleep(0.2) # To prevent bounce
+                if validate_device_passcode(device_num, passcode):#Correct passcode
+                    return device_num
+                else:#Incorrect passcode
+                    lb.display.clear()
+                    lb.display.show_text("Wrong Passcode", 1)
+                    lb.display.show_text("*Try Again #Back", 2)
                     input = lb.keypad.read_key()
                     time.sleep(0.2) # To prevent bounce
                     if input == "*":#Try Again selected
-                        count += 1
+                        continue
                     elif input == "#":#Back to Main Menu
                         return None
-                else:
-                    #TODO: Display second line
-                    input = ""
-                    while input != "*":#Back to Main Menu
-                        input = lb.keypad.read_key()
-                        time.sleep(0.2) # To prevent bounce
-                    return None
-    else:
-        lb.display.clear()
-        lb.display.show_text("Device Not Found",1)
-        lb.display.show_text("  * Main Menu", 2)
-        input = ""
-        while input != "*":#Back to Main Menu
+        else:
+            lb.display.clear()
+            lb.display.show_text("Device Not Found",1)
+            lb.display.show_text("*Try Again #Back", 2)
             input = lb.keypad.read_key()
             time.sleep(0.2) # To prevent bounce
+            if input == "*":#Try Again selected
+                continue
+            elif input == "#":#Back to Main Menu
+                return None
 
 def menu():
     menu = 0
@@ -503,10 +505,18 @@ def menu():
             time.sleep(0.2) # To prevent bounce
             if input == '*':#Enter
                 if validate_admin():
-                   #TODO:Display devices and points in searchable list
-                   pass
-                else:
-                    menu = 1
+                    #TODO:Display devices and points in searchable list
+                    row_cycle = cycle(check_all_scores(session_id))
+                    lb.display.clear()
+                    lb.display.show_text("  *Next  #Back  ", 2)
+                    input = "*"
+                    while input == "*":
+                        row = next(row_cycle)
+                        lb.display.show_text("D#: " + str(row[0]) + " Pts: " + str(row[1]), 1)
+                        input = lb.keypad.read_key()
+                        time.sleep(0.2) # To prevent bounce
+                        if input == "#":#Back to Main Menu
+                            menu = 1
             elif input == '#':#Down
                 menu = 1
             
