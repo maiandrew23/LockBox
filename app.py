@@ -9,11 +9,11 @@ connection = sqlite3.connect("lockbox.db")
 cursor = connection.cursor()
 
 def clear_database():
-    cursor.execute('''DROP TABLE session IF EXISTS''')
-    cursor.execute('''DROP TABLE device IF EXISTS''')
-    cursor.execute('''DROP TABLE event IF EXISTS''')
-    cursor.execute('''DROP TABLE score IF EXISTS''')
-    cursor.execute('''DROP TABLE feedback IF EXISTS''')
+    cursor.execute('''DROP TABLE IF EXISTS session''')
+    cursor.execute('''DROP TABLE IF EXISTS device''')
+    cursor.execute('''DROP TABLE IF EXISTS event''')
+    cursor.execute('''DROP TABLE IF EXISTS score''')
+    cursor.execute('''DROP TABLE IF EXISTS feedback''')
 
 clear_database()
 
