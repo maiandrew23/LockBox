@@ -439,7 +439,7 @@ def menu():
                 if device_num:
                     points = check_score(session_id, device_num)
                     lb.display.clear()
-                    lb.display.show_text("Points: ", str(points), 1)
+                    lb.display.show_text("Points: " + str(points), 1)
                     lb.display.show_text("  * Main Menu", 2)
                     input = ""
                     while input != "*":#Lock
