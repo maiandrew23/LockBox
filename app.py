@@ -44,7 +44,7 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS device (
 
 # Create event table
 cursor.execute('''CREATE TABLE IF NOT EXISTS event (
-                    event_id integer
+                    event_id integer,
                     session_ID integer,
                     device_number integer,
                     action varchar(255) NOT NULL,
@@ -181,15 +181,15 @@ def create_device(session_id, name):
                         VALUES (?,?,0)''', (session_id,device_number))
 
 def lock_device(session_id, device_num):
-    cursor.execute('''INSERT INTO event (session_ID, device_number,action, datetime) 
+    cursor.execute('''INSERT INTO event (session_ID, device_number, action, datetime) 
                         VALUES (?,?,'Locked',DATETIME())''', (session_id, device_num,))
 
 def unlock_device(session_id, device_num):
-    cursor.execute('''INSERT INTO event (session_ID, device_number,action, datetime) 
+    cursor.execute('''INSERT INTO event (session_ID, device_number, action, datetime) 
                         VALUES (?,?,'Unlocked',DATETIME())''', (session_id, device_num,))
 
 def checkout_device(session_id, device_num):
-    cursor.execute('''INSERT INTO event (session_ID, device_number,action, datetime) 
+    cursor.execute('''INSERT INTO event (session_ID, device_number, action, datetime) 
                         VALUES (?,?,'Checked out',DATETIME())''', (session_id, device_num,))
 
 def update_score(session_id, device_num):
