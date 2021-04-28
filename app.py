@@ -331,7 +331,7 @@ def menu():
                     #TODO: Print receipt
                     device_num, passcode = create_device(session_id, "N/A")
                     lb.display.clear()
-                    lb.display.show_text("Device #: " + device_num, 1)
+                    lb.display.show_text("Device #: " + str(device_num), 1)
                     lb.display.show_text("Passcode: " + passcode, 2)
                     time.sleep(5)
                     menu = 2
