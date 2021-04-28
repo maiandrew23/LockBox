@@ -211,7 +211,7 @@ def finalize_score(session_id, device_num):
 
 def check_score(session_id, device_num):
     #TODO: Add points earned up until the current time
-    cursor.execute('''SELEC points FROM score WHERE session_ID = ? AND device_number = ?''', (session_id, device_num,))
+    cursor.execute('''SELECT points FROM score WHERE session_ID = ? AND device_number = ?''', (session_id, device_num,))
     points = cursor.fetchone()[0]
     print("Current points: ", str(points))
     return points
