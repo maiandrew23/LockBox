@@ -174,6 +174,8 @@ def create_device(session_id, name):
     passcode = ''.join(random.choice(string.digits) for i in range(4))
     cursor.execute('''INSERT INTO device (name,passcode) VALUES (?,?)''', (name,str(passcode),))
     device_number = cursor.lastrowid
+    print("Device # = ", device_number)
+    print("Passcode = ", passcode)
     cursor.execute('''INSERT INTO score (session_ID, device_number,points)
                         VALUES (?,?,0)''', (session_id,device_number))
 
@@ -232,7 +234,8 @@ def validate_admin(lb):
     return False
 
 def validate_device():
-    lb.display.show_text("Enter Device #")
+    lb.display.show_text("Enter Device #", 1)
+    lb.display.show_text("     * Done", 2)
     device_num = ""
     input = lb.keypad.read_key()
     while input != "*":
@@ -300,6 +303,9 @@ def menu():
                 if input == '*':#Yes
                     #TODO: Print receipt
                     create_device(session_id, "N/A")
+                    lb.display.clear()
+                    lb.display.show_text("Device Created!", 1)
+                    time.sleep(3)
                     menu = 2
                 elif input == '#':#No
                     menu == 2
