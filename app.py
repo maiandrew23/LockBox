@@ -169,7 +169,7 @@ def unlock_box(lb):
 
 def create_admin_passcode(passcode):
     cursor.execute('''SELECT * FROM admin WHERE passcode = ?''', (passcode,))
-    if cursor.fetchone()[0] == None:
+    if cursor.fetchone() == None:
         cursor.execute('''INSERT INTO admin (passcode) VALUES (?)''', (passcode,))
 
 def setup_admin_passcode():
