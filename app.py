@@ -72,8 +72,6 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS feedback (
                     PRIMARY KEY (session_ID, device_number)
                   )''')
 
-cursor.close()
-
 app = Flask(__name__, static_folder='html')
 
 @app.route("/")
