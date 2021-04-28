@@ -526,7 +526,6 @@ def menu():
                 row_cycle = cycle(rows)
                 lb.display.clear()
                 lb.display.show_text("  *Next  #Back  ", 2)
-                input = "*"
                 while input == "*":
                     if len(rows) != 0:
                         row = next(row_cycle)
@@ -541,11 +540,6 @@ def menu():
                             time.sleep(0.2) # To prevent bounce
                             if input == "#":#Back to Main Menu
                                 menu = 1
-                if len(rows) == 0:
-                    input = lb.keypad.read_key()
-                    time.sleep(0.2) # To prevent bounce
-                    if input == "#":#Back to Main Menu
-                        menu = 1
             elif input == '#':#Down
                 menu = 8
         elif menu == 8:# End Session
