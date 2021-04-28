@@ -535,6 +535,12 @@ def menu():
                         time.sleep(0.2) # To prevent bounce
                         if input == "#":#Back to Main Menu
                             menu = 1
+                    else:
+                        while input != "#":
+                            input = lb.keypad.read_key()
+                            time.sleep(0.2) # To prevent bounce
+                            if input == "#":#Back to Main Menu
+                                menu = 1
                 if len(rows) == 0:
                     input = lb.keypad.read_key()
                     time.sleep(0.2) # To prevent bounce
