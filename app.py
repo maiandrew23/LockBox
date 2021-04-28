@@ -258,17 +258,17 @@ def validate_device_passcode(device_num, passcode):
     return False
 
 def validate_admin():
-    lb.display.clear()
-    lb.display.show_text("Enter Passcode", 1)
-    lb.display.show_text("     * Done", 2)
-    passcode = ""
-    input = lb.keypad.read_key()
-    time.sleep(0.2) # To prevent bounce
-    while input != "*":
-        passcode = passcode + input
+    while True:
+        lb.display.clear()
+        lb.display.show_text("Enter Passcode", 1)
+        lb.display.show_text("     * Done", 2)
+        passcode = ""
         input = lb.keypad.read_key()
         time.sleep(0.2) # To prevent bounce
-    while True:
+        while input != "*":
+            passcode = passcode + input
+            input = lb.keypad.read_key()
+            time.sleep(0.2) # To prevent bounce
         if validate_admin_passcode(passcode):
             return True
         else:
