@@ -564,6 +564,7 @@ def menu():
             time.sleep(0.2) # To prevent bounce
             if input == '*':#Enter
                 if validate_admin():
+                    #TODO: Print cumulative receipt
                     row = get_winner(session_id)
                     connection.commit()
                     lb.display.clear()
