@@ -196,13 +196,17 @@ def update_score(session_id, device_num):
     #TODO: make points addition be based on time between last lock and unlock
     points = 10
     cursor.execute('''UPDATE score SET points = points + ?
-                      WHERE session_ID = ? AND device_number = ?)''', (points, session_id, device_num,))
+                      WHERE session_ID = ? AND device_number = ?''', (points, session_id, device_num,))
+    cursor.execute('''SELECT points FROM score WHERE session_ID = ? AND device_number = ?''', (session_id, device_num,))
+    print("Current points = ", cursor.fetchone()[0])
 
 def finalize_score(session_id, device_num):
     #TODO: make points addition be based on time between last lock and checkout
     points = 10
     cursor.execute('''UPDATE score SET points = points + ?
-                      WHERE session_ID = ? AND device_number = ?)''', (points, session_id, device_num,))
+                      WHERE session_ID = ? AND device_number = ?''', (points, session_id, device_num,))
+    cursor.execute('''SELECT points FROM score WHERE session_ID = ? AND device_number = ?''', (session_id, device_num,))
+    print("Final points = ", cursor.fetchone()[0])
 
 def validate_admin(lb):
     count = 0
