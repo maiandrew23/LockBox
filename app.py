@@ -231,13 +231,13 @@ def validate_admin_passcode(passcode):
     return False
 
 def validate_device_number(device_num):
-    cursor.execute('''SELECT * FROM device WHERE deivice_number = ?''', (device_num,))
+    cursor.execute('''SELECT * FROM device WHERE device_number = ?''', (device_num,))
     if cursor.fetchone():
         return True
     return False
 
 def validate_device_passcode(device_num, passcode):
-    cursor.execute('''SELECT * FROM device WHERE deivice_number = ? AND passcode = ?''', (device_num, passcode,))
+    cursor.execute('''SELECT * FROM device WHERE device_number = ? AND passcode = ?''', (device_num, passcode,))
     if cursor.fetchone():
         return True
     return False
