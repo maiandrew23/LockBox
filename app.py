@@ -44,11 +44,12 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS device (
 
 # Create event table
 cursor.execute('''CREATE TABLE IF NOT EXISTS event (
+                    event_id integer
                     session_ID integer,
                     device_number integer,
                     action varchar(255) NOT NULL,
                     datetime datetime NOT NULL,
-                    PRIMARY KEY (session_ID, device_number)
+                    PRIMARY KEY (event_id)
                   )''')
 
 # Create score table
@@ -209,9 +210,11 @@ def validate_admin(lb):
         lb.display.show_text("Enter Passcode", 1)
         passcode = ""
         input = lb.keypad.read_key()
+        time.sleep(0.2) # To prevent bounce
         while input != "*":
             passcode = passcode + input
             input = lb.keypad.read_key()
+            time.sleep(0.2) # To prevent bounce
         cursor.execute('''SELECT * FROM admin WHERE passcode = ?''', (passcode,))
         if cursor.fetchone():
             return True
@@ -220,6 +223,7 @@ def validate_admin(lb):
             #TODO: Display second line
             if count == 0:
                 input = lb.keypad.read_key()
+                time.sleep(0.2) # To prevent bounce
                 if input == "*":#Try Again selected
                     count += 1
                 elif input == "#":#Back to Main Menu
@@ -230,6 +234,7 @@ def validate_admin(lb):
                 input = ""
                 while input != "*":#Back to Main Menu
                     input = lb.keypad.read_key()
+                    time.sleep(0.2) # To prevent bounce
                 return False
     return False
 
@@ -239,9 +244,11 @@ def validate_device():
     lb.display.show_text("     * Done", 2)
     device_num = ""
     input = lb.keypad.read_key()
+    time.sleep(0.2) # To prevent bounce
     while input != "*":
         device_num = device_num + input
         input = lb.keypad.read_key()
+        time.sleep(0.2) # To prevent bounce
     cursor.execute('''SELECT * FROM device WHERE device_number = ?''', (device_num,))
     if cursor.fetchone():#Valid Device Number
         count = 0
@@ -252,16 +259,21 @@ def validate_device():
             passcode = ""
             input = lb.keypad.read_key()
             while input != "*":
+                time.sleep(0.2) # To prevent bounce
                 passcode = passcode + input
                 input = lb.keypad.read_key()
+            time.sleep(0.2) # To prevent bounce
             cursor.execute('''SELECT * FROM device WHERE device_number = ? AND passcode = ?''', (device_num, passcode,))
             if cursor.fetchone():#Correct passcode
                return device_num
             else:#Incorrect passcode
-                lb.display.show_text("Wrong Passcode")
+                lb.display.clear()
+                lb.display.show_text("Wrong Passcode", 1)
+                lb.display.show_text("*Try Again #Back", 2)
                 if count == 0:
                     #TODO: Display second line
                     input = lb.keypad.read_key()
+                    time.sleep(0.2) # To prevent bounce
                     if input == "*":#Try Again selected
                         count += 1
                     elif input == "#":#Back to Main Menu
@@ -271,12 +283,14 @@ def validate_device():
                     input = ""
                     while input != "*":#Back to Main Menu
                         input = lb.keypad.read_key()
+                        time.sleep(0.2) # To prevent bounce
                     return None
     else:
         lb.display.show_text("Device Not Found")
         input = ""
         while input != "*":#Back to Main Menu
             input = lb.keypad.read_key()
+            time.sleep(0.2) # To prevent bounce
         menu = 1
 
 def menu():
@@ -291,6 +305,7 @@ def menu():
             input = ""
             while input != "*":#Create session
                 input = lb.keypad.read_key()
+                time.sleep(0.2) # To prevent bounce
             #TODO: Setup session
             session_id = create_session("Party")
             menu = 1
@@ -300,16 +315,18 @@ def menu():
             lb.display.show_text("Register Device", 1)
             lb.display.show_text("* Enter   # Down", 2)
             input = lb.keypad.read_key()
+            time.sleep(0.2) # To prevent bounce
             if input == '*':#Enter
                 lb.display.clear()
                 lb.display.show_text(" Are You Sure?", 1)
                 lb.display.show_text("* Yes       # No", 2)
                 input = lb.keypad.read_key()
+                time.sleep(0.2) # To prevent bounce
                 if input == '*':#Yes
                     #TODO: Print receipt
                     create_device(session_id, "N/A")
                     lb.display.clear()
-                    lb.display.show_text("Device Created!", 1)
+                    lb.display.show_text("    Success!", 1)
                     time.sleep(3)
                     menu = 2
                 elif input == '#':#No
@@ -322,6 +339,7 @@ def menu():
             lb.display.show_text("  Lock Device", 1)
             lb.display.show_text("* Enter   # Down", 2)
             input = lb.keypad.read_key()
+            time.sleep(0.2) # To prevent bounce
             if input == '*':#Enter
                 device_num = validate_device()
                 if device_num:
@@ -330,8 +348,10 @@ def menu():
                     lb.display.show_text(" Insert Device", 1)
                     lb.display.show_text("    * Lock    ", 2)
                     input = lb.keypad.read_key()
+                    time.sleep(0.2) # To prevent bounce
                     while input != "*":#Lock
                         input = lb.keypad.read_key()
+                        time.sleep(0.2) # To prevent bounce
                     lock_device(session_id, device_num)
                     lock_box(lb)
                     lb.display.clear()
@@ -340,6 +360,7 @@ def menu():
                     input = ""
                     while input != "*":#Back to Main Menu
                         input = lb.keypad.read_key()
+                        time.sleep(0.2) # To prevent bounce
                     menu = 1
             elif input == '#':#Down
                 menu = 3
@@ -349,6 +370,7 @@ def menu():
             lb.display.show_text("Take Out Device", 1)
             lb.display.show_text("* Enter   # Down", 2)
             input = lb.keypad.read_key()
+            time.sleep(0.2) # To prevent bounce
             if input == '*':#Enter
                 device_num = validate_device()
                 if device_num:
@@ -361,6 +383,7 @@ def menu():
                     input = ""
                     while input != "*":#Lock
                         input = lb.keypad.read_key()
+                        time.sleep(0.2) # To prevent bounce
                     lock_box(lb)
                     menu = 1
             elif input == '#':#Down
@@ -371,6 +394,7 @@ def menu():
             lb.display.show_text("Checkout Device", 1)
             lb.display.show_text("* Enter   # Down", 2)
             input = lb.keypad.read_key()
+            time.sleep(0.2) # To prevent bounce
             if input == '*':#Enter
                 device_num = validate_device()
                 if device_num:
@@ -384,6 +408,7 @@ def menu():
                     input = ""
                     while input != "*":#Lock
                         input = lb.keypad.read_key()
+                        time.sleep(0.2) # To prevent bounce
                     lock_box(lb)
                     menu = 1
             elif input == '#':#Down
@@ -394,6 +419,7 @@ def menu():
             lb.display.show_text(" Display Points", 1)
             lb.display.show_text("* Enter   # Down", 2)
             input = lb.keypad.read_key()
+            time.sleep(0.2) # To prevent bounce
             if input == '*':#Enter  
                 device_num = validate_device()
                 if device_num:
@@ -409,6 +435,7 @@ def menu():
             lb.display.show_text("  Admin Unlock", 1)
             lb.display.show_text("* Enter   # Down", 2)
             input = lb.keypad.read_key()
+            time.sleep(0.2) # To prevent bounce
             if input == '*':#Enter
                 if validate_admin(lb):
                     unlock_box(lb)
@@ -418,6 +445,7 @@ def menu():
                     input = ""
                     while input != "*":#Lock
                         input = lb.keypad.read_key()
+                        time.sleep(0.2) # To prevent bounce
                     lock_box(lb)
                 else:
                     menu = 1
@@ -429,6 +457,7 @@ def menu():
             lb.display.show_text("Display All")
             lb.display.show_text("* Enter   # Down", 2)
             input = lb.keypad.read_key()
+            time.sleep(0.2) # To prevent bounce
             if input == '*':#Enter
                 if validate_admin(lb):
                    #TODO:Display devices and points in searchable list
