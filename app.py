@@ -226,7 +226,7 @@ def check_score(session_id, device_num):
                             FROM event 
                             WHERE session_ID = ? AND device_number = ? AND action = \'Locked\')''', (session_id, device_num,))
     points += cursor.fetchone()[0]
-    print("Current points: ", str(points))
+    print("Current points: ", str(int(points)))
     return points
 
 def validate_admin_passcode(passcode):
@@ -272,7 +272,7 @@ def validate_admin():
             return False
     return False
 
-def validate_device():
+def validate_device(device_num_only=False):
     lb.display.clear()
     lb.display.show_text("Enter Device #", 1)
     lb.display.show_text("     * Done", 2)
@@ -284,6 +284,8 @@ def validate_device():
         input = lb.keypad.read_key()
         time.sleep(0.2) # To prevent bounce
     if validate_device_number(device_num):#Valid Device Number
+        if device_num_only:
+            return device_num
         count = 0
         while count < 2:
             lb.display.clear()
@@ -455,7 +457,7 @@ def menu():
             input = lb.keypad.read_key()
             time.sleep(0.2) # To prevent bounce
             if input == '*':#Enter  
-                device_num = validate_device()
+                device_num = validate_device(device_num_only=True)
                 if device_num:
                     points = check_score(session_id, device_num)
                     lb.display.clear()
