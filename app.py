@@ -23,6 +23,9 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS admin (
                     PRIMARY KEY (passcode)
                   )''')
 
+#Default passcode for debugging
+cursor.execute('''INSERT INTO admin (passcode) VALUES (1234)''')
+
 # Create session table
 cursor.execute('''CREATE TABLE IF NOT EXISTS session (
                     ID integer,
@@ -219,7 +222,9 @@ def check_score(session_id, device_num):
 def validate_admin():
     count = 0
     while count < 2:
+        lb.display.clear()
         lb.display.show_text("Enter Passcode", 1)
+        lb.display.show_text("     * Done", 2)
         passcode = ""
         input = lb.keypad.read_key()
         time.sleep(0.2) # To prevent bounce
@@ -231,6 +236,7 @@ def validate_admin():
         if cursor.fetchone():
             return True
         else:
+            lb.display.clear()
             lb.display.show_text("Wrong Passcode!", 1)
             #TODO: Display second line
             if count == 0:
@@ -242,7 +248,7 @@ def validate_admin():
                     return False
             else:
                 lb.display.show_text("Wrong Passcode!")
-                #TODO: Display second line
+                lb.display.show_text("*Try Again #Back", 2)
                 input = ""
                 while input != "*":#Back to Main Menu
                     input = lb.keypad.read_key()
