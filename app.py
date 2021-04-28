@@ -241,7 +241,11 @@ def check_all_scores(session_id):
                         FROM (SELECT MAX(datetime) as t 
                                 FROM event 
                                 WHERE session_ID = ? AND device_number = ? AND action = \'Locked\')''', (session_id, row[0],))
-        all_points.append((row[0], cursor.fetchone()[0]))
+        result = cursor.fetchone()
+        if result:
+            all_points.append((int(row[0]), result[0]))
+        else:
+            all_points.append((int(row[0]), 0))
     return all_points
 
 def validate_admin_passcode(passcode):
@@ -504,24 +508,23 @@ def menu():
         #Display All
         elif menu == 7:
             lb.display.clear()
-            lb.display.show_text("Display All")
+            lb.display.show_text("Display All Pnts")
             lb.display.show_text("* Enter   # Down", 2)
             input = lb.keypad.read_key()
             time.sleep(0.2) # To prevent bounce
             if input == '*':#Enter
-                if validate_admin():
-                    #TODO:Display devices and points in searchable list
-                    row_cycle = cycle(check_all_scores(session_id))
-                    lb.display.clear()
-                    lb.display.show_text("  *Next  #Back  ", 2)
-                    input = "*"
-                    while input == "*":
-                        row = next(row_cycle)
-                        lb.display.show_text("D#: " + str(row[0]) + " Pts: " + str(row[1]), 1)
-                        input = lb.keypad.read_key()
-                        time.sleep(0.2) # To prevent bounce
-                        if input == "#":#Back to Main Menu
-                            menu = 1
+                #TODO:Display devices and points in searchable list
+                row_cycle = cycle(check_all_scores(session_id))
+                lb.display.clear()
+                lb.display.show_text("  *Next  #Back  ", 2)
+                input = "*"
+                while input == "*":
+                    row = next(row_cycle)
+                    lb.display.show_text("D#: " + str(row[0]) + " Pts: " + str(row[1]), 1)
+                    input = lb.keypad.read_key()
+                    time.sleep(0.2) # To prevent bounce
+                    if input == "#":#Back to Main Menu
+                        menu = 1
             elif input == '#':#Down
                 menu = 1
             
