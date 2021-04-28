@@ -197,12 +197,10 @@ def checkout_device(session_id, device_num):
                         VALUES (?,?,'Checked out',DATETIME())''', (session_id, device_num,))
 
 def update_score(session_id, device_num):
-    #TODO: make points addition be based on time between last lock and unlock
     cursor.execute('''SELECT ROUND((JULIANDAY(DATETIME()) - JULIANDAY(t)) * 86400)
                       FROM (SELECT MAX(datetime) as t 
                             FROM event 
                             WHERE session_ID = ? AND device_number = ? AND action = \'Locked\')''', (session_id, device_num,))
-    
     points = cursor.fetchone()[0]
     cursor.execute('''UPDATE score SET points = points + ?
                       WHERE session_ID = ? AND device_number = ?''', (points, session_id, device_num,))
@@ -210,17 +208,24 @@ def update_score(session_id, device_num):
     print("Current points = ", cursor.fetchone()[0])
 
 def finalize_score(session_id, device_num):
-    #TODO: make points addition be based on time between last lock and checkout
-    points = 10
+    cursor.execute('''SELECT ROUND((JULIANDAY(DATETIME()) - JULIANDAY(t)) * 86400)
+                      FROM (SELECT MAX(datetime) as t 
+                            FROM event 
+                            WHERE session_ID = ? AND device_number = ? AND action = \'Locked\')''', (session_id, device_num,))
+    points = cursor.fetchone()[0]
     cursor.execute('''UPDATE score SET points = points + ?
                       WHERE session_ID = ? AND device_number = ?''', (points, session_id, device_num,))
     cursor.execute('''SELECT points FROM score WHERE session_ID = ? AND device_number = ?''', (session_id, device_num,))
     print("Final points = ", cursor.fetchone()[0])
 
 def check_score(session_id, device_num):
-    #TODO: Add points earned up until the current time
     cursor.execute('''SELECT points FROM score WHERE session_ID = ? AND device_number = ?''', (session_id, device_num,))
     points = cursor.fetchone()[0]
+    cursor.execute('''SELECT ROUND((JULIANDAY(DATETIME()) - JULIANDAY(t)) * 86400)
+                      FROM (SELECT MAX(datetime) as t 
+                            FROM event 
+                            WHERE session_ID = ? AND device_number = ? AND action = \'Locked\')''', (session_id, device_num,))
+    points += cursor.fetchone()[0]
     print("Current points: ", str(points))
     return points
 
