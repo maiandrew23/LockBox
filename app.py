@@ -263,11 +263,11 @@ def validate_device():
             lb.display.show_text("     * Done", 2)
             passcode = ""
             input = lb.keypad.read_key()
+            time.sleep(0.2) # To prevent bounce
             while input != "*":
-                time.sleep(0.2) # To prevent bounce
                 passcode = passcode + input
                 input = lb.keypad.read_key()
-            time.sleep(0.2) # To prevent bounce
+                time.sleep(0.2) # To prevent bounce
             cursor.execute('''SELECT * FROM device WHERE device_number = ? AND passcode = ?''', (device_num, passcode,))
             if cursor.fetchone():#Correct passcode
                return device_num
@@ -291,7 +291,9 @@ def validate_device():
                         time.sleep(0.2) # To prevent bounce
                     return None
     else:
-        lb.display.show_text("Device Not Found")
+        lb.display.clear()
+        lb.display.show_text("Device Not Found",1)
+        lb.display.show_text("*Try Again #Back", 2)
         input = ""
         while input != "*":#Back to Main Menu
             input = lb.keypad.read_key()
