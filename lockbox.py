@@ -56,7 +56,7 @@ class Solenoid:
     print("Solenoid is open")
 
   def close(self):
-    GPIO.output(SOL_CONTROL, GPIO.HIGH)
+    GPIO.output(SOL_CONTROL, GPIO.LOW)
     print("Solenoid is closed")
 
 class Keypad:
