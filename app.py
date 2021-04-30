@@ -5,23 +5,21 @@ import random
 import string
 from itertools import cycle
 from flask import Flask, redirect, render_template
-from threading import Thread, Event
 
-def runFlask():
-    app = Flask(__name__, static_folder='html')
-x = threading.Thread(target=runFlask, args=(1,))
-x.start()
+
+app = Flask(__name__, static_folder='templates')
+
 @app.route("/")
 def home():
   print("Home page")
-  return app.send_static_file('index.html')
+  return render_template('index.html',name='hi')
 
 #Admin Pages
 @app.route("/admin")
 def admin():
   print("Admin")
   #Pass list of events to table on page
-  return app.render_template("admin.html", events = events)
+  return render_template('admin.html',name='hi')
 
 @app.route("/admin/createEvent")
 def createEvent():
@@ -599,7 +597,7 @@ if __name__ == "__main__":
     lb.keypad.on()
     lb.display.on()
 
-    #app.run(host='0.0.0.0', port=80, debug=True, threaded=True)
+    app.run(host='0.0.0.0', port=80, debug=True, threaded=True)
     cursor.execute('''SELECT * FROM admin''')
     if cursor.fetchone() == None:
         setup_admin_passcode()
