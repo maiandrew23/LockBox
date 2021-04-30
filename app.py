@@ -5,6 +5,103 @@ import random
 import string
 from itertools import cycle
 from flask import Flask, redirect, render_template
+from threading import Thread, Event
+
+def runFlask():
+    app = Flask(__name__, static_folder='html')
+x = threading.Thread(target=runFlask, args=(1,))
+x.start()
+@app.route("/")
+def home():
+  print("Home page")
+  return app.send_static_file('index.html')
+
+#Admin Pages
+@app.route("/admin")
+def admin():
+  print("Admin")
+  #Pass list of events to table on page
+  return app.render_template("admin.html", events = events)
+
+@app.route("/admin/createEvent")
+def createEvent():
+  #Create an event. Sends user to form page where user enters Event name and date
+  return app.send_static_file("create.html")
+
+@app.route("/admin/createEventPOST")
+def createEventPOST():
+  #Create an event. Sends user to form page where user enters Event name and date
+  return app.render_template("admin.html", events = events)
+
+@app.route("/admin/deleteEvent/<string:eventName>")
+def deleteEvent():
+  #Delete Event name
+  return app.render_template("admin.html", events = events)
+
+#Event Pages
+@app.route("/event/<string:eventName>")
+def displayEvent():
+  print("Event")
+  #query eventName
+  #search for eventName and render event.html with event info
+  #Send list of registered devices under events
+  return app.render_template("event.html", eventName = eventName)
+
+@app.route("/event/rename/<string:eventName>")
+def rename():
+  print("Rename " + eventName)
+  #Send form for user to enter new name
+  return app.send_static_file("rename.html")
+
+@app.route("/event/renamePOST/<string:eventName>")
+def renamePOST():
+  print("Rename " + eventName)
+  return app.render_template("event.html", eventName = eventName)
+
+@app.route("/event/deleteDevice/<string:eventName>/<string:deviceName>")
+def deleteDevice():
+  deleteDevice("Delete " + deviceName)
+  return app.render_template("event.html", eventName = eventName)
+
+@app.route("/event/lockDevice/<string:eventName>/<string:deviceName>")
+def lock():
+  print("Lock " + deviceName)
+  #Close solenoid, log device
+  return app.render_template("event.html", eventName = eventName)
+
+@app.route("/event/unlockDevice/<string:eventName>/<string:deviceName>")
+def unlock():
+  print("Unlock " + deviceName)
+  #Open solenoid, log device
+  #Set saftey timer
+  return app.render_template("event.html", eventName = eventName)
+
+@app.route("/event/checkout/<string:eventName>/<string:deviceName>")
+def checkout():
+  print("Checkout " + deviceName)
+
+  return app.render_template("event.html", eventName = eventName)
+
+#Device Pages
+@app.route("/event/device/<string:eventName>/<string:deviceName>")
+def guestDevice():
+  print("GET"+deviceName)
+  #query deviceName and get device log info, render in device.html
+  return app.render_template('device.html', deviceName = deviceName)
+
+#Guest
+@app.route("/guest/login")
+def guestLogin():
+  print("guest")
+  #Pass list of events to table on page
+  return app.send_static_file("guestlogin.html")
+
+@app.route("/guest/loginPOST")
+def guestLoginPOST():
+  #gathers POST data and query deviceName
+  return app.render_template('guestDevice.html', deviceName = deviceName)
+
+
 
 connection = sqlite3.connect("lockbox.db")
 cursor = connection.cursor()
@@ -69,97 +166,6 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS feedback (
                     PRIMARY KEY (session_ID, device_number)
                   )''')
 
-app = Flask(__name__, static_folder='html')
-
-@app.route("/")
-def home():
-  print("Home page")
-  return app.send_static_file('index.html')
-
-#Admin Pages
-@app.route("/admin")
-def admin():
-  print("Admin")
-  #Pass list of events to table on page
-  return app.render_template("admin.html", events = events)
-
-@app.route("/createEvent")
-def createEvent():
-  #Create an event. Sends user to form page where user enters Event name and date
-  return app.send_static_file("create.html")
-
-@app.route("/createEventPOST")
-def createEventPOST():
-  #Create an event. Sends user to form page where user enters Event name and date
-  return app.render_template("admin.html", events = events)
-
-@app.route("/deleteEvent/<string:eventName>")
-def deleteEvent():
-  #Delete Event name
-  return app.render_template("admin.html", events = events)
-
-#Event Pages
-@app.route("/event/<string:eventName>")
-def displayEvent():
-  print("Event")
-  #query eventName
-  #search for eventName and render event.html with event info
-  #Send list of registered devices under events
-  return app.render_template("event.html", eventName = eventName)
-
-@app.route("/event/rename/<string:eventName>")
-def rename():
-  print("Rename " + eventName)
-  #Send form for user to enter new name
-  return app.send_static_file("rename.html")
-  
-@app.route("/event/renamePOST/<string:eventName>")
-def renamePOST():
-  print("Rename " + eventName)
-  return app.render_template("event.html", eventName = eventName)
-
-@app.route("/event/deleteDevice/<string:eventName>/<string:deviceName>")
-def deleteDevice():
-  deleteDevice("Delete " + deviceName)
-  return app.render_template("event.html", eventName = eventName)
-
-@app.route("/event/lockDevice/<string:eventName>/<string:deviceName>")
-def lock():
-  print("Lock " + deviceName)
-  #Close solenoid, log device
-  return app.render_template("event.html", eventName = eventName)
-
-@app.route("/event/unlockDevice/<string:eventName>/<string:deviceName>")
-def unlock():
-  print("Unlock " + deviceName)
-  #Open solenoid, log device
-  #Set saftey timer
-  return app.render_template("event.html", eventName = eventName)
-
-@app.route("/event/checkout/<string:eventName>/<string:deviceName>")
-def checkout():
-  print("Checkout " + deviceName)
-
-  return app.render_template("event.html", eventName = eventName)
-
-#Device Pages
-@app.route("/event/device/<string:eventName>/<string:deviceName>")
-def guestDevice():
-  print("GET"+deviceName)
-  #query deviceName and get device log info, render in device.html
-  return app.render_template('device.html', deviceName = deviceName)
-
-#Guest
-@app.route("/guest/login")
-def guestLogin():
-  print("guest")
-  #Pass list of events to table on page
-  return app.send_static_file("guestlogin.html")
-
-@app.route("/guest/loginPOST")
-def guestLoginPOST():
-  #gathers POST data and query deviceName
-  return app.render_template('guestDevice.html', deviceName = deviceName)
 
 def lock_box(lb):
     lb.solenoid.close()
@@ -202,21 +208,21 @@ def create_device(session_id, name):
     return device_number, passcode
 
 def lock_device(session_id, device_num):
-    cursor.execute('''INSERT INTO event (session_ID, device_number, action, datetime) 
+    cursor.execute('''INSERT INTO event (session_ID, device_number, action, datetime)
                         VALUES (?,?,'Locked',DATETIME())''', (session_id, device_num,))
 
 def unlock_device(session_id, device_num):
-    cursor.execute('''INSERT INTO event (session_ID, device_number, action, datetime) 
+    cursor.execute('''INSERT INTO event (session_ID, device_number, action, datetime)
                         VALUES (?,?,'Unlocked',DATETIME())''', (session_id, device_num,))
 
 def checkout_device(session_id, device_num):
-    cursor.execute('''INSERT INTO event (session_ID, device_number, action, datetime) 
+    cursor.execute('''INSERT INTO event (session_ID, device_number, action, datetime)
                         VALUES (?,?,'Checked out',DATETIME())''', (session_id, device_num,))
 
 def update_score(session_id, device_num):
     cursor.execute('''SELECT ROUND((JULIANDAY(DATETIME()) - JULIANDAY(t)) * 86400)
-                      FROM (SELECT MAX(datetime) as t 
-                            FROM event 
+                      FROM (SELECT MAX(datetime) as t
+                            FROM event
                             WHERE session_ID = ? AND device_number = ? AND action = \'Locked\')''', (session_id, device_num,))
     points = cursor.fetchone()[0]
     cursor.execute('''UPDATE score SET points = points + ?
@@ -226,8 +232,8 @@ def update_score(session_id, device_num):
 
 def finalize_score(session_id, device_num):
     cursor.execute('''SELECT ROUND((JULIANDAY(DATETIME()) - JULIANDAY(t)) * 86400)
-                      FROM (SELECT MAX(datetime) as t 
-                            FROM event 
+                      FROM (SELECT MAX(datetime) as t
+                            FROM event
                             WHERE session_ID = ? AND device_number = ? AND action = \'Locked\')''', (session_id, device_num,))
     points = cursor.fetchone()[0]
     cursor.execute('''UPDATE score SET points = points + ?
@@ -239,8 +245,8 @@ def check_score(session_id, device_num):
     cursor.execute('''SELECT points FROM score WHERE session_ID = ? AND device_number = ?''', (session_id, device_num,))
     points = cursor.fetchone()[0]
     cursor.execute('''SELECT ROUND((JULIANDAY(DATETIME()) - JULIANDAY(t)) * 86400)
-                      FROM (SELECT MAX(datetime) as t 
-                            FROM event 
+                      FROM (SELECT MAX(datetime) as t
+                            FROM event
                             WHERE session_ID = ? AND device_number = ? AND action = \'Locked\')''', (session_id, device_num,))
     additional_points = cursor.fetchone()[0]
     if additional_points:
@@ -254,8 +260,8 @@ def check_all_scores(session_id):
     all_points = []
     for row in result1:
         cursor.execute('''SELECT ROUND((JULIANDAY(DATETIME()) - JULIANDAY(t)) * 86400)
-                        FROM (SELECT MAX(datetime) as t 
-                                FROM event 
+                        FROM (SELECT MAX(datetime) as t
+                                FROM event
                                 WHERE session_ID = ? AND device_number = ? AND action = \'Locked\')''', (session_id, row[0],))
         result2 = cursor.fetchone()
         if result2[0]:
@@ -493,7 +499,7 @@ def menu():
             lb.display.show_text("* Enter   # Down", 2)
             input = lb.keypad.read_key()
             time.sleep(0.2) # To prevent bounce
-            if input == '*':#Enter  
+            if input == '*':#Enter
                 device_num = validate_device(device_num_only=True)
                 if device_num:
                     points = check_score(session_id, device_num)
@@ -581,7 +587,7 @@ def menu():
                     menu = 1
             elif input == '#':#Down
                 menu = 1
-            
+
 if __name__ == "__main__":
     lb = lockbox.Lockbox()
     lb.solenoid.setup()
