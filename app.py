@@ -29,9 +29,9 @@ def createEvent():
 @app.route("/admin/createEvent", methods = ["POST"])
 def createEventPOST():
   #Create an event. Sends user to form page where user enters Event name and date
-  name = request.form["Name"]
-  date = request.form["Date"]
-  time = request.form["Time"]
+  eventName = request.form["eventName"]
+  date = request.form["date"]
+  time = request.form["time"]
 
   return app.render_template("admin.html", name = test, date = date, time = time)
 
@@ -50,13 +50,13 @@ def displayEvent():
   #Send list of registered devices under events
   return app.render_template("event.html", name = "test", device = "device1")
 
-@app.route("/admin/event/edit/<string:eventName>", method = ["GET"])
+@app.route("/admin/event/edit/<string:eventName>", methods = ["GET"])
 def rename():
   #print("Rename " + eventName)
   #Send form for user to enter new name
   return app.render_template("eventEdit.html",eventName )
 
-@app.route("/admin/event/edit/<string:eventName>", method = ["POST"])
+@app.route("/admin/event/edit/<string:eventName>", methods = ["POST"])
 def renamePOST():
   #print("Rename " + eventName)
   return app.render_template("event.html",name = "test")
@@ -93,30 +93,30 @@ def guestDevice():
   return app.render_template('deviceInfo.html', deviceName = deviceName)
 
 #Guest
-@app.route("/guest/login", method = ["GET"])
+@app.route("/guest/login", methods = ["GET"])
 def guestLoginGET():
   #print("guest")
   #Pass list of events to table on page
   return app.send_static_file("guestlogin.html")
 
-@app.route("/guest/login", method = ["POST"])
+@app.route("/guest/login", methods = ["POST"])
 def guestLoginPOST():
   device = request.form["device"]
   passcode = request.form["passcode"]
   #gathers POST data and query deviceName
   return app.render_template('guestPage.html', deviceName = deviceName)
 
-@app.route("/guest/edit/<string:deviceName>", method = ["GET"])
-def guestEditGET()
+@app.route("/guest/edit/<string:deviceName>", methods = ["GET"])
+def guestEditGET():
   return app.render_template("guestEdit.html",deviceName = deviceName )
 
-@app.route("/guest/edit/<string:name>", method = ["POST"])
-def guestEditPOST()
+@app.route("/guest/edit/<string:name>", methods = ["POST"])
+def guestEditPOST():
   deviceName = request.form["deviceName"]
   return app.render_template("guestPage.html")
 
-@app.route("/guest/comment/<string:name>", method = ["POST"])
-def guestCommentEdit()
+@app.route("/guest/comment/<string:name>", methods = ["POST"])
+def guestCommentEdit():
   comment = request.form["comment"]
   return app.render_template("guestPage.html")
 
@@ -188,7 +188,7 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS feedback (
 def lock_box(lb):
     lb.solenoid.close()
 
-def lock_safety
+def lock_safety():
     time.sleep(10)
     lb.solenoid.close()
 
