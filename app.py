@@ -53,7 +53,7 @@ def displayEvent():
 def rename():
   #print("Rename " + eventName)
   #Send form for user to enter new name
-  return render_template("eventEdit.html",eventName )
+  return render_template("eventEdit.html",eventName="name" )
 
 @app.route("/admin/event/edit/<int:sessionId>", methods = ["POST"])
 def renamePOST():
