@@ -4,7 +4,7 @@ import sqlite3
 import random
 import string
 from itertools import cycle
-from flask import Flask, redirect, render_template
+from flask import Flask, redirect, render_template, request
 
 
 app = Flask(__name__, static_folder='templates')
@@ -33,7 +33,7 @@ def createEventPOST():
   date = request.form["date"]
   time = request.form["time"]
 
-  return app.render_template("admin.html", name = test, date = date, time = time)
+  return render_template("admin.html", eventName = "created event", date = date, time = time)
 
 @app.route("/admin/deleteEvent/<string:eventName>")
 def deleteEvent():
