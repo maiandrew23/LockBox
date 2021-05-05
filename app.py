@@ -240,7 +240,7 @@ def create_session(name):
 
 def create_device(session_id, name):
     passcode = ''.join(random.choice(string.digits) for i in range(4))
-    cursor.execute('''INSERT INTO device (session_id,name,passcode) VALUES (?,?)''', (session_id,name,str(passcode),))
+    cursor.execute('''INSERT INTO device (session_id,name,passcode) VALUES (?,?,?)''', (session_id,name,str(passcode),))
     device_number = cursor.lastrowid
     print("Device # = ", device_number)
     print("Passcode = ", passcode)
