@@ -12,62 +12,67 @@ app = Flask(__name__, static_folder='templates')
 @app.route("/")
 def home():
   print("Home page")
-  return render_template('index.html',name='hi')
+  return app.send_static_file('index.html')
 
 #Admin Pages
 @app.route("/admin")
 def admin():
   print("Admin")
   #Pass list of events to table on page
-  return render_template('admin.html',name='hi')
+  return render_template('admin.html',eventName='Event1')
 
-@app.route("/admin/createEvent")
+@app.route("/admin/createEvent", methods = ["GET"])
 def createEvent():
   #Create an event. Sends user to form page where user enters Event name and date
-  return app.send_static_file("create.html")
+  return app.send_static_file("createEvent.html")
 
-@app.route("/admin/createEventPOST")
+@app.route("/admin/createEvent", methods = ["POST"])
 def createEventPOST():
   #Create an event. Sends user to form page where user enters Event name and date
-  return app.render_template("admin.html", events = events)
+  name = request.form["Name"]
+  date = request.form["Date"]
+  time = request.form["Time"]
+
+  return app.render_template("admin.html", name = test, date = date, time = time)
 
 @app.route("/admin/deleteEvent/<string:eventName>")
 def deleteEvent():
   #Delete Event name
-  return app.render_template("admin.html", events = events)
+  #print("delete " + eventName)
+  return app.render_template("admin.html", name = "deleted")
 
 #Event Pages
-@app.route("/event/<string:eventName>")
+@app.route("/admin/event/<string:eventName>")
 def displayEvent():
-  print("Event")
+  #print("View event " + eventName)
   #query eventName
   #search for eventName and render event.html with event info
   #Send list of registered devices under events
-  return app.render_template("event.html", eventName = eventName)
+  return app.render_template("event.html", name = "test", device = "device1")
 
-@app.route("/event/rename/<string:eventName>")
+@app.route("/admin/event/edit/<string:eventName>", method = ["GET"])
 def rename():
-  print("Rename " + eventName)
+  #print("Rename " + eventName)
   #Send form for user to enter new name
-  return app.send_static_file("rename.html")
+  return app.render_template("eventEdit.html",eventName )
 
-@app.route("/event/renamePOST/<string:eventName>")
+@app.route("/admin/event/edit/<string:eventName>", method = ["POST"])
 def renamePOST():
-  print("Rename " + eventName)
-  return app.render_template("event.html", eventName = eventName)
+  #print("Rename " + eventName)
+  return app.render_template("event.html",name = "test")
 
-@app.route("/event/deleteDevice/<string:eventName>/<string:deviceName>")
+@app.route("/admin/deleteDevice/<string:eventName>/<string:deviceName>")
 def deleteDevice():
   deleteDevice("Delete " + deviceName)
-  return app.render_template("event.html", eventName = eventName)
+  return app.render_template("event.html",name = "test")
 
-@app.route("/event/lockDevice/<string:eventName>/<string:deviceName>")
+@app.route("/admin/lockDevice/<string:eventName>/<string:deviceName>")
 def lock():
-  print("Lock " + deviceName)
+  #print("Lock " + deviceName)
   #Close solenoid, log device
-  return app.render_template("event.html", eventName = eventName)
+  return app.render_template("event.html")
 
-@app.route("/event/unlockDevice/<string:eventName>/<string:deviceName>")
+@app.route("/admin/unlockDevice/<string:eventName>/<string:deviceName>")
 def unlock():
   print("Unlock " + deviceName)
   #Open solenoid, log device
@@ -76,29 +81,44 @@ def unlock():
 
 @app.route("/event/checkout/<string:eventName>/<string:deviceName>")
 def checkout():
-  print("Checkout " + deviceName)
+  #print("Checkout " + deviceName)
 
   return app.render_template("event.html", eventName = eventName)
 
 #Device Pages
 @app.route("/event/device/<string:eventName>/<string:deviceName>")
 def guestDevice():
-  print("GET"+deviceName)
+  #print("GET"+deviceName)
   #query deviceName and get device log info, render in device.html
-  return app.render_template('device.html', deviceName = deviceName)
+  return app.render_template('deviceInfo.html', deviceName = deviceName)
 
 #Guest
-@app.route("/guest/login")
-def guestLogin():
-  print("guest")
+@app.route("/guest/login", method = ["GET"])
+def guestLoginGET():
+  #print("guest")
   #Pass list of events to table on page
   return app.send_static_file("guestlogin.html")
 
-@app.route("/guest/loginPOST")
+@app.route("/guest/login", method = ["POST"])
 def guestLoginPOST():
+  device = request.form["device"]
+  passcode = request.form["passcode"]
   #gathers POST data and query deviceName
-  return app.render_template('guestDevice.html', deviceName = deviceName)
+  return app.render_template('guestPage.html', deviceName = deviceName)
 
+@app.route("/guest/edit/<string:deviceName>", method = ["GET"])
+def guestEditGET()
+  return app.render_template("guestEdit.html",deviceName = deviceName )
+
+@app.route("/guest/edit/<string:name>", method = ["POST"])
+def guestEditPOST()
+  deviceName = request.form["deviceName"]
+  return app.render_template("guestPage.html")
+
+@app.route("/guest/comment/<string:name>", method = ["POST"])
+def guestCommentEdit()
+  comment = request.form["comment"]
+  return app.render_template("guestPage.html")
 
 
 connection = sqlite3.connect("lockbox.db")
@@ -168,8 +188,14 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS feedback (
 def lock_box(lb):
     lb.solenoid.close()
 
+def lock_safety
+    time.sleep(10)
+    lb.solenoid.close()
+
 def unlock_box(lb):
     lb.solenoid.open()
+    #lock_safety()    #run this in a thread
+
 
 def create_admin_passcode(passcode):
     cursor.execute('''SELECT * FROM admin WHERE passcode = ?''', (passcode,))
