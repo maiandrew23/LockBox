@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="templates/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic">
-    <link rel="stylesheet" href="templates/assets/fonts/font-awesome.min.css">
+    <link rel="stylesheet" href="templates/templates/assets/fonts/font-awesome.min.css">
     <link rel="stylesheet" href="templates/assets/css/Brands.css">
     <link rel="stylesheet" href="templates/assets/css/Contact-Form-Clean.css">
     <link rel="stylesheet" href="templates/assets/css/Login-Form-Dark.css">
@@ -22,12 +22,12 @@
     </header>
     <header style="height: 47px;background: #09d768;"></header>
     <div class="form-group">
-        <form action="/createEvent" method="post"><label>Name of Event</label><input class="form-control" type="text"><label>Date of Event</label><input class="form-control" type="text"><label>Time of Event</label><input class="form-control" type="text"><button class="btn btn-primary" type="submit">Create</button><a class="btn btn-primary" role="button" style="transform: translate(3px);" href="/admin">Cancel</a></form>
+        <form action="/admin/createEvent" method="post"><label>Name of Event</label><input class="form-control" type="text" name="eventName"><label>Date of Event</label><input class="form-control" type="text" name="date"><label>Time of Event</label><input class="form-control" type="text" name="time"><button class="btn btn-primary" type="submit">Create</button><a class="btn btn-primary" role="button" style="transform: translate(3px);" href="/admin">Cancel</a></form>
     </div>
-    <script src="assets/js/jquery.min.js"></script>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="templates/assets/js/jquery.min.js"></script>
+    <script src="templates/assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
-    <script src="assets/js/freelancer.js"></script>
+    <script src="templates/assets/js/freelancer.js"></script>
 </body>
 
 </html>

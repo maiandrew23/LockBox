@@ -32,9 +32,9 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td><a href="#">{.device}</a></td>
+                        <td><a href="#">{{ device }}</a></td>
                         <td>Cell 1</td>
-                        <td><a class="btn btn-primary" role="button" style="margin: 1px;background: var(--indigo);" href="/admin/lock">Lock</a><a class="btn btn-primary" role="button" style="margin: 1px;background: var(--green);" href="/admin/unlock">Unlock</a><a class="btn btn-primary" role="button" style="margin: 1px;background: var(--yellow);" href="/admin/checkout">Checkout</a><a class="btn btn-primary" role="button" style="margin: 1px;background: var(--red);" href="/admin/deleteDevice">Delete</a></td>
+                        <td><a class="btn btn-primary" role="button" style="margin: 1px;background: var(--indigo);" href="/admin/lock/{{ deviceName }}">Lock</a><a class="btn btn-primary" role="button" style="margin: 1px;background: var(--green);" href="/admin/unlock/{{ deviceName }}">Unlock</a><a class="btn btn-primary" role="button" style="margin: 1px;background: var(--yellow);" href="/admin/checkout/{{ deviceName }}">Checkout</a><a class="btn btn-primary" role="button" style="margin: 1px;background: var(--red);" href="/admin/deleteDevice/{{ deviceName }}">Delete</a></td>
                     </tr>
                 </tbody>
             </table>
@@ -47,10 +47,10 @@
             </blockquote>
         </section>
     </section>
-    <script src="assets/js/jquery.min.js"></script>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="templates/assets/js/jquery.min.js"></script>
+    <script src="templates/assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
-    <script src="assets/js/freelancer.js"></script>
+    <script src="templates/assets/js/freelancer.js"></script>
 </body>
 
 </html>

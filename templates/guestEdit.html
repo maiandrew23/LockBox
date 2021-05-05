@@ -24,12 +24,12 @@
     <h1 style="font-size: 24px;">Device #</h1>
     <h1 style="font-size: 30px;">Current Name: ____</h1>
     <div class="form-group">
-        <form action="/guest/edit/{.deviceName}" method="post"><label>Update Name</label><input class="form-control" type="text" name="name"><button class="btn btn-primary" type="submit">Update</button><a class="btn btn-primary" role="button" style="transform: translate(3px);" href="/guest">Cancel</a></form>
+        <form action="/guest/edit/{{ deviceName }}" method="post"><label>Update Name</label><input class="form-control" type="text" name="deviceName"><button class="btn btn-primary" type="submit">Update</button><a class="btn btn-primary" role="button" style="transform: translate(3px);" href="/guest">Cancel</a></form>
     </div>
-    <script src="assets/js/jquery.min.js"></script>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="templates/assets/js/jquery.min.js"></script>
+    <script src="templates/assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
-    <script src="assets/js/freelancer.js"></script>
+    <script src="templates/assets/js/freelancer.js"></script>
 </body>
 
 </html>

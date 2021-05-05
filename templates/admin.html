@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic">
     <link rel="stylesheet" href="templates/assets/fonts/font-awesome.min.css">
-    <link rel="stylesheet" href="templates/assets/css/Brands.css">
+    <link rel="stylesheet" href="templates/templates/assets/css/Brands.css">
     <link rel="stylesheet" href="templates/assets/css/Contact-Form-Clean.css">
     <link rel="stylesheet" href="templates/assets/css/Login-Form-Dark.css">
 </head>
@@ -33,7 +33,7 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td><a class="btn btn-primary" role="button" style="transform: translate(332px);margin: 1;" href="/admin/deleteEvent/{.eventName}">Delete</a><a class="btn btn-primary active" role="button" style="transform: translate(197px);margin: 1px;" href="/admin/edit/{.eventName}">Edit</a><a href="/admin/event/{.name}">{.eventName}</a></td>
+                        <td><a class="btn btn-primary" role="button" style="transform: translate(332px);margin: 1;" href="/admin/deleteEvent/{{ eventName }}">Delete</a><a class="btn btn-primary active" role="button" style="transform: translate(197px);margin: 1px;" href="/admin/edit/{{ eventName }}">Edit</a><a href="/admin/event/{{ eventName }}">{{ eventName }}</a></td>
                         <td>Cell 1</td>
                         <td>Cell 2</td>
                     </tr>
@@ -41,10 +41,10 @@
             </table>
         </div>
     </section>
-    <script src="assets/js/jquery.min.js"></script>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="templates/assets/js/jquery.min.js"></script>
+    <script src="templates/assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
-    <script src="assets/js/freelancer.js"></script>
+    <script src="templates/assets/js/freelancer.js"></script>
 </body>
 
 </html>
