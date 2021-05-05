@@ -18,7 +18,7 @@
     <nav class="navbar navbar-light navbar-expand-lg fixed-top bg-warning text-uppercase" id="mainNav">
         <div class="container"><a class="navbar-brand text-dark js-scroll-trigger" href="/" style="font-size: 30px;">Lockbox</a></div>
     </nav>
-    <header class="text-center text-white bg-primary masthead" style="background: rgb(21,214,121);padding: 53px 0px 10px;height: 186px;"><a class="btn btn-primary" role="button" style="transform: translate(216px);background: var(--danger);margin: 46px;padding: 7px 14px;" href="admin/lock">Lock the Box!</a><a class="btn btn-primary" role="button" style="transform: translate(177px);background: var(--indigo);" href="admin/unlock">Unlock the Box!</a></header>
+    <header class="text-center text-white bg-primary masthead" style="background: rgb(21,214,121);padding: 53px 0px 10px;height: 186px;"></header>
     <section id="portfolio" class="portfolio" style="transform: perspective(0px) translate(0px);transform-origin: top;height: 274.2px;">
         <h1 style="font-size: 34px;padding: 10px;margin: -8px;">Event Name</h1>
         <div class="table-responsive">
@@ -32,9 +32,9 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td><a href="#">{{ device }}</a></td>
+                        <td><a href="#">{{ device }} ({{ sessionId }})</a></td>
                         <td>Cell 1</td>
-                        <td><a class="btn btn-primary" role="button" style="margin: 1px;background: var(--indigo);" href="/admin/lock/{{ deviceName }}">Lock</a><a class="btn btn-primary" role="button" style="margin: 1px;background: var(--green);" href="/admin/unlock/{{ deviceName }}">Unlock</a><a class="btn btn-primary" role="button" style="margin: 1px;background: var(--yellow);" href="/admin/checkout/{{ deviceName }}">Checkout</a><a class="btn btn-primary" role="button" style="margin: 1px;background: var(--red);" href="/admin/deleteDevice/{{ deviceName }}">Delete</a></td>
+                        <td><a class="btn btn-primary" role="button" style="margin: 1px;background: var(--indigo);" href="/admin/lock/{{ sessionId }}">Lock</a><a class="btn btn-primary" role="button" style="margin: 1px;background: var(--green);" href="/admin/unlock/{{ sessionId }}">Unlock</a><a class="btn btn-primary" role="button" style="margin: 1px;background: var(--yellow);" href="/admin/checkout/{{ sessionId }}">Checkout</a><a class="btn btn-primary" role="button" style="margin: 1px;background: var(--red);" href="/admin/deleteDevice/{{ sessionId }}">Delete</a></td>
                     </tr>
                 </tbody>
             </table>
