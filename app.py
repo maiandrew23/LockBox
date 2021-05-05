@@ -360,17 +360,17 @@ def validate_admin():
         return False
 
 def validate_device(session_id,device_num_only=False):
-    lb.display.clear()
-    lb.display.show_text("Enter Device #", 1)
-    lb.display.show_text("     * Done", 2)
-    device_num = ""
-    input = lb.keypad.read_key()
-    time.sleep(0.2) # To prevent bounce
-    while input != "*":
-        device_num = device_num + input
+    while True:
+        lb.display.clear()
+        lb.display.show_text("Enter Device #", 1)
+        lb.display.show_text("     * Done", 2)
+        device_num = ""
         input = lb.keypad.read_key()
         time.sleep(0.2) # To prevent bounce
-    while True:
+        while input != "*":
+            device_num = device_num + input
+            input = lb.keypad.read_key()
+            time.sleep(0.2) # To prevent bounce
         if validate_device_number(session_id,device_num):#Valid Device Number
             if device_num_only:
                 return device_num
