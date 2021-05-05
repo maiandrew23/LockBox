@@ -32,8 +32,7 @@ def createEventPOST():
   eventName = request.form["eventName"]
   date = request.form["date"]
   time = request.form["time"]
-
-  return render_template("admin.html", sessionId = 1, eventName = eventName, date = date, time = time)
+  return reidrect("/admin")
 
 @app.route("/admin/deleteEvent/<int:sessionId>")
 def deleteEvent():
@@ -105,13 +104,6 @@ def guestLoginPOST():
   device = request.form(["device"])
   passcode = request.form(["passcode"])
   return render_template("guestpage.html")
-
-@app.route("/guest/login", methods = ["POST"])
-def guestLoginPOST():
-  device = request.form["device"]
-  passcode = request.form["passcode"]
-  #gathers POST data and query deviceName
-  return render_template('guestPage.html', deviceName = deviceName)
 
 @app.route("/guest/edit/<string:deviceName>", methods = ["GET"])
 def guestEditGET():
@@ -333,8 +325,8 @@ def validate_device_number(session_id,device_num):
     return False
 
 def validate_device_passcode(session_id, device_num, passcode):
-    cursor.execute('''SELECT * 
-                      FROM device 
+    cursor.execute('''SELECT *
+                      FROM device
                       WHERE session_id = ? AND device_number = ? AND passcode = ?''', (session_id,device_num, passcode,))
     if cursor.fetchone():
         return True
