@@ -106,12 +106,6 @@ def guestLoginPOST():
   passcode = request.form(["passcode"])
   return render_template("guestpage.html")
 
-@app.route("/guest/login", methods = ["POST"])
-def guestLoginPOST():
-  device = request.form["device"]
-  passcode = request.form["passcode"]
-  #gathers POST data and query deviceName
-  return render_template('guestPage.html', deviceName = deviceName)
 
 @app.route("/guest/edit/<string:deviceName>", methods = ["GET"])
 def guestEditGET():
