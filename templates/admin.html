@@ -5,26 +5,23 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Home - Brand</title>
-    <link rel="stylesheet" href="templates/assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic">
-    <link rel="stylesheet" href="templates/assets/fonts/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/fonts/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/css/Brands.css">
+    <link rel="stylesheet" href="assets/css/Contact-Form-Clean.css">
+    <link rel="stylesheet" href="assets/css/Login-Form-Dark.css">
 </head>
 
 <body id="page-top">
     <nav class="navbar navbar-light navbar-expand-lg fixed-top bg-warning text-uppercase" id="mainNav">
-        <div class="container"><a class="navbar-brand text-dark js-scroll-trigger" href="#page-top">Lockbox</a><button data-toggle="collapse" data-target="#navbarResponsive" class="navbar-toggler text-white bg-primary navbar-toggler-right text-uppercase rounded" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><i class="fa fa-bars"></i></button>
-            <div class="collapse navbar-collapse" id="navbarResponsive">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#portfolio">Portfolio</a></li>
-                    <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#about">About</a></li>
-                    <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#contact">Contact</a></li>
-                </ul>
-            </div>
-        </div>
+        <div class="container"><a class="navbar-brand text-dark js-scroll-trigger" href="/" style="font-size: 30px;">Lockbox</a></div>
     </nav>
-    <header class="text-center text-white bg-primary masthead" style="background: rgb(21,214,121);padding: 53px 0px 10px;height: 186px;"><a class="btn btn-secondary text-left" role="button" style="opacity: 1;transform: perspective(0px) translate(-152px);transform-origin: left;height: 40px;padding: 6px 12px;margin: 44px;" href="/admin/createEvent">Create New Event</a><a class="btn btn-primary" role="button" style="transform: translate(119px);background: var(--danger);" href="admin/lock">Lock the Box!</a><a class="btn btn-primary" role="button" style="transform: translate(119px);background: var(--indigo);" href="admin/unlock">Unlock the Box!</a></header>
-    <section id="portfolio" class="portfolio" style="transform: perspective(0px) translate(0px);transform-origin: top;height: 274.2px;">
+    <header class="text-center text-white bg-success masthead" style="background: rgb(21,214,121);padding: 8px 0px 10px;height: 213px;margin: 1;">
+        <h1 style="padding: 117px;color: var(--gray-dark);text-align: center;font-size: 36px;">Welcome Admin!</h1>
+    </header>
+    <section id="portfolio" class="portfolio" style="transform: perspective(0px) translate(0px);transform-origin: top;height: 265.2px;padding: 0px 0px;"><a class="btn btn-secondary text-left" role="button" style="opacity: 1;transform: perspective(0px) translate(-36px);transform-origin: left;height: 40px;padding: 6px 12px;margin: 44px;" href="/admin/createEvent">Create New Event</a><a class="btn btn-primary" role="button" style="transform: translate(250px);background: var(--danger);margin: 1px;" href="admin/lock">Lock the Box!</a><a class="btn btn-primary" role="button" style="transform: translate(250px);background: var(--indigo);margin: 1px;" href="admin/unlock">Unlock the Box!</a>
         <div class="table-responsive">
             <table class="table">
                 <thead>
@@ -36,7 +33,7 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Text<a class="btn btn-primary" role="button" style="transform: translate(360px);" href="/admin/delete">Delete</a><a class="btn btn-primary active" role="button" style="transform: translate(197px);" href="/admin/rename">Rename</a></td>
+                        <td><a class="btn btn-primary" role="button" style="transform: translate(332px);margin: 1;" href="/admin/deleteEvent/{.eventName}">Delete</a><a class="btn btn-primary active" role="button" style="transform: translate(197px);margin: 1px;" href="/admin/edit/{.eventName}">Edit</a><a href="/admin/event/{.name}">{.eventName}</a></td>
                         <td>Cell 1</td>
                         <td>Cell 2</td>
                     </tr>
