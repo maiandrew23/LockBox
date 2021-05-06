@@ -3,7 +3,7 @@ import RPi.GPIO as GPIO
 import sys
 import time
 from threading import Thread, Event
-
+from RPLCD import CharLCD
 #Solenoid Globals
 SOL_CONTROL = 16
 
@@ -62,6 +62,7 @@ class Solenoid:
 class Keypad:
   def __init__(self):
     self.activated = False
+    self.lcd = CharLCD(cols=16, rows=2, pin_rs=6, pin_e=5, pins_data=[13,19,26,1],numbering_mode=GPIO.BCM)
 
   def setup(self):
     GPIO.setmode(GPIO.BCM)
@@ -125,7 +126,7 @@ class Display:
 
 
   def write_arr_4bit(self, bits, mode, debug=True):
-    
+
     pins = [LCD_D7, LCD_D6, LCD_D5, LCD_D4]
     GPIO.output(LCD_RS, mode)
     # set the most significant bits (high bits) on data lines
@@ -158,16 +159,20 @@ class Display:
 
   def clear(self):
     self.write_arr_4bit(LCD_CLEAR, LCD_CMD)
-    
+
   def show_text(self, text, line=1):
     if line == 1:
-      self.write_arr_4bit(LCD_LINE_1, LCD_CMD)
+      lcd.cursor_pos = (0, 0)
+      lcd.write_string(text)
+      #self.write_arr_4bit(LCD_LINE_1, LCD_CMD)
     elif line == 2:
-      self.write_arr_4bit(LCD_LINE_2, LCD_CMD)
-    for c in text:
-      arr = self.char_to_arr(c)
-      self.write_arr_4bit(arr, LCD_CHR)
-    print("'" + text + "'", "on line 1 of display")
+      lcd.cursor_pos = (1, 0)
+      lcd.write_string(text)
+      #self.write_arr_4bit(LCD_LINE_2, LCD_CMD)
+    #for c in text:
+      #arr = self.char_to_arr(c)
+      #self.write_arr_4bit(arr, LCD_CHR)
+    #print("'" + text + "'", "on line 1 of display")
 
 class Printer:
   def __init__(self):
@@ -188,5 +193,3 @@ class Lockbox:
     self.printer = Printer()
     self.display = Display()
     self.solenoid = Solenoid()
-
-
