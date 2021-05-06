@@ -64,12 +64,12 @@ def deleteEvent():
 
 #Event Pages
 @app.route("/admin/event/<sessionId>")
-def displayEvent():
+def displayEvent(sessionId):
   #print("View event " + eventName)
   #query eventName
   #search for eventName and render event.html with event info
   #Send list of registered devices under events
-  return render_template("event.html", name = "test", sessionId = 3, device = "device1")
+  return render_template("event.html", name = "test", sessionId = sessionId, device = "device1")
 
 @app.route("/admin/event/edit/<sessionId>", methods = ["GET"])
 def rename():
