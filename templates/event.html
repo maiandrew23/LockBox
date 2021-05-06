@@ -33,7 +33,7 @@
                     <tr>
                         <td><a href="#">{{ device }} ({{ sessionId }})</a></td>
                         <td>Cell 1</td>
-                        <td><a class="btn btn-primary" role="button" style="margin: 1px;background: var(--indigo);" href="/admin/lock/{{ sessionId }}">Lock</a><a class="btn btn-primary" role="button" style="margin: 1px;background: var(--green);" href="/admin/unlock/{{ sessionId }}">Unlock</a><a class="btn btn-primary" role="button" style="margin: 1px;background: var(--yellow);" href="/admin/checkout/{{ sessionId }}">Checkout</a><a class="btn btn-primary" role="button" style="margin: 1px;background: var(--red);" href="/admin/deleteDevice/{{ sessionId }}">Delete</a></td>
+                        <td><a class="btn btn-primary" role="button" style="margin: 1px;background: var(--indigo);" href="/admin/lockDevice/{{ sessionId }}/{{ deviceNum }}">Lock</a><a class="btn btn-primary" role="button" style="margin: 1px;background: var(--green);" href="/admin/unlockDevice/{{ sessionId }}/{{ deviceNum }}">Unlock</a><a class="btn btn-primary" role="button" style="margin: 1px;background: var(--yellow);" href="/admin/checkout/{{ sessionId }}/{{ deviceNum }}">Checkout</a><a class="btn btn-primary" role="button" style="margin: 1px;background: var(--red);" href="/admin/deleteDevice/{{ sessionId }}/{{ deviceNum }}">Delete</a></td>
                     </tr>
                 </tbody>
             </table>
