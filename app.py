@@ -678,7 +678,9 @@ if __name__ == "__main__":
     lb.keypad.on()
     lb.display.on()
 
-    app.run(host='0.0.0.0', port=80, debug=True, threaded=True)
     x = threading.Thread(target=menu)
     x.start()
+    
+    app.run(host='0.0.0.0', port=80, debug=True, threaded=True)
+
     x.join()
