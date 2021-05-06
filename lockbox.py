@@ -100,20 +100,20 @@ class Keypad:
 class Display:
   def setup(self):
     GPIO.setmode(GPIO.BCM)
-    GPIO.setup(LCD_RS, GPIO.OUT)
-    GPIO.setup(LCD_E, GPIO.OUT)
-    GPIO.setup(LCD_D4, GPIO.OUT)
-    GPIO.setup(LCD_D5, GPIO.OUT)
-    GPIO.setup(LCD_D6, GPIO.OUT)
-    GPIO.setup(LCD_D7, GPIO.OUT)
+    #GPIO.setup(LCD_RS, GPIO.OUT)
+    #GPIO.setup(LCD_E, GPIO.OUT)
+    #GPIO.setup(LCD_D4, GPIO.OUT)
+    #GPIO.setup(LCD_D5, GPIO.OUT)
+    #GPIO.setup(LCD_D6, GPIO.OUT)
+    #GPIO.setup(LCD_D7, GPIO.OUT)
 
-    self.write_arr_4bit(LCD_4BIT1, LCD_CMD)
-    self.write_arr_4bit(LCD_4BIT2, LCD_CMD)
-    self.write_arr_4bit(LCD_ON_NC, LCD_CMD)
-    self.write_arr_4bit(LCD_ENTRY, LCD_CMD)
-    self.write_arr_4bit(LCD_CLEAR, LCD_CMD)
+    #self.write_arr_4bit(LCD_4BIT1, LCD_CMD)
+    #self.write_arr_4bit(LCD_4BIT2, LCD_CMD)
+    #self.write_arr_4bit(LCD_ON_NC, LCD_CMD)
+    #self.write_arr_4bit(LCD_ENTRY, LCD_CMD)
+    #self.write_arr_4bit(LCD_CLEAR, LCD_CMD)
     print("Display setup finished")
-
+    self.lcd = CharLCD(cols=16,rows=2,pin_rs=6,pin_e=5,pins_data=[13,19,26,1],numbering_mode=GPIO.BCM)
   def on(self):
     self.write_arr_4bit(LCD_D_ON, LCD_CMD)
     print("Display is on")
@@ -158,16 +158,20 @@ class Display:
       GPIO.output(p,GPIO.LOW)
 
   def clear(self):
-    self.write_arr_4bit(LCD_CLEAR, LCD_CMD)
-
+    #self.write_arr_4bit(LCD_CLEAR, LCD_CMD)
+    return
   def show_text(self, text, line=1):
     if line == 1:
-      lcd.cursor_pos = (0, 0)
-      lcd.write_string(text)
+      self.lcd.cursor_pos = (0,0)
+      self.lcd.write_string("                ")
+      self.lcd.cursor_pos = (0,0)
+      self.lcd.write_string(text)
       #self.write_arr_4bit(LCD_LINE_1, LCD_CMD)
     elif line == 2:
-      lcd.cursor_pos = (1, 0)
-      lcd.write_string(text)
+      self.lcd.cursor_pos = (1,0)
+      self.lcd.write_string("                ")
+      self.lcd.cursor_pos = (1,0)
+      self.lcd.write_string(text)
       #self.write_arr_4bit(LCD_LINE_2, LCD_CMD)
     #for c in text:
       #arr = self.char_to_arr(c)
