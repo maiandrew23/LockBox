@@ -6,6 +6,19 @@ import string
 from itertools import cycle
 from flask import Flask, redirect, render_template, request
 
+class Event:
+  def __init__(self, sessionId, eventName, date, time, devices):
+    self.sessionId = ""
+    self.eventName = ""
+    self.date = ""
+    self.time = ""
+    self.devices = ""
+class Devices:
+  def __init__(self, sessionId, deviceNum, deviceName, actions):
+    self.sessionId = ""
+    self.deviceNum = ""
+    self.deviceName = ""
+    self.actions = []
 
 app = Flask(__name__, static_folder='templates')
 
@@ -19,7 +32,7 @@ def home():
 def admin():
   print("Admin")
   #Pass list of events to table on page
-  return render_template('admin.html',eventName='Event1', sessionId = 1)
+  return render_template('admin.html',events = events)
 
 @app.route("/admin/createEvent", methods = ["GET"])
 def createEvent():
@@ -32,66 +45,80 @@ def createEventPOST():
   eventName = request.form["eventName"]
   date = request.form["date"]
   time = request.form["time"]
-  return reidrect("/admin")
+  return redirect("/admin")
 
-@app.route("/admin/deleteEvent/<int:sessionId>")
+@app.route("/admin/deleteEvent/<sessionId>")
 def deleteEvent():
+  print("deleted" + sessionId)
+  sessionId = int(sessionId)
   #Delete Event name
   #print("delete " + eventName)
-  return render_template("admin.html", sessionId = 1, eventName = "deleted")
+  return redirect("/admin")
 
 #Event Pages
-@app.route("/admin/event/<int:sessionId>")
+@app.route("/admin/event/<sessionId>")
 def displayEvent():
   #print("View event " + eventName)
   #query eventName
   #search for eventName and render event.html with event info
   #Send list of registered devices under events
-  return render_template("event.html", name = "test", device = "device1")
+  return render_template("event.html", name = "test", sessionId = 3, device = "device1")
 
-@app.route("/admin/event/edit/<int:sessionId>", methods = ["GET"])
+@app.route("/admin/event/edit/<sessionId>", methods = ["GET"])
 def rename():
   #print("Rename " + eventName)
   #Send form for user to enter new name
-  return render_template("eventEdit.html",eventName="name" )
+  return render_template("eventEdit.html",eventName="name",sessionId = sessionId )
 
-@app.route("/admin/event/edit/<int:sessionId>", methods = ["POST"])
+@app.route("/admin/event/edit/<sessionId>", methods = ["POST"])
 def renamePOST():
   #print("Rename " + eventName)
-  return render_template("event.html",name = "test")
+  return redirect("/admin/event/" + string(sessionId))
 
-@app.route("/admin/deleteDevice/<int:sessionId>/<int:deviceNum>")
+@app.route("/admin/deleteDevice/<sessionId>/<deviceNum>")
 def deleteDevice():
   deleteDevice("Delete " + deviceName)
   return render_template("event.html",name = "test")
 
-@app.route("/admin/lockDevice/<int:sessionId>/<int:deviceNum>")
+@app.route("/admin/lockDevice/<sessionId>/<deviceNum>")
 def lock():
-  #print("Lock " + deviceName)
-  #Close solenoid, log device
-  return render_template("event.html")
+  sessionId = int(sessionId)
+  deviceNum = int(deviceNum)
+  return redirect("/admin/event/" + string(sessionId) + string(deviceNum))
 
-@app.route("/admin/unlockDevice/<int:sessionId>/<int:deviceNum>")
+@app.route("/admin/unlockDevice/<sessionId>/<deviceNum>")
 def unlock():
+  sessionId = int(sessionId)
+  deviceNum = int(deviceNum)
   print("Unlock " + deviceName)
   #Open solenoid, log device
   #Set saftey timer
-  return render_template("event.html", eventName = eventName)
+  return redirect("/admin/event/" + string(sessionId) + string(deviceNum))
 
-@app.route("/event/checkout/<int:sessionId>/<int:deviceNum>")
+@app.route("/event/checkout/<sessionId>/<deviceNum>")
 def checkout():
+  sessionId = int(sessionId)
+  deviceNum = int(deviceNum)
   #print("Checkout " + deviceName)
 
-  return render_template("event.html", eventName = eventName)
+  return redirect("/admin/event/" + string(sessionId) + string(deviceNum))
 
-#Device Pages
 @app.route("/event/device/<int:sessionId>/<int:deviceNum>")
 def guestDevice():
+  sessionId = int(sessionId)
+  deviceNum = int(deviceNum)
   #print("GET"+deviceName)
   #query deviceName and get device log info, render in device.html
   return render_template('deviceInfo.html', deviceName = deviceName)
 
 #Guest
+
+@app.route("/guest/<sessionId>/<deviceNum>")
+def renderGuest():
+  sessionId = int(sessionId)
+  deviceNum = int(deviceNum)
+  return render_template("guestpage.html",sessionId = sessionId,deviceNum = deviceNum )
+
 @app.route("/guest/login", methods = ["GET"])
 def guestLoginGET():
   #print("guest")
@@ -103,22 +130,25 @@ def guestLoginPOST():
   sessionId = request.form(["sessionId"])
   device = request.form(["device"])
   passcode = request.form(["passcode"])
-  return render_template("guestpage.html")
+  return redirect("/guest/" + string(sessionId) + '/' + string(deviceNum)")
 
 
-@app.route("/guest/edit/<string:deviceName>", methods = ["GET"])
+@app.route("/guest/edit/<sessionId>/<deviceNum>", methods = ["GET"])
 def guestEditGET():
+  sessionId = int(sessionId)
+  deviceNum = int(deviceNum)
   return render_template("guestEdit.html",deviceName = deviceName )
 
-@app.route("/guest/edit/<string:name>", methods = ["POST"])
+@app.route("/guest/edit/<sessionId>/<deviceNum>", methods = ["POST"])
 def guestEditPOST():
   deviceName = request.form["deviceName"]
-  return app.render_template("guestPage.html")
+  return redirect("/guest/" + string(sessionId) + '/' + string(deviceNum)")
 
-@app.route("/guest/comment/<string:name>", methods = ["POST"])
+@app.route("/guest/comment/<sessionId>/<deviceNum>", methods = ["POST"])
 def guestCommentEdit():
   comment = request.form["comment"]
-  return app.render_template("guestPage.html")
+  return redirect("/guest/" + string(sessionId) + '/' + string(deviceNum)")
+
 
 @app.route("/admin/adminUnlock")
 def adminUnlock():

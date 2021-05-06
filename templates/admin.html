@@ -5,23 +5,22 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Home - Brand</title>
-    <link rel="stylesheet" href="template/assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="templates/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic">
-    <link rel="stylesheet" href="template/assets/fonts/font-awesome.min.css">
-    <link rel="stylesheet" href="template/assets/css/Brands.css">
-    <link rel="stylesheet" href="template/assets/css/Contact-Form-Clean.css">
-    <link rel="stylesheet" href="template/assets/css/Login-Form-Dark.css">
+    <link rel="stylesheet" href="templates/assets/css/Brands.css">
+    <link rel="stylesheet" href="templates/assets/css/Contact-Form-Clean.css">
+    <link rel="stylesheet" href="templates/assets/css/Login-Form-Dark.css">
 </head>
 
 <body id="page-top">
     <nav class="navbar navbar-light navbar-expand-lg fixed-top bg-warning text-uppercase" id="mainNav">
         <div class="container"><a class="navbar-brand text-dark js-scroll-trigger" href="/" style="font-size: 30px;">Lockbox</a></div>
     </nav>
-    <header class="text-center text-white bg-success masthead" style="background: rgb(21,214,121);padding: 8px 0px 10px;height: 213px;margin: 1;">
+    <header style="background: var(--primary);height: 210.2px;">
         <h1 style="padding: 117px;color: var(--gray-dark);text-align: center;font-size: 36px;">Welcome Admin!</h1>
     </header>
-    <section id="portfolio" class="portfolio" style="transform: perspective(0px) translate(0px);transform-origin: top;height: 265.2px;padding: 0px 0px;"><a class="btn btn-secondary text-left" role="button" style="opacity: 1;transform: perspective(0px) translate(-36px);transform-origin: left;height: 40px;padding: 6px 12px;margin: 44px;" href="/admin/createEvent">Create New Event</a><a class="btn btn-primary" role="button" style="transform: translate(250px);background: var(--danger);margin: 1px;" href="adminLock">Lock the Box!</a><a class="btn btn-primary" role="button" style="transform: translate(250px);background: var(--indigo);margin: 1px;" href="adminUnlock">Unlock the Box!</a>
+    <section id="portfolio" class="portfolio" style="transform: perspective(0px) translate(0px);transform-origin: top;height: 265.2px;padding: 0px 0px;"><a class="btn btn-secondary text-left" role="button" style="opacity: 1;transform: perspective(0px) translate(-36px);transform-origin: left;height: 40px;padding: 6px 12px;margin: 44px;" href="/admin/createEvent">Create New Event</a><a class="btn btn-primary" role="button" style="transform: translate(250px);background: var(--danger);margin: 1px;" href="admin/adminLock">Lock the Box!</a><a class="btn btn-primary" role="button" style="transform: translate(250px);background: var(--indigo);margin: 1px;" href="adminUnlock">Unlock the Box!</a>
         <div class="table-responsive">
             <table class="table">
                 <thead>
@@ -32,19 +31,21 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% for event in events%}
                     <tr>
-                        <td><a class="text-left" href="/admin/event/{{ eventName }}" style="transform: translate(-773px);">{{ eventName }}( {{ sessionId }})</a><a class="btn btn-primary" role="button" style="transform: translate(225px);margin: 1;" href="/admin/deleteEvent/{{ sessionId }}">Delete</a><a class="btn btn-primary active" role="button" style="transform: translate(90px);margin: 1px;" href="/admin/edit/{{ sessionId }}">Edit</a>&nbsp;</td>
-                        <td>{{ date }}</td>
-                        <td>{{ time }}</td>
+                        <td><a class="text-left" href="/admin/event/{{ event.eventName }}" style="transform: translate(-773px);">{{ event.eventName }}( {{ event.sessionId }})</a><a class="btn btn-primary" role="button" style="transform: translate(225px);margin: 1;" href="/admin/deleteEvent/{{ event.sessionId }}">Delete</a><a class="btn btn-primary active" role="button" style="transform: translate(90px);margin: 1px;" href="/admin/edit/{{ event.sessionId }}">Edit</a>&nbsp;</td>
+                        <td>{{ event.date }}</td>
+                        <td>{{ event.time }}</td>
                     </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
     </section>
-    <script src="template/assets/js/jquery.min.js"></script>
-    <script src="template/assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="templates/assets/js/jquery.min.js"></script>
+    <script src="templates/assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
-    <script src="template/assets/js/freelancer.js"></script>
+    <script src="templates/assets/js/freelancer.js"></script>
 </body>
 
 </html>

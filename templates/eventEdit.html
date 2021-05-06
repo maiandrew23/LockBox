@@ -5,13 +5,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Home - Brand</title>
-    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="templates/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic">
-    <link rel="stylesheet" href="assets/fonts/font-awesome.min.css">
-    <link rel="stylesheet" href="assets/css/Brands.css">
-    <link rel="stylesheet" href="assets/css/Contact-Form-Clean.css">
-    <link rel="stylesheet" href="assets/css/Login-Form-Dark.css">
+    <link rel="stylesheet" href="templates/assets/css/Brands.css">
+    <link rel="stylesheet" href="templates/assets/css/Contact-Form-Clean.css">
+    <link rel="stylesheet" href="templates/assets/css/Login-Form-Dark.css">
 </head>
 
 <body id="page-top">
@@ -20,15 +19,15 @@
             <div class="container"><a class="navbar-brand text-dark js-scroll-trigger" href="/" style="font-size: 30px;">Lockbox</a></div>
         </nav>
     </header>
-    <header style="height: 47px;background: #09d768;"></header>
-    <h1 style="font-size: 24;">"Event Name to edit"</h1>
+    <header style="height: 94px;background: var(--primary);"></header>
+    <h1 style="font-size: 24;">Editing {{ eventName }}</h1>
     <div class="form-group">
-        <form action="/admin/edit/{{ sessionId }}" method="post"><label>Name of Event</label><input class="form-control" type="text" name="eventName"><label>Date of Event</label><input class="form-control" type="text" placeholder="mm/dd/yy" name="date"><label>Time of Event</label><input class="form-control" type="text" name="time"><button class="btn btn-primary" type="submit">Create</button><button class="btn btn-primary" type="button" style="transform: translate(3px);">Cancel</button></form>
+        <form action="/admin/edit/{{ sessionId }}" method="post"><label>Name of Event</label><input class="form-control" type="text" name="eventName"><label>Date of Event</label><input class="form-control" type="text" placeholder="mm/dd/yy" name="date"><label>Time of Event</label><input class="form-control" type="text" name="time"><button class="btn btn-primary" type="submit">Create</button><a class="btn btn-primary" role="button" style="transform: translate(3px);" href="/admin">Cancel</a></form>
     </div>
-    <script src="assets/js/jquery.min.js"></script>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="templates/assets/js/jquery.min.js"></script>
+    <script src="templates/assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
-    <script src="assets/js/freelancer.js"></script>
+    <script src="templates/assets/js/freelancer.js"></script>
 </body>
 
 </html>
