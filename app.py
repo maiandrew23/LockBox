@@ -55,7 +55,7 @@ def createEventPOST():
   return redirect("/admin")
 
 @app.route("/admin/deleteEvent/<sessionId>")
-def deleteEvent():
+def deleteEvent(sessionId):
   print("deleted" + sessionId)
   sessionId = int(sessionId)
   #Delete Event name
@@ -72,29 +72,29 @@ def displayEvent(sessionId):
   return render_template("event.html", name = "test", sessionId = sessionId, device = "device1")
 
 @app.route("/admin/event/edit/<sessionId>", methods = ["GET"])
-def rename():
+def rename(sessionId):
   #print("Rename " + eventName)
   #Send form for user to enter new name
   return render_template("eventEdit.html",eventName="name",sessionId = sessionId )
 
 @app.route("/admin/event/edit/<sessionId>", methods = ["POST"])
-def renamePOST():
+def renamePOST(sessionId):
   #print("Rename " + eventName)
   return redirect("/admin/event/" + string(sessionId))
 
 @app.route("/admin/deleteDevice/<sessionId>/<deviceNum>")
-def deleteDevice():
+def deleteDevice(sessionId,deviceNum):
   deleteDevice("Delete " + deviceName)
   return render_template("event.html",name = "test")
 
 @app.route("/admin/lockDevice/<sessionId>/<deviceNum>")
-def lock():
+def lock(sessionId,deviceNum):
   sessionId = int(sessionId)
   deviceNum = int(deviceNum)
   return redirect("/admin/event/" + string(sessionId) + string(deviceNum))
 
 @app.route("/admin/unlockDevice/<sessionId>/<deviceNum>")
-def unlock():
+def unlock(sessionId,deviceNum):
   sessionId = int(sessionId)
   deviceNum = int(deviceNum)
   print("Unlock " + deviceName)
@@ -103,7 +103,7 @@ def unlock():
   return redirect("/admin/event/" + string(sessionId) + string(deviceNum))
 
 @app.route("/event/checkout/<sessionId>/<deviceNum>")
-def checkout():
+def checkout(sessionId,deviceNum):
   sessionId = int(sessionId)
   deviceNum = int(deviceNum)
   #print("Checkout " + deviceName)
@@ -111,7 +111,7 @@ def checkout():
   return redirect("/admin/event/" + string(sessionId) + string(deviceNum))
 
 @app.route("/event/device/<int:sessionId>/<int:deviceNum>")
-def guestDevice():
+def guestDevice(sessionId,deviceNum):
   sessionId = int(sessionId)
   deviceNum = int(deviceNum)
   #print("GET"+deviceName)
@@ -121,7 +121,7 @@ def guestDevice():
 #Guest
 
 @app.route("/guest/<sessionId>/<deviceNum>")
-def renderGuest():
+def renderGuest(sessionId,deviceNum):
   sessionId = int(sessionId)
   deviceNum = int(deviceNum)
   return render_template("guestpage.html",sessionId = sessionId,deviceNum = deviceNum )
@@ -141,18 +141,18 @@ def guestLoginPOST():
 
 
 @app.route("/guest/edit/<sessionId>/<deviceNum>", methods = ["GET"])
-def guestEditGET():
+def guestEditGET(sessionId,deviceNum):
   sessionId = int(sessionId)
   deviceNum = int(deviceNum)
   return render_template("guestEdit.html",deviceName = deviceName )
 
 @app.route("/guest/edit/<sessionId>/<deviceNum>", methods = ["POST"])
-def guestEditPOST():
+def guestEditPOST(sessionId,deviceNum):
   deviceName = request.form["deviceName"]
   return redirect("/guest/" + string(sessionId) + "/" + string(deviceNum))
 
 @app.route("/guest/comment/<sessionId>/<deviceNum>", methods = ["POST"])
-def guestCommentEdit():
+def guestCommentEdit(sessionId,deviceNum):
   comment = request.form["comment"]
   return redirect("/guest/" + string(sessionId) + '/' + string(deviceNum))
 
