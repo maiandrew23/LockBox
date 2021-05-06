@@ -667,6 +667,9 @@ def menu():
             elif input == '#':#Down
                 menu = 1
 
+def run_flask():
+    app.run(host='0.0.0.0', port=80, debug=True, threaded=True)
+
 if __name__ == "__main__":
     lb = lockbox.Lockbox()
     lb.solenoid.setup()
@@ -678,9 +681,10 @@ if __name__ == "__main__":
     lb.keypad.on()
     lb.display.on()
 
-    x = threading.Thread(target=menu)
-    x.start()
-    
-    app.run(host='0.0.0.0', port=80, debug=True, threaded=True)
+    t1 = threading.Thread(target=menu)
+    t2 = threading.Thread(target=run_flask)
+    t1.start()
+    t2.start()
 
-    x.join()
+    t1.join()
+    t2.join()
