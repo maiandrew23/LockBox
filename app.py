@@ -129,70 +129,66 @@ def adminUnlock():
 def adminLock():
   return
 
-connection = sqlite3.connect("lockbox.db")
-cursor = connection.cursor()
-
-def clear_database():
+def drop_tables(cursor):
     cursor.execute('''DROP TABLE IF EXISTS session''')
     cursor.execute('''DROP TABLE IF EXISTS device''')
     cursor.execute('''DROP TABLE IF EXISTS event''')
     cursor.execute('''DROP TABLE IF EXISTS score''')
     cursor.execute('''DROP TABLE IF EXISTS feedback''')
 
-#clear_database()
+def create_tables(cursor):
+    # Create admin table
+    cursor.execute('''CREATE TABLE IF NOT EXISTS admin (
+                        passcode varchar(255) NOT NULL,
+                        PRIMARY KEY (passcode)
+                    )''')
 
-# Create admin table
-cursor.execute('''CREATE TABLE IF NOT EXISTS admin (
-                    passcode varchar(255) NOT NULL,
-                    PRIMARY KEY (passcode)
-                  )''')
+    # Create session table
+    cursor.execute('''CREATE TABLE IF NOT EXISTS session (
+                        ID integer,
+                        name varchar(255) NOT NULL,
+                        start_date date NOT NULL,
+                        start_time time NOT NULL,
+                        end_date date,
+                        end_time time,
+                        PRIMARY KEY (ID)
+                    )''')
 
-# Create session table
-cursor.execute('''CREATE TABLE IF NOT EXISTS session (
-                    ID integer,
-                    name varchar(255) NOT NULL,
-                    start_date date NOT NULL,
-                    start_time time NOT NULL,
-                    end_date date,
-                    end_time time,
-                    PRIMARY KEY (ID)
-                  )''')
+    # Create device table
+    cursor.execute('''CREATE TABLE IF NOT EXISTS device (
+                        session_id integer,
+                        device_number integer,
+                        name varchar(255) NOT NULL,
+                        passcode varchar(255) NOT NULL,
+                        PRIMARY KEY (device_number),
+                        UNIQUE (session_id,device_number)
+                    )''')
 
-# Create device table
-cursor.execute('''CREATE TABLE IF NOT EXISTS device (
-                    session_id integer,
-                    device_number integer,
-                    name varchar(255) NOT NULL,
-                    passcode varchar(255) NOT NULL,
-                    PRIMARY KEY (device_number),
-                    UNIQUE (session_id,device_number)
-                  )''')
+    # Create event table
+    cursor.execute('''CREATE TABLE IF NOT EXISTS event (
+                        event_id integer,
+                        session_id integer,
+                        device_number integer,
+                        action varchar(255) NOT NULL,
+                        datetime datetime NOT NULL,
+                        PRIMARY KEY (event_id)
+                    )''')
 
-# Create event table
-cursor.execute('''CREATE TABLE IF NOT EXISTS event (
-                    event_id integer,
-                    session_id integer,
-                    device_number integer,
-                    action varchar(255) NOT NULL,
-                    datetime datetime NOT NULL,
-                    PRIMARY KEY (event_id)
-                  )''')
+    # Create score table
+    cursor.execute('''CREATE TABLE IF NOT EXISTS score (
+                        session_id integer,
+                        device_number integer,
+                        points integer NOT NULL,
+                        PRIMARY KEY (session_id, device_number)
+                    )''')
 
-# Create score table
-cursor.execute('''CREATE TABLE IF NOT EXISTS score (
-                    session_id integer,
-                    device_number integer,
-                    points integer NOT NULL,
-                    PRIMARY KEY (session_id, device_number)
-                  )''')
-
-# Create feedback table
-cursor.execute('''CREATE TABLE IF NOT EXISTS feedback (
-                    session_id integer,
-                    device_number integer,
-                    comment varchar(255) NOT NULL,
-                    PRIMARY KEY (session_id, device_number)
-                  )''')
+    # Create feedback table
+    cursor.execute('''CREATE TABLE IF NOT EXISTS feedback (
+                        session_id integer,
+                        device_number integer,
+                        comment varchar(255) NOT NULL,
+                        PRIMARY KEY (session_id, device_number)
+                    )''')
 
 
 def lock_box(lb):
@@ -209,13 +205,14 @@ def unlock_box(lb):
 
 
 
-def create_admin_passcode(passcode):
+def create_admin_passcode(connection, passcode):
+    cursor = connection.cursor()
     cursor.execute('''SELECT * FROM admin WHERE passcode = ?''', (passcode,))
     if cursor.fetchone() == None:
         cursor.execute('''INSERT INTO admin (passcode) VALUES (?)''', (passcode,))
         connection.commit()
 
-def setup_admin_passcode():
+def setup_admin_passcode(connection):
     lb.display.clear()
     lb.display.show_text("Admin Passcode", 1)
     lb.display.show_text("     * Done", 2)
@@ -226,14 +223,18 @@ def setup_admin_passcode():
         passcode = passcode + input
         input = lb.keypad.read_key()
         time.sleep(0.2) # To prevent bounce
-    create_admin_passcode(passcode)
+    create_admin_passcode(connection, passcode)
 
-def create_session(name):
+def create_session(connection, name):
+    cursor = connection.cursor()
     #TODO: fix session name
     cursor.execute('''INSERT INTO session (name, start_date,start_time) VALUES (?,DATE(), TIME())''', (name,))
-    return cursor.lastrowid
+    session_id = cursor.lastrowid
+    cursor.close()
+    return session_id
 
-def create_device(session_id, name):
+def create_device(connection, session_id, name):
+    cursor = connection.cursor()
     passcode = ''.join(random.choice(string.digits) for i in range(4))
     cursor.execute('''INSERT INTO device (session_id,name,passcode) VALUES (?,?,?)''', (session_id,name,str(passcode),))
     device_number = cursor.lastrowid
@@ -241,21 +242,28 @@ def create_device(session_id, name):
     print("Passcode = ", passcode)
     cursor.execute('''INSERT INTO score (session_id, device_number,points)
                         VALUES (?,?,0)''', (session_id,device_number))
+    cursor.close()
     return device_number, passcode
 
-def lock_device(session_id, device_num):
+def lock_device(connection, session_id, device_num):
+    cursor = connection.cursor()
     cursor.execute('''INSERT INTO event (session_id, device_number, action, datetime)
                         VALUES (?,?,'Locked',DATETIME())''', (session_id, device_num,))
 
-def unlock_device(session_id, device_num):
+def unlock_device(connection, session_id, device_num):
+    cursor = connection.cursor()
     cursor.execute('''INSERT INTO event (session_id, device_number, action, datetime)
                         VALUES (?,?,'Unlocked',DATETIME())''', (session_id, device_num,))
+    cursor.close()
 
-def checkout_device(session_id, device_num):
+def checkout_device(connection, session_id, device_num):
+    cursor = connection.cursor()
     cursor.execute('''INSERT INTO event (session_id, device_number, action, datetime)
                         VALUES (?,?,'Checked out',DATETIME())''', (session_id, device_num,))
+    cursor.close()
 
-def update_score(session_id, device_num):
+def update_score(connection, session_id, device_num):
+    cursor = connection.cursor()
     cursor.execute('''SELECT ROUND((JULIANDAY(DATETIME()) - JULIANDAY(t)) * 86400)
                       FROM (SELECT MAX(datetime) as t
                             FROM event
@@ -265,8 +273,10 @@ def update_score(session_id, device_num):
                       WHERE session_id = ? AND device_number = ?''', (points, session_id, device_num,))
     cursor.execute('''SELECT points FROM score WHERE session_id = ? AND device_number = ?''', (session_id, device_num,))
     print("Current points = ", cursor.fetchone()[0])
+    cursor.close()
 
-def finalize_score(session_id, device_num):
+def finalize_score(connection, session_id, device_num):
+    cursor = connection.cursor()
     cursor.execute('''SELECT ROUND((JULIANDAY(DATETIME()) - JULIANDAY(t)) * 86400)
                       FROM (SELECT MAX(datetime) as t
                             FROM event
@@ -276,8 +286,10 @@ def finalize_score(session_id, device_num):
                       WHERE session_id = ? AND device_number = ?''', (points, session_id, device_num,))
     cursor.execute('''SELECT points FROM score WHERE session_id = ? AND device_number = ?''', (session_id, device_num,))
     print("Final points = ", cursor.fetchone()[0])
+    cursor.close()
 
-def check_score(session_id, device_num):
+def check_score(connection, session_id, device_num):
+    cursor = connection.cursor()
     cursor.execute('''SELECT points FROM score WHERE session_id = ? AND device_number = ?''', (session_id, device_num,))
     points = cursor.fetchone()[0]
     cursor.execute('''SELECT ROUND((JULIANDAY(DATETIME()) - JULIANDAY(t)) * 86400)
@@ -285,12 +297,14 @@ def check_score(session_id, device_num):
                             FROM event
                             WHERE session_id = ? AND device_number = ? AND action = \'Locked\')''', (session_id, device_num,))
     additional_points = cursor.fetchone()[0]
+    cursor.close()
     if additional_points:
         points += additional_points
     print("Current points: ", str(int(points)))
     return int(points)
 
-def check_all_scores(session_id):
+def check_all_scores(connection,session_id):
+    cursor = connection.cursor()
     cursor.execute('''SELECT device_number,points FROM score WHERE session_id = ?''', (session_id,))
     result1 = cursor.fetchall()
     all_points = []
@@ -300,42 +314,54 @@ def check_all_scores(session_id):
                                 FROM event
                                 WHERE session_id = ? AND device_number = ? AND action = \'Locked\')''', (session_id, row[0],))
         result2 = cursor.fetchone()
+        cursor.close()
         if result2[0]:
             all_points.append((int(row[0]), int(result2[0])))
         else:
             all_points.append((int(row[0]), 0))
     return all_points
 
-def get_winner(session_id):
+def get_winner(connection, session_id):
+    cursor = connection.cursor()
     #TODO: will return name if needed
     cursor.execute('''SELECT device_number,MAX(points) FROM score WHERE session_id = ?''', (session_id,))
     result = cursor.fetchone()
+    cursor.close()
     print("Result: ", result)
     if result[0]:
         return result
     return None
 
-def validate_admin_passcode(passcode):
+def validate_admin_passcode(connection, passcode):
+    cursor = connection.cursor()
     cursor.execute('''SELECT * FROM admin WHERE passcode = ?''', (passcode,))
     if cursor.fetchone():
+        cursor.close()
         return True
+    cursor.close()
     return False
 
-def validate_device_number(session_id,device_num):
+def validate_device_number(connection, session_id,device_num):
+    cursor = connection.cursor()
     cursor.execute('''SELECT * FROM device WHERE session_id = ? AND device_number = ?''', (session_id,device_num,))
     if cursor.fetchone():
+        cursor.close()
         return True
+    cursor.close()
     return False
 
-def validate_device_passcode(session_id, device_num, passcode):
+def validate_device_passcode(connection, session_id, device_num, passcode):
+    cursor = connection.cursor()
     cursor.execute('''SELECT *
                       FROM device
                       WHERE session_id = ? AND device_number = ? AND passcode = ?''', (session_id,device_num, passcode,))
     if cursor.fetchone():
+        cursor.close()
         return True
+    cursor.close()
     return False
 
-def validate_admin():
+def validate_admin(connection):
     while True:
         lb.display.clear()
         lb.display.show_text("Enter Passcode", 1)
@@ -347,7 +373,7 @@ def validate_admin():
             passcode = passcode + input
             input = lb.keypad.read_key()
             time.sleep(0.2) # To prevent bounce
-        if validate_admin_passcode(passcode):
+        if validate_admin_passcode(connection, passcode):
             return True
         else:
             lb.display.clear()
@@ -361,7 +387,7 @@ def validate_admin():
                 return False
         return False
 
-def validate_device(session_id,device_num_only=False):
+def validate_device(connection, session_id,device_num_only=False):
     while True:
         lb.display.clear()
         lb.display.show_text("Enter Device #", 1)
@@ -373,7 +399,7 @@ def validate_device(session_id,device_num_only=False):
             device_num = device_num + input
             input = lb.keypad.read_key()
             time.sleep(0.2) # To prevent bounce
-        if validate_device_number(session_id,device_num):#Valid Device Number
+        if validate_device_number(connection,session_id,device_num):#Valid Device Number
             if device_num_only:
                 return device_num
             while True:
@@ -387,7 +413,7 @@ def validate_device(session_id,device_num_only=False):
                     passcode = passcode + input
                     input = lb.keypad.read_key()
                     time.sleep(0.2) # To prevent bounce
-                if validate_device_passcode(session_id, device_num, passcode):#Correct passcode
+                if validate_device_passcode(connection,session_id, device_num, passcode):#Correct passcode
                     return device_num
                 else:#Incorrect passcode
                     lb.display.clear()
@@ -411,9 +437,13 @@ def validate_device(session_id,device_num_only=False):
                 return None
 
 def menu():
+    connection = sqlite3.connect("lockbox.db")
+    cursor = connection.cursor()
     cursor.execute('''SELECT * FROM admin''')
     if cursor.fetchone() == None:
-        setup_admin_passcode()
+        setup_admin_passcode(connection)
+    cursor.close()
+
     menu = 0
     session_id = 0
     while(True):
@@ -426,7 +456,7 @@ def menu():
             while input != "*":#Create session
                 input = lb.keypad.read_key()
                 time.sleep(0.2) # To prevent bounce
-            session_id = create_session("Party")
+            session_id = create_session(connection, "Party")
             menu = 1
         #Register New Device
         if menu == 1:
@@ -443,7 +473,7 @@ def menu():
                 time.sleep(0.2) # To prevent bounce
                 if input == '*':#Yes
                     #TODO: Print receipt
-                    device_num, passcode = create_device(session_id, "N/A")
+                    device_num, passcode = create_device(connection,session_id, "N/A")
                     lb.display.clear()
                     lb.display.show_text("Device #: " + str(device_num), 1)
                     lb.display.show_text("Passcode: " + passcode, 2)
@@ -461,7 +491,7 @@ def menu():
             input = lb.keypad.read_key()
             time.sleep(0.2) # To prevent bounce
             if input == '*':#Enter
-                device_num = validate_device(session_id)
+                device_num = validate_device(connection, session_id)
                 if device_num:
                     unlock_box(lb)
                     lb.display.clear()
@@ -472,7 +502,7 @@ def menu():
                     while input != "*":#Lock
                         input = lb.keypad.read_key()
                         time.sleep(0.2) # To prevent bounce
-                    lock_device(session_id, device_num)
+                    lock_device(connection, session_id, device_num)
                     lock_box(lb)
                     lb.display.clear()
                     lb.display.show_text("    Locked!", 1)
@@ -492,11 +522,11 @@ def menu():
             input = lb.keypad.read_key()
             time.sleep(0.2) # To prevent bounce
             if input == '*':#Enter
-                device_num = validate_device(session_id)
+                device_num = validate_device(connection, session_id)
                 if device_num:
                     #Unlock device and update score
-                    unlock_device(session_id, device_num)
-                    update_score(session_id, device_num)
+                    unlock_device(connection, session_id, device_num)
+                    update_score(connection, session_id, device_num)
                     lb.display.clear()
                     lb.display.show_text("   Unlocked!", 1)
                     lb.display.show_text("    * Lock    ", 2)
@@ -516,11 +546,11 @@ def menu():
             input = lb.keypad.read_key()
             time.sleep(0.2) # To prevent bounce
             if input == '*':#Enter
-                device_num = validate_device(session_id)
+                device_num = validate_device(connection, session_id)
                 if device_num:
                     #Checkout device and finalize score
-                    checkout_device(session_id, device_num)
-                    finalize_score(session_id, device_num)
+                    checkout_device(connection, session_id, device_num)
+                    finalize_score(connection, session_id, device_num)
                     #TODO: Print receipt
                     lb.display.clear()
                     lb.display.show_text("Printing Receipt", 1)
@@ -541,9 +571,9 @@ def menu():
             input = lb.keypad.read_key()
             time.sleep(0.2) # To prevent bounce
             if input == '*':#Enter
-                device_num = validate_device(session_id,device_num_only=True)
+                device_num = validate_device(connection, session_id,device_num_only=True)
                 if device_num:
-                    points = check_score(session_id, device_num)
+                    points = check_score(connection, session_id, device_num)
                     lb.display.clear()
                     lb.display.show_text("Points: " + str(points), 1)
                     lb.display.show_text("  * Main Menu", 2)
@@ -562,7 +592,7 @@ def menu():
             input = lb.keypad.read_key()
             time.sleep(0.2) # To prevent bounce
             if input == '*':#Enter
-                if validate_admin():
+                if validate_admin(connection):
                     unlock_box(lb)
                     lb.display.clear()
                     lb.display.show_text("   Unlocked!", 1)
@@ -584,7 +614,7 @@ def menu():
             input = lb.keypad.read_key()
             time.sleep(0.2) # To prevent bounce
             if input == '*':#Enter
-                rows = check_all_scores(session_id)
+                rows = check_all_scores(connection, session_id)
                 row_cycle = cycle(rows)
                 lb.display.clear()
                 lb.display.show_text("  *Next  #Back  ", 2)
@@ -611,9 +641,9 @@ def menu():
             input = lb.keypad.read_key()
             time.sleep(0.2) # To prevent bounce
             if input == '*':#Enter
-                if validate_admin():
+                if validate_admin(connection):
                     #TODO: Print cumulative receipt
-                    row = get_winner(session_id)
+                    row = get_winner(connection, session_id)
                     connection.commit()
                     lb.display.clear()
                     if row:
