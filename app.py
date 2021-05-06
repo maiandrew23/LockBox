@@ -7,12 +7,13 @@ from itertools import cycle
 from flask import Flask, redirect, render_template, request
 
 class Event:
-  def __init__(self, sessionId, eventName, date, time, devices):
+  def __init__(self, sessionId="", eventName="", date="", time="", devices=""):
     self.sessionId = ""
     self.eventName = ""
     self.date = ""
     self.time = ""
     self.devices = ""
+
 class Devices:
   def __init__(self, sessionId, deviceNum, deviceName, actions):
     self.sessionId = ""
@@ -32,6 +33,12 @@ def home():
 def admin():
   print("Admin")
   #Pass list of events to table on page
+  event = Event()
+  event.sessionId = 1
+  event.eventName = "test"
+  event.date = "123"
+  event.time = "4312"
+  events = [event]
   return render_template('admin.html',events = events)
 
 @app.route("/admin/createEvent", methods = ["GET"])
@@ -128,9 +135,9 @@ def guestLoginGET():
 @app.route("/guest/login", methods = ["POST"])
 def guestLoginPOST():
   sessionId = request.form(["sessionId"])
-  device = request.form(["device"])
+  deviceNum = request.form(["deviceNum"])
   passcode = request.form(["passcode"])
-  return redirect("/guest/" + string(sessionId) + '/' + string(deviceNum)")
+  return redirect("/guest/"+string(sessionId) + "/" +string(deviceNum))
 
 
 @app.route("/guest/edit/<sessionId>/<deviceNum>", methods = ["GET"])
@@ -142,12 +149,12 @@ def guestEditGET():
 @app.route("/guest/edit/<sessionId>/<deviceNum>", methods = ["POST"])
 def guestEditPOST():
   deviceName = request.form["deviceName"]
-  return redirect("/guest/" + string(sessionId) + '/' + string(deviceNum)")
+  return redirect("/guest/" + string(sessionId) + "/" + string(deviceNum))
 
 @app.route("/guest/comment/<sessionId>/<deviceNum>", methods = ["POST"])
 def guestCommentEdit():
   comment = request.form["comment"]
-  return redirect("/guest/" + string(sessionId) + '/' + string(deviceNum)")
+  return redirect("/guest/" + string(sessionId) + '/' + string(deviceNum))
 
 
 @app.route("/admin/adminUnlock")
