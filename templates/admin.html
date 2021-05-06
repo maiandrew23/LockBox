@@ -33,7 +33,7 @@
                 <tbody>
                     {% for event in events%}
                     <tr>
-                        <td><a class="text-left" href="/admin/event/{{ event.eventName }}" style="transform: translate(-773px);">{{ event.eventName }}( {{ event.sessionId }})</a><a class="btn btn-primary" role="button" style="transform: translate(225px);margin: 1;" href="/admin/deleteEvent/{{ event.sessionId }}">Delete</a><a class="btn btn-primary active" role="button" style="transform: translate(90px);margin: 1px;" href="/admin/edit/{{ event.sessionId }}">Edit</a>&nbsp;</td>
+                        <td><a class="text-left" href="/admin/event/{{ event.sessionId }}" style="transform: translate(-773px);">{{ event.sessionId }}( {{ event.sessionId }})</a><a class="btn btn-primary" role="button" style="transform: translate(225px);margin: 1;" href="/admin/deleteEvent/{{ event.sessionId }}">Delete</a><a class="btn btn-primary active" role="button" style="transform: translate(90px);margin: 1px;" href="/admin/edit/{{ event.sessionId }}">Edit</a>&nbsp;</td>
                         <td>{{ event.date }}</td>
                         <td>{{ event.time }}</td>
                     </tr>
