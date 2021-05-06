@@ -33,7 +33,7 @@ def createEventPOST():
   eventName = request.form["eventName"]
   date = request.form["date"]
   time = request.form["time"]
-  return reidrect("/admin")
+  return redirect("/admin")
 
 @app.route("/admin/deleteEvent/<int:sessionId>")
 def deleteEvent():
@@ -123,11 +123,13 @@ def guestCommentEdit():
 
 @app.route("/admin/adminUnlock")
 def adminUnlock():
-  return
+  unlock_box(lb)
+  return redirect("/admin")
 
 @app.route("/admin/adminLock")
 def adminLock():
-  return
+  lock_box(lb)
+  return redirect("/admin")
 
 def drop_tables(connection):
     cursor = connection.cursor()
@@ -199,13 +201,12 @@ def create_tables(connection):
 def lock_box(lb):
     lb.solenoid.close()
 
-def lock_safety():
-    time.sleep(10)
-    lb.solenoid.close()
 
 def unlock_box(lb):
     lb.solenoid.open()
-    #lock_safety()    #run this in a thread
+    time.sleep(60)
+    lb.solenoid.close()
+    
 
 
 
@@ -668,7 +669,7 @@ def menu():
                 menu = 1
 
 def run_flask():
-    app.run(host='0.0.0.0', port=80, debug=True, threaded=True)
+    app.run(host='0.0.0.0', port=80, debug= False, threaded=True)
 
 if __name__ == "__main__":
     lb = lockbox.Lockbox()
