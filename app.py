@@ -129,14 +129,18 @@ def adminUnlock():
 def adminLock():
   return
 
-def drop_tables(cursor):
+def drop_tables(connection):
+    cursor = connection.cursor()
     cursor.execute('''DROP TABLE IF EXISTS session''')
     cursor.execute('''DROP TABLE IF EXISTS device''')
     cursor.execute('''DROP TABLE IF EXISTS event''')
     cursor.execute('''DROP TABLE IF EXISTS score''')
     cursor.execute('''DROP TABLE IF EXISTS feedback''')
+    cursor.close()
 
-def create_tables(cursor):
+def create_tables(connection):
+    cursor = connection.cursor()
+
     # Create admin table
     cursor.execute('''CREATE TABLE IF NOT EXISTS admin (
                         passcode varchar(255) NOT NULL,
@@ -189,6 +193,7 @@ def create_tables(cursor):
                         comment varchar(255) NOT NULL,
                         PRIMARY KEY (session_id, device_number)
                     )''')
+    cursor.close()
 
 
 def lock_box(lb):
@@ -438,6 +443,9 @@ def validate_device(connection, session_id,device_num_only=False):
 
 def menu():
     connection = sqlite3.connect("lockbox.db")
+    drop_tables(connection)
+    create_tables(connection)
+
     cursor = connection.cursor()
     cursor.execute('''SELECT * FROM admin''')
     if cursor.fetchone() == None:
