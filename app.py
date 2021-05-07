@@ -77,16 +77,17 @@ def rename(sessionId):
 @app.route("/admin/event/edit/<sessionId>", methods = ["POST"])
 def renamePOST(sessionId):
   #TODO Edit session in database
-  sessionName = request.form(["eventName"])
-
+  eventName = request.form["eventName"]
+  
+  print("editing" +eventName)
   connection = connectDB()
   cursor = connection.cursor()
-  cursor.execute('''UPDATE session SET name = ? WHERE session_id = ? AND device_number = ?''', (eventName, sessionId, deviceNum,))
+  cursor.execute('''UPDATE session SET name = ? WHERE ID = ?''', (eventName, sessionId,))
   cursor.close()
   closeDB(connection)
   return redirect("/admin/event/" + str(sessionId))
 
-@app.route("/admin/deleteDevice/<sessionId>/<deviceNum>")
+@app.route("/admin/event/deleteDevice/<sessionId>/<deviceNum>")
 def deleteDevice(sessionId,deviceNum):
 
   connection = connectDB()
@@ -294,6 +295,10 @@ def lock_box(lb):
 
 def unlock_box(lb):
     lb.solenoid.open()
+    t1 = threading.Thread(target=autolock)
+    t1.start()
+
+def autolock():
     time.sleep(60)
     lb.solenoid.close()
 
