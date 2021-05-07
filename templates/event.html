@@ -17,8 +17,9 @@
     <nav class="navbar navbar-light navbar-expand-lg fixed-top bg-warning text-uppercase" id="mainNav">
         <div class="container"><a class="navbar-brand text-dark js-scroll-trigger" href="/" style="font-size: 30px;">Lockbox</a></div>
     </nav>
-    <header class="text-center text-white bg-primary masthead" style="background: rgb(21,214,121);padding: 53px 0px 10px;height: 210px;"></header>
-    <section id="portfolio" class="portfolio" style="transform: perspective(0px) translate(0px);transform-origin: top;height: 274.2px;padding: 9px 0px;">
+    <header style="background: var(--primary);height: 210.2px;">
+        <h1 style="padding: 117px;color: var(--gray-dark);text-align: center;font-size: 36px;">Event Information</h1>
+    </header>    <section id="portfolio" class="portfolio" style="transform: perspective(0px) translate(0px);transform-origin: top;height: 274.2px;padding: 9px 0px;">
         <h1 style="font-size: 34px;padding: 10px;margin: -8px;height: 75.8px;">{{ eventName }}</h1>
         <div class="table-responsive">
             <table class="table">
@@ -30,11 +31,16 @@
                     </tr>
                 </thead>
                 <tbody>
+                  {% for device in devices %}
                     <tr>
-                        <td><a href="#">{{ device }} ({{ sessionId }})</a></td>
-                        <td>Cell 1</td>
-                        <td><a class="btn btn-primary" role="button" style="margin: 1px;background: var(--indigo);" href="/admin/lockDevice/{{ sessionId }}/{{ deviceNum }}">Lock</a><a class="btn btn-primary" role="button" style="margin: 1px;background: var(--green);" href="/admin/unlockDevice/{{ sessionId }}/{{ deviceNum }}">Unlock</a><a class="btn btn-primary" role="button" style="margin: 1px;background: var(--yellow);" href="/admin/checkout/{{ sessionId }}/{{ deviceNum }}">Checkout</a><a class="btn btn-primary" role="button" style="margin: 1px;background: var(--red);" href="/admin/deleteDevice/{{ sessionId }}/{{ deviceNum }}">Delete</a></td>
+                        <td><a href="/admin/event/{{ device[0] }}/{{ device[1] }}">{{ device[2] }}</a></td>
+                        <td>{{ device[1] }}</td>
+                        <td><a class="btn btn-primary" role="button" style="margin: 1px;background: var(--indigo);" href="/admin/event/lockDevice/{{ device[0] }}/{{ device[1] }}">Lock</a>
+                          <a class="btn btn-primary" role="button" style="margin: 1px;background: var(--green);" href="/admin/event/unlockDevice/{{ device[0] }}/{{ device[1] }}">Unlock</a>
+                          <a class="btn btn-primary" role="button" style="margin: 1px;background: var(--yellow);" href="/admin/event/checkout/{{ device[0] }}/{{ device[1] }}">Checkout</a>
+                          <a class="btn btn-primary" role="button" style="margin: 1px;background: var(--red);" href="/admin/event/deleteDevice/{{ device[0] }}/{{ device[1] }}">Delete</a></td>
                     </tr>
+                  {% endfor %}
                 </tbody>
             </table>
         </div><a class="btn btn-primary" role="button" style="margin: 10px;transform: translate(0px);" href="/admin">Back</a>

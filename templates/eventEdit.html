@@ -14,12 +14,12 @@
 </head>
 
 <body id="page-top">
-    <header class="border-warning" style="background: var(--yellow);height: 81px;margin: 0px;border-width: 3px;border-color: rgb(33, 37, 41);border-top-color: rgb(33,;border-right-color: 37,;border-bottom-color: 41);border-left-color: 37,;">
-        <nav class="navbar navbar-light navbar-expand-lg fixed-top bg-warning text-uppercase" id="mainNav">
-            <div class="container"><a class="navbar-brand text-dark js-scroll-trigger" href="/" style="font-size: 30px;">Lockbox</a></div>
-        </nav>
-    </header>
-    <header style="height: 94px;background: var(--primary);"></header>
+    <nav class="navbar navbar-light navbar-expand-lg fixed-top bg-warning text-uppercase" id="mainNav">
+        <div class="container"><a class="navbar-brand text-dark js-scroll-trigger" href="/" style="font-size: 30px;">Lockbox</a></div>
+    </nav>
+    <header style="background: var(--primary);height: 210.2px;">
+        <h1 style="padding: 117px;color: var(--gray-dark);text-align: center;font-size: 36px;">Event Edit</h1>
+    </header>    <section id="portfolio" class="portfolio" style="transform: perspective(0px) translate(0px);transform-origin: top;height: 274.2px;padding: 9px 0px;">
     <h1 style="font-size: 24;">Editing {{ eventName }}</h1>
     <div class="form-group">
         <form action="/admin/edit/{{ sessionId }}" method="post"><label>Name of Event</label><input class="form-control" type="text" name="eventName"><label>Date of Event</label><input class="form-control" type="text" placeholder="mm/dd/yy" name="date"><label>Time of Event</label><input class="form-control" type="text" name="time"><button class="btn btn-primary" type="submit">Create</button><a class="btn btn-primary" role="button" style="transform: translate(3px);" href="/admin">Cancel</a></form>

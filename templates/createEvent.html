@@ -17,9 +17,11 @@
     <nav class="navbar navbar-light navbar-expand-lg fixed-top bg-warning text-uppercase" id="mainNav">
         <div class="container"><a class="navbar-brand text-dark js-scroll-trigger" href="/" style="font-size: 30px;">Lockbox</a></div>
     </nav>
-    <header style="background: var(--primary);height: 210px;margin: 0px;border-width: 3px;border-color: rgb(33, 37, 41);border-top-color: rgb(33,;border-right-color: 37,;border-bottom-color: 41);border-left-color: 37,;"></header>
+    <header style="background: var(--primary);height: 210.2px;">
+        <h1 style="padding: 117px;color: var(--gray-dark);text-align: center;font-size: 36px;">Create Event</h1>
+    </header>
     <div class="form-group">
-        <h1 style="font-size: 20px;height: 49px;min-height: 0px;">Create Event</h1>
+
         <form action="/admin/createEvent" method="post"><label>Name of Event</label><input class="form-control" type="text" name="eventName" style="width: 400px;"><label>Date of Event</label><input class="form-control" type="text" name="date" style="width: 250px;"><label>Time of Event</label><input class="form-control" type="text" name="time" style="width: 250px;"><button class="btn btn-primary" type="submit">Create</button><a class="btn btn-primary" role="button" style="transform: translate(3px);" href="/admin">Cancel</a></form>
     </div>
     <script src="templates/assets/js/jquery.min.js"></script>

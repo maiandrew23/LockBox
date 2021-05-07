@@ -7,22 +7,6 @@ import threading
 from itertools import cycle
 from flask import Flask, redirect, render_template, request
 
-
-class Event:
-  def __init__(self, sessionId="", eventName="", date="", time="", devices=""):
-    self.sessionId = ""
-    self.eventName = ""
-    self.date = ""
-    self.time = ""
-    self.devices = ""
-
-class Devices:
-  def __init__(self, sessionId, deviceNum, deviceName, actions):
-    self.sessionId = ""
-    self.deviceNum = ""
-    self.deviceName = ""
-    self.actions = []
-
 app = Flask(__name__, static_folder='templates')
 
 @app.route("/")
@@ -30,91 +14,113 @@ def home():
   print("Home page")
   return app.send_static_file('index.html')
 
-#Admin Pages
+#Main Admin Page
 @app.route("/admin")
 def admin():
   print("Admin")
   #Pass list of events to table on page
-  event = Event()
-  event.sessionId = 1
-  event.eventName = "test"
-  event.date = "123"
-  event.time = "4312"
-  events = [event]
+  cursor = connection.cursor()
+  cursor.execute('''SELECT * FROM session ''')
+  events = cursor.fetchall()
+  cursor.close()
   return render_template('admin.html',events = events)
 
+#Sends a form to the user to fill out
 @app.route("/admin/createEvent", methods = ["GET"])
 def createEvent():
-  #Sends a form to the user to fill out
   return app.send_static_file("createEvent.html")
 
+#User inputs from edit form
 @app.route("/admin/createEvent", methods = ["POST"])
 def createEventPOST():
   #Create an event. Sends user to form page where user enters Event name and date
   eventName = request.form["eventName"]
   date = request.form["date"]
   time = request.form["time"]
+  sessionId = create_session(connection, eventName)
   return redirect("/admin")
 
+#Deleting an event
 @app.route("/admin/deleteEvent/<sessionId>")
 def deleteEvent(sessionId):
-  print("deleted" + sessionId)
   sessionId = int(sessionId)
-  #Delete Event name
-  #print("delete " + eventName)
+  cursor = connection.cursor()
+  cursor.execute('''DELETE FROM session WHERE ID = ?''', (sessionId,))
+  cursor.close()
   return redirect("/admin")
 
-#Event Pages
+#Event Page
 @app.route("/admin/event/<sessionId>")
 def displayEvent(sessionId):
-  #print("View event " + eventName)
-  #query eventName
-  #search for eventName and render event.html with event info
-  #Send list of registered devices under events
-  return render_template("event.html", name = "test", sessionId = sessionId, deviceNum = 1)
+  cursor = connection.cursor()
+  cursor.execute('''SELECT * FROM device WHERE session_id = ?''', (sessionId,))
+  devices = cursor.fetchall()
+  cursor.close()
+  return render_template("event.html", devices)
 
 @app.route("/admin/event/edit/<sessionId>", methods = ["GET"])
 def rename(sessionId):
-  #print("Rename " + eventName)
   #Send form for user to enter new name
   return render_template("eventEdit.html",eventName="name",sessionId = sessionId )
 
 @app.route("/admin/event/edit/<sessionId>", methods = ["POST"])
 def renamePOST(sessionId):
-  #print("Rename " + eventName)
+  #TODO Edit session in database
+  sessionName = request.form(["eventName"])
+  cursor.execute('''UPDATE session SET name = ? WHERE session_id = ? AND device_number = ?''', (eventName, sessionId, deviceNum,))
   return redirect("/admin/event/" + str(sessionId))
 
 @app.route("/admin/deleteDevice/<sessionId>/<deviceNum>")
 def deleteDevice(sessionId,deviceNum):
-
+  cursor = connection.cursor()
+  cursor.execute('''DELETE FROM device WHERE session_id = ? AND device_number = ?''', (sessionId,deviceNum,))
+  cursor.close()
   return redirect("/admin")
-
-@app.route("/admin/lockDevice/<sessionId>/<deviceNum>")
+"""
+@app.route("/admin/event/lockDevice/<sessionId>/<deviceNum>")
 def lock(sessionId,deviceNum):
   sessionId = int(sessionId)
   deviceNum = int(deviceNum)
   return redirect("/admin/event/" + str(sessionId))
 
-@app.route("/admin/unlockDevice/<sessionId>/<deviceNum>")
+@app.route("/admin/event/unlockDevice/<sessionId>/<deviceNum>")
 def unlock(sessionId,deviceNum):
-  #Open solenoid, log device
-  #Set saftey timer
+    unlock_device(connection, session_id, device_num)
+    update_score(connection, session_id, device_num)
+  return redirect("/admin/event/" + str(sessionId))
+"""
+
+@app.route("/admin/event/editDevice/<sessionId>/<deviceNum>")
+def editDevice(sessionId,deviceNum):
+    #TODO
   return redirect("/admin/event/" + str(sessionId))
 
-@app.route("/admin/checkout/<sessionId>/<deviceNum>")
+@app.route("/admin/event/checkout/<sessionId>/<deviceNum>")
 def checkout(sessionId,deviceNum):
   sessionId = int(sessionId)
   deviceNum = int(deviceNum)
-
+  checkout_device(connection, sessionId, deviceNum)
   return redirect("/admin/event/" + str(sessionId))
 
 @app.route("/admin/event/device/<int:sessionId>/<int:deviceNum>")
 def guestDevice(sessionId,deviceNum):
   sessionId = int(sessionId)
   deviceNum = int(deviceNum)
-  #print("GET"+deviceName)
-  #query deviceName and get device log info, render in device.html
-  return render_template('deviceInfo.html', deviceNum = deviceNum)
+  cursor = connection.cursor()
+  cursor.execute('''SELECT points FROM score WHERE session_id = ? AND device_number = ?''', (sessionId, deviceNum,))
+  points = cursor.fetchone()[0]
+  cursor.execute('''SELECT action,datetime FROM event WHERE session_id = ? AND device_number = ?''', (sessionId, deviceNum,))
+  actions = cursor.fetchall()
+
+  cursor.execute('''SELECT device_number,comment FROM feedback WHERE session_id = ? and device_number = ?''', (sessionId, deviceNum,))
+  comments_raw = cursor,fetchall()
+  comments = []
+  for commenter in comments_raw:
+      cursor.execute('''SELECT name FROM device where session_id = ? AND device_number = ?''', (sessionId,commenter['device_number'],))
+      deviceName = cursor.fetchone()[0]
+      comments.append((deviceName, commenter['comment']))
+  cursor.close()
+  return render_template('deviceInfo.html',sessionId = sessionId, deviceNum = deviceNum, points = points, actions = actions, comments = comments)
 
 #Guest
 
@@ -122,7 +128,13 @@ def guestDevice(sessionId,deviceNum):
 def renderGuest(sessionId,deviceNum):
   sessionId = int(sessionId)
   deviceNum = int(deviceNum)
-  return render_template("guestpage.html",sessionId = sessionId,deviceNum = deviceNum )
+  cursor = connection.cursor()
+  cursor.execute('''SELECT points FROM score WHERE session_id = ? AND device_number = ?''', (sessionId, deviceNum,))
+  points = cursor.fetchone()[0]
+  cursor.execute('''SELECT action,datetime FROM event WHERE session_id = ? AND device_number = ?''', (sessionId, deviceNum,))
+  actions = cursor.fetchall()
+  cursor.close()
+  return render_template("guestpage.html",sessionId = sessionId,deviceNum = deviceNum,points = points, actions=actions )
 
 @app.route("/guest/login", methods = ["GET"])
 def guestLoginGET():
@@ -135,7 +147,11 @@ def guestLoginPOST():
   sessionId = request.form(["sessionId"])
   deviceNum = request.form(["deviceNum"])
   passcode = request.form(["passcode"])
-  return redirect("/guest/"+str(sessionId) + "/" +str(deviceNum))
+  if validate_device_number(session, sessionId,deviceNum) and validate_device_passcode(session, sessionId, passcode):
+    return redirect("/guest/"+str(sessionId) + "/" +str(deviceNum))
+  else:
+    return redirect("guest/login")
+
 
 
 @app.route("/guest/edit/<sessionId>/<deviceNum>", methods = ["GET"])
@@ -147,11 +163,18 @@ def guestEditGET(sessionId,deviceNum):
 @app.route("/guest/edit/<sessionId>/<deviceNum>", methods = ["POST"])
 def guestEditPOST(sessionId,deviceNum):
   deviceName = request.form["deviceName"]
+  #TODO edit database
   return redirect("/guest/" + str(sessionId) + "/" + str(deviceNum))
 
 @app.route("/guest/comment/<sessionId>/<deviceNum>", methods = ["POST"])
 def guestCommentEdit(sessionId,deviceNum):
   comment = request.form["comment"]
+  cursor = connection.cursor()
+  cursor.execute('''DELETE FROM device WHERE device_number = ?''', (sessionId,deviceNum))
+  cursor.execute('''INSERT INTO feedback (session_id, device_number, comment)''', (sessionId, deviceNum, comment))
+  cursor.close()
+
+
   return redirect("/guest/" + str(sessionId) + '/' + str(deviceNum))
 
 @app.route("/admin/adminUnlock")
@@ -264,10 +287,13 @@ def setup_admin_passcode(connection):
         time.sleep(0.2) # To prevent bounce
     create_admin_passcode(connection, passcode)
 
-def create_session(connection, name):
+def create_session(connection, name, date = "", time = "", flask = False):
     cursor = connection.cursor()
     #TODO: fix session name
-    cursor.execute('''INSERT INTO session (name, start_date,start_time) VALUES (?,DATE(), TIME())''', (name,))
+    if flask:
+        cursor.execute('''INSERT INTO session (name, ?, ?)''', (name,date,time))
+    else:
+        cursor.execute('''INSERT INTO session (name, start_date,start_time) VALUES (?,DATE(), TIME())''', (name,))
     session_id = cursor.lastrowid
     cursor.close()
     return session_id
@@ -702,6 +728,7 @@ def menu():
                 menu = 1
 
 def run_flask():
+    connection = sqlite3.connect("lockbox.db")
     app.run(host='0.0.0.0', port=80, debug= False, threaded=True)
 
 if __name__ == "__main__":
