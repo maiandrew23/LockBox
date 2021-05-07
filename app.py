@@ -19,10 +19,13 @@ def home():
 def admin():
   print("Admin")
   #Pass list of events to table on page
+  connection = sqlite3.connect("lockbox.db")
   cursor = connection.cursor()
   cursor.execute('''SELECT * FROM session ''')
   events = cursor.fetchall()
   cursor.close()
+  connection.commit()
+  connection.close()
   return render_template('admin.html',events = events)
 
 #Sends a form to the user to fill out
@@ -37,25 +40,39 @@ def createEventPOST():
   eventName = request.form["eventName"]
   date = request.form["date"]
   time = request.form["time"]
+
+  connection = sqlite3.connect("lockbox.db")
   sessionId = create_session(connection, eventName)
+  connection.commit()
+  connection.close()
+
   return redirect("/admin")
 
 #Deleting an event
 @app.route("/admin/deleteEvent/<sessionId>")
 def deleteEvent(sessionId):
   sessionId = int(sessionId)
+
+  connection = sqlite3.connect("lockbox.db")
   cursor = connection.cursor()
   cursor.execute('''DELETE FROM session WHERE ID = ?''', (sessionId,))
   cursor.close()
+  connection.commit()
+  connection.close()
+
   return redirect("/admin")
 
 #Event Page
 @app.route("/admin/event/<sessionId>")
 def displayEvent(sessionId):
+
+  connection = sqlite3.connect("lockbox.db")
   cursor = connection.cursor()
   cursor.execute('''SELECT * FROM device WHERE session_id = ?''', (sessionId,))
   devices = cursor.fetchall()
   cursor.close()
+  connection.commit()
+  connection.close()
   return render_template("event.html", devices)
 
 @app.route("/admin/event/edit/<sessionId>", methods = ["GET"])
@@ -67,14 +84,24 @@ def rename(sessionId):
 def renamePOST(sessionId):
   #TODO Edit session in database
   sessionName = request.form(["eventName"])
+
+  connection = sqlite3.connect("lockbox.db")
+  cursor = connection.cursor()
   cursor.execute('''UPDATE session SET name = ? WHERE session_id = ? AND device_number = ?''', (eventName, sessionId, deviceNum,))
+  cursor.close()
+  connection.commit()
+  connection.close()
   return redirect("/admin/event/" + str(sessionId))
 
 @app.route("/admin/deleteDevice/<sessionId>/<deviceNum>")
 def deleteDevice(sessionId,deviceNum):
+
+  connection = sqlite3.connect("lockbox.db")
   cursor = connection.cursor()
   cursor.execute('''DELETE FROM device WHERE session_id = ? AND device_number = ?''', (sessionId,deviceNum,))
   cursor.close()
+  connection.commit()
+  connection.close()
   return redirect("/admin")
 """
 @app.route("/admin/event/lockDevice/<sessionId>/<deviceNum>")
@@ -99,13 +126,19 @@ def editDevice(sessionId,deviceNum):
 def checkout(sessionId,deviceNum):
   sessionId = int(sessionId)
   deviceNum = int(deviceNum)
+  connection = sqlite3.connect("lockbox.db")
   checkout_device(connection, sessionId, deviceNum)
+  connection.commit()
+  connection.close()
+
   return redirect("/admin/event/" + str(sessionId))
 
 @app.route("/admin/event/device/<int:sessionId>/<int:deviceNum>")
 def guestDevice(sessionId,deviceNum):
   sessionId = int(sessionId)
   deviceNum = int(deviceNum)
+
+  connection = sqlite3.connect("lockbox.db")
   cursor = connection.cursor()
   cursor.execute('''SELECT points FROM score WHERE session_id = ? AND device_number = ?''', (sessionId, deviceNum,))
   points = cursor.fetchone()[0]
@@ -120,6 +153,8 @@ def guestDevice(sessionId,deviceNum):
       deviceName = cursor.fetchone()[0]
       comments.append((deviceName, commenter['comment']))
   cursor.close()
+  connection.commit()
+  connection.close()
   return render_template('deviceInfo.html',sessionId = sessionId, deviceNum = deviceNum, points = points, actions = actions, comments = comments)
 
 #Guest
@@ -128,12 +163,16 @@ def guestDevice(sessionId,deviceNum):
 def renderGuest(sessionId,deviceNum):
   sessionId = int(sessionId)
   deviceNum = int(deviceNum)
+
+  connection = sqlite3.connect("lockbox.db")
   cursor = connection.cursor()
   cursor.execute('''SELECT points FROM score WHERE session_id = ? AND device_number = ?''', (sessionId, deviceNum,))
   points = cursor.fetchone()[0]
   cursor.execute('''SELECT action,datetime FROM event WHERE session_id = ? AND device_number = ?''', (sessionId, deviceNum,))
   actions = cursor.fetchall()
   cursor.close()
+  connection.commit()
+  connection.close()
   return render_template("guestpage.html",sessionId = sessionId,deviceNum = deviceNum,points = points, actions=actions )
 
 @app.route("/guest/login", methods = ["GET"])
@@ -147,9 +186,15 @@ def guestLoginPOST():
   sessionId = request.form(["sessionId"])
   deviceNum = request.form(["deviceNum"])
   passcode = request.form(["passcode"])
+
+  connection = sqlite3.connect("lockbox.db")
   if validate_device_number(session, sessionId,deviceNum) and validate_device_passcode(session, sessionId, passcode):
+    connection.commit()
+    connection.close()
     return redirect("/guest/"+str(sessionId) + "/" +str(deviceNum))
   else:
+    connection.commit()
+    connection.close()
     return redirect("guest/login")
 
 
@@ -169,11 +214,14 @@ def guestEditPOST(sessionId,deviceNum):
 @app.route("/guest/comment/<sessionId>/<deviceNum>", methods = ["POST"])
 def guestCommentEdit(sessionId,deviceNum):
   comment = request.form["comment"]
+
+  connection = sqlite3.connect("lockbox.db")
   cursor = connection.cursor()
   cursor.execute('''DELETE FROM device WHERE device_number = ?''', (sessionId,deviceNum))
   cursor.execute('''INSERT INTO feedback (session_id, device_number, comment)''', (sessionId, deviceNum, comment))
   cursor.close()
-
+  connection.commit()
+  connection.close()
 
   return redirect("/guest/" + str(sessionId) + '/' + str(deviceNum))
 
