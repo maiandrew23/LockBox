@@ -40,7 +40,7 @@ def createEventPOST():
   date = request.form["date"]
   time = request.form["time"]
 
-  sessionId = create_session(eventName)
+  sessionId = create_session(eventName,date,time,True)
 
   return redirect("/admin")
 
@@ -67,7 +67,7 @@ def displayEvent(sessionId):
   devices = cursor.fetchall()
   cursor.close()
   closeDB(connection)
-  return render_template("event.html", devices)
+  return render_template("event.html", devices=devices)
 
 @app.route("/admin/event/edit/<sessionId>", methods = ["GET"])
 def rename(sessionId):
@@ -123,7 +123,7 @@ def checkout(sessionId,deviceNum):
 
   return redirect("/admin/event/" + str(sessionId))
 
-@app.route("/admin/event/device/<int:sessionId>/<int:deviceNum>")
+@app.route("/admin/event/devices/<int:sessionId>/<int:deviceNum>")
 def guestDevice(sessionId,deviceNum):
   sessionId = int(sessionId)
   deviceNum = int(deviceNum)
@@ -136,7 +136,7 @@ def guestDevice(sessionId,deviceNum):
   actions = cursor.fetchall()
 
   cursor.execute('''SELECT device_number,comment FROM feedback WHERE session_id = ? and device_number = ?''', (sessionId, deviceNum,))
-  comments_raw = cursor,fetchall()
+  comments_raw = cursor.fetchall()
   comments = []
   for commenter in comments_raw:
       cursor.execute('''SELECT name FROM device where session_id = ? AND device_number = ?''', (sessionId,commenter['device_number'],))
@@ -327,7 +327,7 @@ def create_session(name, date = "", time = "", flask = False):
     cursor = connection.cursor()
     #TODO: fix session name
     if flask:
-        cursor.execute('''INSERT INTO session (name, ?, ?)''', (name,date,time))
+        cursor.execute('''INSERT INTO session (name, start_date, start_time) VALUES(?,?,?)''', (name,date,time))
     else:
         cursor.execute('''INSERT INTO session (name, start_date,start_time) VALUES (?,DATE(), TIME())''', (name,))
     session_id = cursor.lastrowid
