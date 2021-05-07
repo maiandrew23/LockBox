@@ -47,8 +47,8 @@
                 <tbody>
                 {% for action in actions%}
                     <tr>
-                      <td> {{ action['action'] }}</td>
-                      <td> {{ action['datetime'] }}</td>
+                      <td> {{ action[0] }}</td>
+                      <td> {{ action[1] }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>
