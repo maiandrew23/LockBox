@@ -179,12 +179,12 @@ def renderGuest(sessionId,deviceNum):
 def guestLoginGET():
   #print("guest")
   #Pass list of events to table on page
-  return app.send_static_file("guestlogin.html")
+  return app.send_static_file("guestLogin.html")
 
 @app.route("/guest/login", methods = ["POST"])
 def guestLoginPOST():
-  sessionId = request.form(["sessionId"])
-  deviceNum = request.form(["deviceNum"])
+  sessionId = int(request.form(["sessionId"]))
+  deviceNum = int(request.form(["deviceNum"]))
   passcode = request.form(["passcode"])
 
   connection = sqlite3.connect("lockbox.db")
@@ -776,7 +776,6 @@ def menu():
                 menu = 1
 
 def run_flask():
-    connection = sqlite3.connect("lockbox.db")
     app.run(host='0.0.0.0', port=80, debug= False, threaded=True)
 
 if __name__ == "__main__":

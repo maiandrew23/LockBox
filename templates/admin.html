@@ -34,9 +34,9 @@
                     {% for event in events%}
                     <tr>
                         <!-- event[0]=sessionId, event[1]=eventName, event[2]=date, event[3]=time -->
-                        <td><a class="text-left" href="/admin/event/{{ event['ID'] }}" style="transform: translate(-773px);">{{ event['name'] }}(Session Id {{ event['ID']] }})</a>
+                        <td><a class="text-left" href="/admin/event/{{ event['ID'] }}" style="transform: translate(-773px);">{{ event['name'] }}(Session Id {{ event['ID'] }})</a>
                           <a class="btn btn-primary" role="button" style="transform: translate(225px);margin: 1;" href="/admin/deleteEvent/{{ event['ID'] }}">Delete</a>
-                          <a class="btn btn-primary active" role="button" style="transform: translate(90px);margin: 1px;" href="/admin/event/edit/{{ event['ID']] }}">Edit</a>&nbsp;</td>
+                          <a class="btn btn-primary active" role="button" style="transform: translate(90px);margin: 1px;" href="/admin/event/edit/{{ event['ID'] }}">Edit</a>&nbsp;</td>
                         <td>{{ event['start_date'] }}</td>
                         <td>{{ event['start_time'] }}</td>
                     </tr>
