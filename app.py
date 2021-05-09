@@ -7,12 +7,12 @@ import threading
 from itertools import cycle
 from flask import Flask, redirect, render_template, request
 
-app = Flask(__name__, static_folder='templates')
+app = Flask(__name__,template_folder='templates', static_folder='static')
 
 @app.route("/")
 def home():
   print("Home page")
-  return app.send_static_file('index.html')
+  return render_template('index.html')
 
 #Main Admin Page
 @app.route("/admin")
