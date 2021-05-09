@@ -159,7 +159,7 @@ def renderGuest(sessionId,deviceNum):
   actions = cursor.fetchall()
   cursor.close()
   closeDB(connection)
-  return render_template("guestpage.html",sessionId = sessionId,deviceNum = deviceNum,points = points, actions=actions )
+  return render_template("guestPage.html",sessionId = sessionId,deviceNum = deviceNum,points = points, actions=actions )
 
 @app.route("/guest/login", methods = ["GET"])
 def guestLoginGET():
@@ -169,12 +169,12 @@ def guestLoginGET():
 
 @app.route("/guest/login", methods = ["POST"])
 def guestLoginPOST():
-  sessionId = int(request.form(["sessionId"]))
-  deviceNum = int(request.form(["deviceNum"]))
-  passcode = request.form(["passcode"])
+  sessionId = int(request.form["sessionId"])
+  deviceNum = int(request.form["deviceNum"])
+  passcode = request.form["passcode"]
 
   connection = connectDB()
-  if validate_device_number(session, sessionId,deviceNum) and validate_device_passcode(session, sessionId, passcode):
+  if validate_device_number(sessionId,deviceNum) and validate_device_passcode(sessionId, deviceNum, passcode):
     closeDB(connection)
     return redirect("/guest/"+str(sessionId) + "/" +str(deviceNum))
   else:
@@ -187,12 +187,20 @@ def guestLoginPOST():
 def guestEditGET(sessionId,deviceNum):
   sessionId = int(sessionId)
   deviceNum = int(deviceNum)
-  return render_template("guestEdit.html",deviceName = deviceName )
+  return render_template("guestEdit.html", sessionId = sessionId, deviceNum = deviceNum)
 
 @app.route("/guest/edit/<sessionId>/<deviceNum>", methods = ["POST"])
 def guestEditPOST(sessionId,deviceNum):
   deviceName = request.form["deviceName"]
   #TODO edit database
+  sessionId = int(sessionId)
+  deviceNum = int(deviceNum)
+
+  connection = connectDB()
+  cursor = connection.cursor()
+  cursor.execute('''UPDATE device set name = ? WHERE session_id = ?''', (deviceName,sessionId,))
+  cursor.close()
+  closeDB(connection)
   return redirect("/guest/" + str(sessionId) + "/" + str(deviceNum))
 
 @app.route("/guest/comment/<sessionId>/<deviceNum>", methods = ["POST"])
@@ -201,8 +209,8 @@ def guestCommentEdit(sessionId,deviceNum):
 
   connection = connectDB()
   cursor = connection.cursor()
-  cursor.execute('''DELETE FROM device WHERE device_number = ?''', (sessionId,deviceNum))
-  cursor.execute('''INSERT INTO feedback (session_id, device_number, comment)''', (sessionId, deviceNum, comment))
+  cursor.execute('''DELETE FROM device WHERE device_number = ?''', (sessionId,deviceNum,))
+  cursor.execute('''INSERT INTO feedback (session_id, device_number, comment)''', (sessionId, deviceNum, comment,))
   cursor.close()
   connection.commit()
   connection.close()
