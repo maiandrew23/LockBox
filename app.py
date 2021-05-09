@@ -65,9 +65,18 @@ def displayEvent(sessionId):
   cursor = connection.cursor()
   cursor.execute('''SELECT * FROM device WHERE session_id = ?''', (sessionId,))
   devices = cursor.fetchall()
+
+  cursor.execute('''SELECT * FROM feedback WHERE session_id = ? ''', (sessionId,))
+  comments_raw = cursor.fetchall()
+  comments = []
+  for commenter in comments_raw:
+    cursor.execute('''SELECT name FROM device where session_id = ? AND device_number = ?''', (sessionId,commenter['device_number'],))
+    deviceName = cursor.fetchone()[0]
+    comments.append((deviceName, commenter['comment']))
+
   cursor.close()
   closeDB(connection)
-  return render_template("event.html", devices=devices)
+  return render_template("event.html", devices=devices, comments=comments)
 
 @app.route("/admin/event/edit/<sessionId>", methods = ["GET"])
 def rename(sessionId):
@@ -78,7 +87,7 @@ def rename(sessionId):
 def renamePOST(sessionId):
   #TODO Edit session in database
   eventName = request.form["eventName"]
-  
+
   print("editing" +eventName)
   connection = connectDB()
   cursor = connection.cursor()
@@ -96,19 +105,6 @@ def deleteDevice(sessionId,deviceNum):
   cursor.close()
   closeDB(connection)
   return redirect("/admin")
-"""
-@app.route("/admin/event/lockDevice/<sessionId>/<deviceNum>")
-def lock(sessionId,deviceNum):
-  sessionId = int(sessionId)
-  deviceNum = int(deviceNum)
-  return redirect("/admin/event/" + str(sessionId))
-
-@app.route("/admin/event/unlockDevice/<sessionId>/<deviceNum>")
-def unlock(sessionId,deviceNum):
-    unlock_device(connection, session_id, device_num)
-    update_score(connection, session_id, device_num)
-  return redirect("/admin/event/" + str(sessionId))
-"""
 
 @app.route("/admin/event/editDevice/<sessionId>/<deviceNum>")
 def editDevice(sessionId,deviceNum):
@@ -137,15 +133,13 @@ def guestDevice(sessionId,deviceNum):
   actions = cursor.fetchall()
 
   cursor.execute('''SELECT device_number,comment FROM feedback WHERE session_id = ? and device_number = ?''', (sessionId, deviceNum,))
-  comments_raw = cursor.fetchall()
-  comments = []
-  for commenter in comments_raw:
-      cursor.execute('''SELECT name FROM device where session_id = ? AND device_number = ?''', (sessionId,commenter['device_number'],))
-      deviceName = cursor.fetchone()[0]
-      comments.append((deviceName, commenter['comment']))
+  comment = cursor.fetchone()[0]
+
+  cursor.execute('''SELECT passcode FROM device where session_id = ? AND device_number = ?''', (sessionId,deviceNum))
+  passcode = cursor.fetchone()[0]
   cursor.close()
   closeDB(connection)
-  return render_template('deviceInfo.html',sessionId = sessionId, deviceNum = deviceNum, points = points, actions = actions, comments = comments)
+  return render_template('deviceInfo.html',sessionId = sessionId, deviceNum = deviceNum, points = points, actions = actions, comment = comment, passcode = passcode)
 
 #Guest
 
@@ -182,7 +176,7 @@ def guestLoginPOST():
     return redirect("/guest/"+str(sessionId) + "/" +str(deviceNum))
   else:
     closeDB(connection)
-    return redirect("guest/login")
+    return redirect("/guest/login")
 
 
 

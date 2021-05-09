@@ -22,7 +22,16 @@
     </header>    <section id="portfolio" class="portfolio" style="transform: perspective(0px) translate(0px);transform-origin: top;height: 274.2px;padding: 9px 0px;">
     <h1 style="font-size: 24;">Editing {{ eventName }}</h1>
     <div class="form-group">
-        <form action="/admin/event/edit/{{ sessionId }}" method="post"><label>Name of Event</label><input class="form-control" type="text" name="eventName"><label>Date of Event</label><input class="form-control" type="text" placeholder="YYYY-MM-DD" name="date"><label>Time of Event</label><input class="form-control" placeholder="HH:MM:SS" type="text" name="time"><button class="btn btn-primary" type="submit">Create</button><a class="btn btn-primary" role="button" style="transform: translate(3px);" href="/admin">Cancel</a></form>
+        <form action="/admin/event/edit/{{ sessionId }}" method="post">
+          <label>Name of Event</label>
+          <input class="form-control" type="text" name="eventName" style="width: 400px;">
+          <label>Date of Event</label>
+          <input class="form-control" type="text" placeholder="YYYY-MM-DD" name="date" style="width: 400px;">
+          <label>Time of Event</label>
+          <input class="form-control" placeholder="HH:MM:SS" type="text" name="time" style="width: 400px;">
+          <button class="btn btn-primary" type="submit">Create</button>
+          <a class="btn btn-primary" role="button" style="transform: translate(3px);" href="/admin">Cancel</a>
+        </form>
     </div>
 </body>
 

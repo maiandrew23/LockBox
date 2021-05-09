@@ -24,7 +24,11 @@
     <h1 style="font-size: 24px;">Device # {{ deviceNum }}</h1>
     <h1 style="font-size: 30px;">Current Name: {{ deviceName }}</h1>
     <div class="form-group">
-        <form action="/guest/edit/{{ sessionId }}/{{ deviceNum }}" method="post"><label>Update Name</label><input class="form-control" type="text" name="deviceName"><button class="btn btn-primary" type="submit">Update</button><a class="btn btn-primary" role="button" style="transform: translate(3px);" href="/guest/{{sessionId}}/{{deviceNum}}">Cancel</a></form>
+        <form action="/guest/edit/{{ sessionId }}/{{ deviceNum }}" method="post"><label>Update Name</label>
+          <input class="form-control" type="text" name="deviceName" style="width: 400px;">
+          <button class="btn btn-primary" type="submit">Update</button>
+          <a class="btn btn-primary" role="button" style="transform: translate(3px);" href="/guest/{{sessionId}}/{{deviceNum}}">Cancel</a>
+        </form>
     </div>
 </body>
 
