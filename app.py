@@ -133,8 +133,11 @@ def guestDevice(sessionId,deviceNum):
   actions = cursor.fetchall()
 
   cursor.execute('''SELECT device_number,comment FROM feedback WHERE session_id = ? and device_number = ?''', (sessionId, deviceNum,))
-  comment = cursor.fetchone()[0]
-
+  comment = cursor.fetchone()
+  if comment:
+    comment = comment[0]
+  else:
+    comment  = ""
   cursor.execute('''SELECT passcode FROM device where session_id = ? AND device_number = ?''', (sessionId,deviceNum))
   passcode = cursor.fetchone()[0]
   cursor.close()
