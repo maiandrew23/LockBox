@@ -299,7 +299,8 @@ def guestCommentEdit(sessionId,deviceNum):
 
   connection = connectDB()
   cursor = connection.cursor()
-  cursor.execute('''INSERT OR REPLACE INTO feedback (session_id, device_number, comment)''', (sessionId, deviceNum, comment,))
+  cursor.execute('''INSERT OR REPLACE INTO feedback (session_id, device_number, comment)
+                    VALUES (?, ?, ?)''', (sessionId, deviceNum, comment,))
   cursor.close()
   connection.commit()
   connection.close()
