@@ -514,7 +514,7 @@ def finalize_score(session_id, device_num):
     cursor.execute('''SELECT ROUND((JULIANDAY(DATETIME()) - JULIANDAY(t)) * 86400)
                       FROM (SELECT MAX(datetime) as t
                             FROM event
-                            WHERE session_id = ? AND device_number = ? AND action = \'Locked\' OR action = \'Checked out\')''', (session_id, device_num,))
+                            WHERE session_id = ? AND device_number = ? AND action = \'Locked\'''', (session_id, device_num,))
     points = cursor.fetchone()[0]
     if points == None:
         points = 0
@@ -585,7 +585,6 @@ def get_winner(session_id):
     result = cursor.fetchone()
     cursor.close()
     closeDB(connection)
-    print("Result: ", result)
     if result[0]:
         return result
     return None
