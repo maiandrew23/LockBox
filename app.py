@@ -167,18 +167,18 @@ def guestLogin():
   #Pass list of events to table on page
   return app.send_static_file("guestLogin.html")
 
-@app.route("/guest/login", methods = ["POST"])
+@app.route("/guest/loginAuth", methods = ["POST"])
 def guestLoginAuth():
   sessionId = int(request.form["sessionId"])
   deviceNum = int(request.form["deviceNum"])
   passcode = request.form["passcode"]
 
   if not validate_device_number(sessionId,deviceNum):
-    error = "Unknown Device Number"
-    app.send_static_file("guestLogin.html", error=error)
+    #error = "Unknown Device Number"
+    app.send_static_file("guestLogin.html")
   if  not validate_device_passcode(sessionId, deviceNum, passcode):
-    error = "Incorrect Passcode"
-    app.send_static_file
+    #error = "Incorrect Passcode"
+    app.send_static_file("guestLogin.html")
     return redirect("/guest/"+str(sessionId) + "/" +str(deviceNum))
     
 
