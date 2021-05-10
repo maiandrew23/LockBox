@@ -106,8 +106,24 @@ def displayEvent(sessionId):
       return redirect('/admin/login')
   connection = connectDB()
   cursor = connection.cursor()
-  cursor.execute('''SELECT * FROM device WHERE session_id = ?''', (sessionId,))
+  cursor.execute('''SELECT session_id AS s,device_number AS d,name,IFF((SELECT action, MAX(datetime)
+                                                                        FROM event
+                                                                        WHERE session_id = s AND device_number = d) != 'Locked'
+                                                                        , 0
+                                                                        , SELECT ROUND((JULIANDAY(DATETIME()) - JULIANDAY(t)) * 86400)
+                                                                          FROM (SELECT MAX(datetime) as t
+                                                                                FROM event
+                                                                                WHERE session_id = s AND device_number = d AND action = \'Locked\'))
+                                                                    points
+                                                                                ''', (sessionId,))
   devices = cursor.fetchall()
+
+  #===========
+  '''SELECT ROUND((JULIANDAY(DATETIME()) - JULIANDAY(t)) * 86400)
+                      FROM (SELECT MAX(datetime) as t
+                            FROM event
+                            WHERE session_id = ? AND device_number = ? AND action = \'Locked\')'''
+  #=========
 
   cursor.execute('''SELECT * FROM feedback WHERE session_id = ? ''', (sessionId,))
   comments_raw = cursor.fetchall()
@@ -243,17 +259,20 @@ def renderGuest(sessionId,deviceNum):
     deviceNum = int(session['deviceNum'])
   except:
       return redirect('/guest/login')
-      
+
   points = str(check_score(sessionId, deviceNum))
 
   connection = connectDB()
   cursor = connection.cursor()
   cursor.execute('''SELECT action,datetime FROM event WHERE session_id = ? AND device_number = ?''', (sessionId, deviceNum,))
   actions = cursor.fetchall()
+
+  cursor.execute('SELECT name FROM device WHERE session_id = ? AND device_number = ?', (sessionId, deviceNum))
+  deviceName = cursor.fetchone()[0]
   cursor.close()
   closeDB(connection)
 
-  return render_template("guestPage.html",sessionId = sessionId,deviceNum = deviceNum,points = points, actions=actions )
+  return render_template("guestPage.html",sessionId = sessionId,deviceNum = deviceNum,points = points, actions=actions, deviceName=deviceName)
 
 
 @app.route("/guest/edit/<sessionId>/<deviceNum>", methods = ["GET"])
@@ -502,7 +521,7 @@ def finalize_score(session_id, device_num):
 def check_score(session_id, device_num):
     connection = connectDB()
     cursor = connection.cursor()
-    cursor.execute('''SELECT action FROM event WHERE session_id = ? AND device_number = ?''',(session_id, device_num,))
+    cursor.execute('''SELECT action FROM event WHERE session_id = ? AND device_number = ? ORDER BY datetime ASC''',(session_id, device_num,))
     data = cursor.fetchall()
     if len(data) == 0:
         cursor.close()

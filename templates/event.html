@@ -27,6 +27,7 @@
                     <tr>
                         <th style="transform-origin: center;height: 40.6px;width: 213.8px;">Device Name</th>
                         <th style="width: 203px;">Device Number</th>
+                        <th style="width: 203px;">Points</th>
                         <th>Device Controls</th>
                     </tr>
                 </thead>
@@ -35,6 +36,7 @@
                     <tr>
                         <td><a href="/admin/event/devices/{{ device[0] }}/{{ device[1] }}">{{ device[2] }}</a></td>
                         <td>{{ device[1] }}</td>
+                        <td>{{ device[3] }}</td>
                         <td>
                           <a class="btn btn-primary" role="button" style="margin: 1px;background: var(--yellow);" href="/admin/event/checkout/{{ device[0] }}/{{ device[1] }}">Checkout</a>
                           <a class="btn btn-primary" role="button" style="margin: 1px;background: var(--red);" href="/admin/event/deleteDevice/{{ device[0] }}/{{ device[1] }}">Delete</a>
