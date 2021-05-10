@@ -230,7 +230,7 @@ def guestLoginAuth():
       return render_template("guestLogin.html", error=error)
   #else:
   print("Successful Guest Login")
-  session['sesionId'] = str(sessionId)
+  session['sessionId'] = str(sessionId)
   session['deviceNum'] = str(deviceNum)
   return redirect("/guest/"+str(sessionId) + "/" +str(deviceNum))
 
@@ -239,13 +239,11 @@ def renderGuest(sessionId,deviceNum):
   sessionId = 0
   deviceNum = 0
   try:
-    print("hi1")
     sessionId = int(session['sessionId'])
     deviceNum = int(session['deviceNum'])
   except:
       return redirect('/guest/login')
-
-  print("hi2")
+      
   points = str(check_score(sessionId, deviceNum))
 
   connection = connectDB()
