@@ -787,7 +787,7 @@ def menu():
                 device_num = validate_device(session_id)
                 if device_num:
                     lastAction = get_last_action(session_id, device_num)
-                    if lastAction = 'Locked':
+                    if lastAction == 'Locked':
                         lb.display.clear()
                         lb.display.show_text("Already Locked", 1)
                         lb.display.show_text("    * Main Menu    ", 2)
@@ -797,7 +797,7 @@ def menu():
                             input = lb.keypad.read_key()
                             time.sleep(0.2) # To prevent bounce
                         menu = 1
-                    elif lastAction = 'Checked out':
+                    elif lastAction == 'Checked out':
                         lb.display.clear()
                         lb.display.show_text("  Checked Out   ", 1)
                         lb.display.show_text("    * Main Menu    ", 2)
@@ -850,7 +850,7 @@ def menu():
                             time.sleep(0.2) # To prevent bounce
                         menu = 1
 
-                    elif lastAction = 'Checked out':
+                    elif lastAction == 'Checked out':
                         lb.display.clear()
                         lb.display.show_text("  Checked Out   ", 1)
                         lb.display.show_text("    * Main Menu    ", 2)
@@ -885,7 +885,7 @@ def menu():
             if input == '*':#Enter
                 device_num = validate_device(session_id)
                 if device_num:
-                    if lastAction = 'Checked out':
+                    if lastAction == 'Checked out':
                         lb.display.clear()
                         lb.display.show_text("  Checked Out   ", 1)
                         lb.display.show_text("    * Main Menu    ", 2)
