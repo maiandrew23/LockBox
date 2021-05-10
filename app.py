@@ -194,9 +194,9 @@ def guestDevice(sessionId,deviceNum):
   deviceNum = int(deviceNum)
 
   points = str(check_score(sessionId, deviceNum))
-  
+
   connection = connectDB()
-  cursor = connection.cursor()  
+  cursor = connection.cursor()
   cursor.execute('''SELECT action,datetime FROM event WHERE session_id = ? AND device_number = ?''', (sessionId, deviceNum,))
   actions = cursor.fetchall()
 
@@ -569,6 +569,14 @@ def get_winner(session_id):
         return result
     return None
 
+def get_last_action(session_id, device_number):
+    connection = connectDB()
+    cursor = connection.Cursor()
+    cursor.execute(''' SELECT action, MAX(datetime) FROM events WHERE session_id = ? AND device_number = ? ''', (session_id,device_number,))
+    lastAction = cursor.fetchone()[0]
+    closeDB(connection)
+    return lastAction
+
 def validate_admin_passcode(passcode):
     connection = connectDB()
     cursor = connection.cursor()
@@ -778,25 +786,47 @@ def menu():
             if input == '*':#Enter
                 device_num = validate_device(session_id)
                 if device_num:
-                    unlock_box(lb)
-                    lb.display.clear()
-                    lb.display.show_text(" Insert Device", 1)
-                    lb.display.show_text("    * Lock    ", 2)
-                    input = lb.keypad.read_key()
-                    time.sleep(0.2) # To prevent bounce
-                    while input != "*":#Lock
+                    lastAction = get_last_action(session_id, device_num)
+                    if lastAction = 'Locked':
+                        lb.display.clear()
+                        lb.display.show_text("Already Locked", 1)
+                        lb.display.show_text("    * Main Menu    ", 2)
                         input = lb.keypad.read_key()
                         time.sleep(0.2) # To prevent bounce
-                    lock_device(session_id, device_num)
-                    lock_box(lb)
-                    lb.display.clear()
-                    lb.display.show_text("    Locked!", 1)
-                    lb.display.show_text("  * Main Menu", 2)
-                    input = ""
-                    while input != "*":#Back to Main Menu
+                        while input != "*":#Lock
+                            input = lb.keypad.read_key()
+                            time.sleep(0.2) # To prevent bounce
+                        menu = 1
+                    elif lastAction = 'Checked out':
+                        lb.display.clear()
+                        lb.display.show_text("  Checked Out   ", 1)
+                        lb.display.show_text("    * Main Menu    ", 2)
                         input = lb.keypad.read_key()
                         time.sleep(0.2) # To prevent bounce
-                    menu = 1
+                        while input != "*":#Lock
+                            input = lb.keypad.read_key()
+                            time.sleep(0.2) # To prevent bounce
+                        menu = 1
+                    else:
+                        unlock_box(lb)
+                        lb.display.clear()
+                        lb.display.show_text(" Insert Device", 1)
+                        lb.display.show_text("    * Lock    ", 2)
+                        input = lb.keypad.read_key()
+                        time.sleep(0.2) # To prevent bounce
+                        while input != "*":#Lock
+                            input = lb.keypad.read_key()
+                            time.sleep(0.2) # To prevent bounce
+                        lock_device(session_id, device_num)
+                        lock_box(lb)
+                        lb.display.clear()
+                        lb.display.show_text("    Locked!", 1)
+                        lb.display.show_text("  * Main Menu", 2)
+                        input = ""
+                        while input != "*":#Back to Main Menu
+                            input = lb.keypad.read_key()
+                            time.sleep(0.2) # To prevent bounce
+                        menu = 1
             elif input == '#':#Down
                 menu = 3
         #Take Out Device
@@ -809,18 +839,40 @@ def menu():
             if input == '*':#Enter
                 device_num = validate_device(session_id)
                 if device_num:
-                    #Unlock device and update score
-                    unlock_device(session_id, device_num)
-                    update_score(session_id, device_num)
-                    lb.display.clear()
-                    lb.display.show_text("   Unlocked!", 1)
-                    lb.display.show_text("    * Lock    ", 2)
-                    input = ""
-                    while input != "*":#Lock
+                    lastAction = get_last_action(session_id,device_num)
+                    if lastAction == 'Unlocked':
+                        lb.display.clear()
+                        lb.display.show_text("Already Unlocked", 1)
+                        lb.display.show_text("  * Main Menu", 2)
+                        input = ""
+                        while input != "*":#Back to Main Menu
+                            input = lb.keypad.read_key()
+                            time.sleep(0.2) # To prevent bounce
+                        menu = 1
+
+                    elif lastAction = 'Checked out':
+                        lb.display.clear()
+                        lb.display.show_text("  Checked Out   ", 1)
+                        lb.display.show_text("    * Main Menu    ", 2)
                         input = lb.keypad.read_key()
                         time.sleep(0.2) # To prevent bounce
-                    lock_box(lb)
-                    menu = 1
+                        while input != "*":#Lock
+                            input = lb.keypad.read_key()
+                            time.sleep(0.2) # To prevent bounce
+                        menu = 1
+                    else:
+                        #Unlock device and update score
+                        unlock_device(session_id, device_num)
+                        update_score(session_id, device_num)
+                        lb.display.clear()
+                        lb.display.show_text("   Unlocked!", 1)
+                        lb.display.show_text("    * Lock    ", 2)
+                        input = ""
+                        while input != "*":#Lock
+                            input = lb.keypad.read_key()
+                            time.sleep(0.2) # To prevent bounce
+                        lock_box(lb)
+                        menu = 1
             elif input == '#':#Down
                 menu = 4
         #Checkout Device
@@ -833,19 +885,30 @@ def menu():
             if input == '*':#Enter
                 device_num = validate_device(session_id)
                 if device_num:
-                    #Checkout device and finalize score
-                    checkout_device(session_id, device_num)
-                    finalize_score(session_id, device_num)
-                    #TODO: Print receipt
-                    lb.display.clear()
-                    lb.display.show_text("Printing Receipt", 1)
-                    lb.display.show_text("    * Lock    ", 2)
-                    input = ""
-                    while input != "*":#Lock
+                    if lastAction = 'Checked out':
+                        lb.display.clear()
+                        lb.display.show_text("  Checked Out   ", 1)
+                        lb.display.show_text("    * Main Menu    ", 2)
                         input = lb.keypad.read_key()
                         time.sleep(0.2) # To prevent bounce
-                    lock_box(lb)
-                    menu = 1
+                        while input != "*":#Lock
+                            input = lb.keypad.read_key()
+                            time.sleep(0.2) # To prevent bounce
+                        menu = 1
+                    else:
+                        #Checkout device and finalize score
+                        checkout_device(session_id, device_num)
+                        finalize_score(session_id, device_num)
+                        #TODO: Print receipt
+                        lb.display.clear()
+                        lb.display.show_text("Printing Receipt", 1)
+                        lb.display.show_text("    * Lock    ", 2)
+                        input = ""
+                        while input != "*":#Lock
+                            input = lb.keypad.read_key()
+                            time.sleep(0.2) # To prevent bounce
+                        lock_box(lb)
+                        menu = 1
             elif input == '#':#Down
                 menu = 5
         #Display Points
