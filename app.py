@@ -916,7 +916,7 @@ def menu():
                         input = lb.keypad.read_key()
                         time.sleep(0.2) # To prevent bounce
                     menu = 0
-                    connection = openDB()
+                    connection = connectDB()
                     cursor = connection.cursor()
                     cursor.execute('''UPDATE session SET active = ? WHERE ID = ?''', (0, session_id,))
                     cursor.execute('''UPDATE session SET sessionOPEN = ? WHERE ID = ?''', (0, session_id,))
