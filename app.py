@@ -111,14 +111,9 @@ def displayEvent(sessionId):
                     WHERE session_id = ?''', (sessionId,))
   devices = cursor.fetchall()
 
-  cursor.execute('''SELECT * FROM feedback WHERE session_id = ? ''', (sessionId,))
-  comments_raw = cursor.fetchall()
-  comments = []
-  for commenter in comments_raw:
-    cursor.execute('''SELECT name FROM device where session_id = ? AND device_number = ?''', (sessionId,commenter['device_number'],))
-    deviceName = cursor.fetchone()[0]
-    comments.append((deviceName, commenter['comment']))
-
+  cursor.execute('''SELECT name,comment FROM device NATURAL JOIN feedback WHERE session_id = ? ''', (sessionId,))
+  comments = cursor.fetchall()
+ 
   cursor.close()
   closeDB(connection)
   return render_template("event.html", devices=devices, comments=comments)
