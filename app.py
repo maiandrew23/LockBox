@@ -196,7 +196,7 @@ def checkout(sessionId,deviceNum):
   sessionId = int(sessionId)
   deviceNum = int(deviceNum)
   checkout_device(sessionId, deviceNum)
-
+  finalize_score(sessionId, deviceNum)
 
   return redirect("/admin/event/" + str(sessionId))
 
@@ -1010,6 +1010,14 @@ def menu():
             time.sleep(0.2) # To prevent bounce
             if input == '*':#Enter
                 if validate_admin():
+                    connection = connectDB()
+                    cursor = connection.cursor()
+                    cursor.execute('''SELECT device_number FROM device WHERE session_id = ?''', (session_id,))
+                    data = cursor.fetchall()
+                    for row in data:
+                        if get_last_action(session_id,row[0]) != 'Checked out':
+                            checkout_device(session_id,row[0])
+                            finalize_score(session_id,row[0])
                     #TODO: Print cumulative receipt
                     row = get_winner(session_id)
                     #connection.commit()
@@ -1022,8 +1030,7 @@ def menu():
                         input = lb.keypad.read_key()
                         time.sleep(0.2) # To prevent bounce
                     menu = 0
-                    connection = connectDB()
-                    cursor = connection.cursor()
+                    
                     cursor.execute('''UPDATE session SET active = ? WHERE ID = ?''', (0, session_id,))
                     cursor.execute('''UPDATE session SET sessionOPEN = ? WHERE ID = ?''', (0, session_id,))
                     closeDB(connection)
