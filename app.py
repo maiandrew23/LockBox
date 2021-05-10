@@ -30,7 +30,7 @@ def admin():
 #Sends a form to the user to fill out
 @app.route("/admin/createEvent", methods = ["GET"])
 def createEvent():
-  return app.send_static_file("createEvent.html")
+  return render_template("createEvent.html")
 
 #User inputs from edit form
 @app.route("/admin/createEvent", methods = ["POST"])
@@ -165,7 +165,7 @@ def renderGuest(sessionId,deviceNum):
 def guestLoginGET():
   #print("guest")
   #Pass list of events to table on page
-  return app.send_static_file("guestLogin.html")
+  return render_template("guestLogin.html")
 
 @app.route("/guest/login", methods = ["POST"])
 def guestLoginPOST():
