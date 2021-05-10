@@ -1060,9 +1060,8 @@ def menu():
                         if get_last_action(session_id,row[0]) != 'Checked out':
                             checkout_device(session_id,row[0])
                             finalize_score(session_id,row[0])
-                    #TODO: Print cumulative receipt
                     row = get_winner(session_id)
-                    #connection.commit()
+                    print_display_all(session_id)
                     lb.display.clear()
                     if row:
                         lb.display.show_text("*D#: " + str(row[0]) + " Pts: " + str(row[1]), 1)
