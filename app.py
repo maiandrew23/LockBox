@@ -712,30 +712,30 @@ def validate_device(session_id,device_num_only=False):
 
 def print_registration(session_id, device_num, passcode):
     lb.printer.print_text("Welcome to LockBox!")
-    lb.printer.print_text("Session ID: " + session_id)
-    lb.printer.print_text("Device Number: " + device_num)
+    lb.printer.print_text("Session ID: " + str(session_id))
+    lb.printer.print_text("Device Number: " + str(device_num))
     lb.printer.print_text("Passcode: " + passcode)
 
 def print_checkout(session_id, device_num, points, name = False):
     lb.printer.print_text("Thank you for using LockBox!")
-    lb.printer.print_text("Session ID: " + session_id)
-    lb.printer.print_text("Device Number: " + device_num)
+    lb.printer.print_text("Session ID: " + str(session_id))
+    lb.printer.print_text("Device Number: " + str(device_num))
     if name:
         lb.printer.print_text("Device Name: " + name)
-    lb.printer.print_text("Points: " + points)
+    lb.printer.print_text("Points: " + str(points))
 
 def print_display_all(session_id):
     connection = connectDB()
     cursor = connection.cursor()
-    cursor.execute('''SELECT * FROM score''')
+    cursor.execute('''SELECT device_number,points FROM score WHERE session_id = ?''', (session_id,))
     devices = cursor.fetchall()
     cursor.close()
-    close(connection)
+    closeDB(connection)
     lb.printer.print_text("All Registered Devices")
-    lb.printer.print_text("Session # " + str(devices[0][0]))
+    lb.printer.print_text("Session # " + str(session_id))
     lb.printer.print_text("Device #  |  Points")
     for device in devices:
-        lb.printer.print_text(str(device[1]) + "   " + str(device[2]))
+        lb.printer.print_text(str(device[0]) + "   " + str(device[1]))
 
 
 def connectDB():
