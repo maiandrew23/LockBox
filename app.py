@@ -222,11 +222,13 @@ def guestDevice(sessionId,deviceNum):
     comment = comment[0]
   else:
     comment  = ""
-  cursor.execute('''SELECT passcode FROM device where session_id = ? AND device_number = ?''', (sessionId,deviceNum))
-  passcode = cursor.fetchone()[0]
+  cursor.execute('''SELECT name,passcode FROM device where session_id = ? AND device_number = ?''', (sessionId,deviceNum))
+  response = cursor.fetchone()
+  passcode = response[1]
+  deviceName = response[0]
   cursor.close()
   closeDB(connection)
-  return render_template('deviceInfo.html',sessionId = sessionId, deviceNum = deviceNum, points = points, actions = actions, comment = comment, passcode = passcode)
+  return render_template('deviceInfo.html',sessionId = sessionId, deviceNum = deviceNum, points = points, actions = actions, comment = comment, passcode = passcode,deviceName = deviceName)
 
 #Guest
 
