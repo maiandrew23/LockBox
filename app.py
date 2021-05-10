@@ -514,8 +514,10 @@ def finalize_score(session_id, device_num):
     cursor.execute('''SELECT ROUND((JULIANDAY(DATETIME()) - JULIANDAY(t)) * 86400)
                       FROM (SELECT MAX(datetime) as t
                             FROM event
-                            WHERE session_id = ? AND device_number = ? AND action = \'Locked\')''', (session_id, device_num,))
+                            WHERE session_id = ? AND device_number = ? AND action = \'Locked\' OR action = \'Checked out\')''', (session_id, device_num,))
     points = cursor.fetchone()[0]
+    if points == None:
+        points = 0
     cursor.execute('''UPDATE score SET points = points + ?
                       WHERE session_id = ? AND device_number = ?''', (points, session_id, device_num,))
     cursor.execute('''SELECT points FROM score WHERE session_id = ? AND device_number = ?''', (session_id, device_num,))
