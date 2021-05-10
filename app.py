@@ -253,6 +253,8 @@ def create_tables(connection):
                         start_time time NOT NULL,
                         end_date date,
                         end_time time,
+                        active int DEFAULT 0 NOT NULL,
+                        sessionOpen int DEFAULT 1 NOT NULL,
                         PRIMARY KEY (ID)
                     )''')
 
@@ -337,9 +339,9 @@ def create_session(name, date = "", time = "", flask = False):
     cursor = connection.cursor()
     #TODO: fix session name
     if flask:
-        cursor.execute('''INSERT INTO session (name, start_date, start_time) VALUES(?,?,?)''', (name,date,time))
+        cursor.execute('''INSERT INTO session (name, start_date, start_time, active) VALUES(?,?,?,0)''', (name,date,time))
     else:
-        cursor.execute('''INSERT INTO session (name, start_date,start_time) VALUES (?,DATE(), TIME())''', (name,))
+        cursor.execute('''INSERT INTO session (name, start_date,start_time, active) VALUES (?,DATE(), TIME(), 1)''', (name,))
     session_id = cursor.lastrowid
     cursor.close()
     closeDB(connection)
@@ -599,13 +601,46 @@ def menu():
         if menu == 0:
             lb.display.clear()
             lb.display.show_text("    Welcome!", 1)
-            lb.display.show_text("* Create Session", 2)
+            lb.display.show_text("* Select Events", 2)
             input = ""
             while input != "*":#Create session
                 input = lb.keypad.read_key()
                 time.sleep(0.2) # To prevent bounce
-            session_id = create_session("Party")
-            menu = 1
+            menu = 10
+        #Event Select Menu
+        elif menu == 10:
+            connection = connectDB()
+            cursor = connection.cursor()
+            cursor.execute('''SELECT ID,name FROM session WHERE sessionOpen = 1''')
+            selections = cursor.fetchall()
+            selections.insert(0,(0,"Create Event"))
+            print("TEST")
+            print(selections)
+            closeDB(connection)
+            selected = False
+            ind = 0
+            while(selected == False):
+                selectedName = selections[ind][1]
+                lb.display.clear()
+                lb.display.show_text(selectedName, 1)
+                lb.display.show_text("* Start   # Down", 2)
+                input = lb.keypad.read_key()
+                time.sleep(0.2) # To prevent bounce
+                if input == '*': #Selected Event
+                    selected = True
+                    if ind == 0:
+                        session_id = create_session("Party")
+                        selected = True
+                        menu = 1
+                    else:
+                        session_id = selections[ind][0]
+                        connection = connectDB()
+                        cursor = connection.cursor()
+                        cursor.execute('''UPDATE session SET active = 1 WHERE ID = ?''', (session_id,))
+                        closeDB(connection)
+                        menu = 1
+                elif input == '#':
+                    ind = (ind + 1)%(len(selections))
         #Register New Device
         if menu == 1:
             lb.display.clear()
@@ -802,10 +837,18 @@ def menu():
                         input = lb.keypad.read_key()
                         time.sleep(0.2) # To prevent bounce
                     menu = 0
+                    connection = openDB()
+                    cursor = connection.cursor()
+                    cursor.execute('''UPDATE session SET active = ? WHERE ID = ?''', (0, session_id,))
+                    cursor.execute('''UPDATE session SET sessionOPEN = ? WHERE ID = ?''', (0, session_id,))
+                    closeDB(connection)
+                    menu = 0
                 else:#Back to Main Menu
                     menu = 1
             elif input == '#':#Down
                 menu = 1
+
+
 
 def run_flask():
     app.run(host='0.0.0.0', port=80, debug= False, threaded=True)
