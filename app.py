@@ -236,6 +236,8 @@ def guestLoginAuth():
 
 @app.route("/guest/<sessionId>/<deviceNum>")
 def renderGuest(sessionId,deviceNum):
+  sessionId = 0
+  deviceNum = 0
   try:
     print("hi1")
     sessionId = int(session['sessionId'])
@@ -243,8 +245,9 @@ def renderGuest(sessionId,deviceNum):
   except:
       return redirect('/guest/login')
 
-  points = str(check_score(sessionId, deviceNum))
   print("hi2")
+  points = str(check_score(sessionId, deviceNum))
+
   connection = connectDB()
   cursor = connection.cursor()
   cursor.execute('''SELECT action,datetime FROM event WHERE session_id = ? AND device_number = ?''', (sessionId, deviceNum,))
