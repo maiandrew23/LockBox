@@ -482,6 +482,19 @@ def finalize_score(session_id, device_num):
 def check_score(session_id, device_num):
     connection = connectDB()
     cursor = connection.cursor()
+    cursor.execute('''SELECT action FROM event WHERE session_id = ? AND device_number = ?)''',(session_id, device_num,))
+    data = cursor.fetchall()
+    if len(data) == 0:
+        cursor.close()
+        closeDB(connection)
+        return 0
+    elif data[len(data) - 1][0] != 'Locked':
+        cursor.execute('''SELECT points FROM score WHERE session_id = ? AND device_number = ?''', (session_id, device_num,))
+        points = cursor.fetchone()[0]
+        cursor.close()
+        closeDB(connection)
+        return int(points)
+
     cursor.execute('''SELECT points FROM score WHERE session_id = ? AND device_number = ?''', (session_id, device_num,))
     points = cursor.fetchone()[0]
     cursor.execute('''SELECT ROUND((JULIANDAY(DATETIME()) - JULIANDAY(t)) * 86400)
