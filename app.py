@@ -15,7 +15,7 @@ def home():
   return render_template('index.html')
 
 #Admin login page
-@app.route("/admin/login")
+@app.route("/admin/login", methods = ['GET'])
 def adminLogin():
     return render_template('adminLogin.html')
 
@@ -34,7 +34,7 @@ def admin():
   return render_template('admin.html',events = events)
 
 #Admin login authentication
-@app.route("/admin/auth")
+@app.route("/admin/auth", methods = ['POST'])
 def adminAuth():
     passcode = request.form['passcode']
     query = '''SELECT * from admin WHERE passcode = ?'''
