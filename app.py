@@ -158,6 +158,8 @@ def deleteDevice(sessionId,deviceNum):
   connection = connectDB()
   cursor = connection.cursor()
   cursor.execute('''DELETE FROM device WHERE session_id = ? AND device_number = ?''', (sessionId,deviceNum,))
+  cursor.execute('''DELETE FROM score WHERE session_id = ? AND device_number = ?''', (sessionId, deviceNum,))
+  cursor.execute('''DELETE FROM event WHERE session_id = ? AND device_number = ?''', (sessionId, deviceNum,))
   cursor.close()
   closeDB(connection)
   return redirect("/admin")
