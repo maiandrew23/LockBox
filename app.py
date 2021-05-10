@@ -132,7 +132,7 @@ def rename(sessionId):
       return redirect('/admin/login')
   connection = connectDB()
   cursor = connection.cursor()
-  cursor.execute('''SELECT name FROM session WHERE session_id = ?''', (sessionId,))
+  cursor.execute('''SELECT name FROM session WHERE ID = ?''', (sessionId,))
   sessionName = cursor.fetchone()[0]
   
   return render_template("eventEdit.html",sessionName=sessionName,sessionId = sessionId )
