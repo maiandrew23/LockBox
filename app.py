@@ -75,7 +75,7 @@ def createEventPOST():
   eventName = request.form["eventName"]
   date = request.form["date"]
   time = request.form["time"]
-
+  print("time:",time)
   sessionId = create_session(eventName,date,time,True)
 
   return redirect("/admin")
