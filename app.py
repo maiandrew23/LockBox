@@ -106,7 +106,7 @@ def displayEvent(sessionId):
       return redirect('/admin/login')
   connection = connectDB()
   cursor = connection.cursor()
-  cursor.execute('''SELECT name,device_number,points
+  cursor.execute('''SELECT session_id, name,device_number,points
                     FROM device NATURAL JOIN score
                     WHERE session_id = ?''', (sessionId,))
   devices = cursor.fetchall()
