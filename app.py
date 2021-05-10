@@ -571,9 +571,10 @@ def get_winner(session_id):
 
 def get_last_action(session_id, device_number):
     connection = connectDB()
-    cursor = connection.Cursor()
-    cursor.execute(''' SELECT action, MAX(datetime) FROM events WHERE session_id = ? AND device_number = ? ''', (session_id,device_number,))
+    cursor = connection.cursor()
+    cursor.execute(''' SELECT action, MAX(datetime) FROM event WHERE session_id = ? AND device_number = ? ''', (session_id,device_number,))
     lastAction = cursor.fetchone()[0]
+    cursor.close()
     closeDB(connection)
     return lastAction
 
@@ -789,7 +790,7 @@ def menu():
                     lastAction = get_last_action(session_id, device_num)
                     if lastAction == 'Locked':
                         lb.display.clear()
-                        lb.display.show_text("Already Locked", 1)
+                        lb.display.show_text(" Already Unlocked ", 1)
                         lb.display.show_text("    * Main Menu    ", 2)
                         input = lb.keypad.read_key()
                         time.sleep(0.2) # To prevent bounce
