@@ -37,8 +37,8 @@
                         <td><a class="text-left" href="/admin/event/{{ event[0] }}" style="transform: translate(-773px);">{{ event[1] }}(Session Id {{ event[0] }})</a>
                           <a class="btn btn-primary" role="button" style="transform: translate(225px);margin: 1;" href="/admin/deleteEvent/{{ event[0] }}">Delete</a>
                           <a class="btn btn-primary active" role="button" style="transform: translate(90px);margin: 1px;" href="/admin/event/edit/{{ event[0] }}">Edit</a>&nbsp;</td>
+                        <td>{{ event[2] }}</td>
                         <td>{{ event[3] }}</td>
-                        <td>{{ event[4] }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
