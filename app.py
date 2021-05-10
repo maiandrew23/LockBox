@@ -5,7 +5,7 @@ import random
 import string
 import threading
 from itertools import cycle
-from flask import Flask, redirect, render_template, request
+from flask import Flask, redirect, render_template, request, session
 
 app = Flask(__name__,template_folder='templates', static_folder='static')
 
@@ -162,24 +162,25 @@ def renderGuest(sessionId,deviceNum):
   return render_template("guestPage.html",sessionId = sessionId,deviceNum = deviceNum,points = points, actions=actions )
 
 @app.route("/guest/login", methods = ["GET"])
-def guestLoginGET():
+def guestLogin():
   #print("guest")
   #Pass list of events to table on page
   return app.send_static_file("guestLogin.html")
 
 @app.route("/guest/login", methods = ["POST"])
-def guestLoginPOST():
+def guestLoginAuth():
   sessionId = int(request.form["sessionId"])
   deviceNum = int(request.form["deviceNum"])
   passcode = request.form["passcode"]
 
-  connection = connectDB()
-  if validate_device_number(sessionId,deviceNum) and validate_device_passcode(sessionId, deviceNum, passcode):
-    closeDB(connection)
+  if not validate_device_number(sessionId,deviceNum):
+    error = "Unknown Device Number"
+    app.send_static_file("guestLogin.html", error=error)
+  if  not validate_device_passcode(sessionId, deviceNum, passcode):
+    error = "Incorrect Passcode"
+    app.send_static_file
     return redirect("/guest/"+str(sessionId) + "/" +str(deviceNum))
-  else:
-    closeDB(connection)
-    return redirect("/guest/login")
+    
 
 
 
@@ -198,7 +199,7 @@ def guestEditPOST(sessionId,deviceNum):
 
   connection = connectDB()
   cursor = connection.cursor()
-  cursor.execute('''UPDATE device set name = ? WHERE session_id = ?''', (deviceName,sessionId,))
+  cursor.execute('''UPDATE device set name = ? WHERE session_id = ? AND device_number = ?''', (deviceName,sessionId,deviceNum,))
   cursor.close()
   closeDB(connection)
   return redirect("/guest/" + str(sessionId) + "/" + str(deviceNum))
@@ -209,8 +210,7 @@ def guestCommentEdit(sessionId,deviceNum):
 
   connection = connectDB()
   cursor = connection.cursor()
-  cursor.execute('''DELETE FROM device WHERE device_number = ?''', (sessionId,deviceNum,))
-  cursor.execute('''INSERT INTO feedback (session_id, device_number, comment)''', (sessionId, deviceNum, comment,))
+  cursor.execute('''INSERT OR REPLACE INTO feedback (session_id, device_number, comment)''', (sessionId, deviceNum, comment,))
   cursor.close()
   connection.commit()
   connection.close()
