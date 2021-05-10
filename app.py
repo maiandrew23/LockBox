@@ -191,10 +191,10 @@ def guestDevice(sessionId,deviceNum):
   sessionId = int(sessionId)
   deviceNum = int(deviceNum)
 
+  points = str(check_score(sessionId, deviceNum))
+  
   connection = connectDB()
-  cursor = connection.cursor()
-  cursor.execute('''SELECT points FROM score WHERE session_id = ? AND device_number = ?''', (sessionId, deviceNum,))
-  points = cursor.fetchone()[0]
+  cursor = connection.cursor()  
   cursor.execute('''SELECT action,datetime FROM event WHERE session_id = ? AND device_number = ?''', (sessionId, deviceNum,))
   actions = cursor.fetchall()
 
