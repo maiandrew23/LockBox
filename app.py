@@ -91,6 +91,12 @@ def deleteEvent(sessionId):
 
   connection = connectDB()
   cursor = connection.cursor()
+  cursor.execute('''SELECT active FROM session WHERE ID = ?''',(sessionId,))
+  active = cursor.fetchone()[0]
+  if active:
+      cursor.close()
+      closeDB(connection)
+      return render_template("deleteError.html",sessionId)
   cursor.execute('''DELETE FROM session WHERE ID = ?''', (sessionId,))
   cursor.close()
   closeDB(connection)
@@ -113,7 +119,7 @@ def displayEvent(sessionId):
 
   cursor.execute('''SELECT name,comment FROM device NATURAL JOIN feedback WHERE session_id = ? ''', (sessionId,))
   comments = cursor.fetchall()
- 
+
   cursor.close()
   closeDB(connection)
   return render_template("event.html", devices=devices, comments=comments)
