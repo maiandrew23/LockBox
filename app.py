@@ -482,7 +482,7 @@ def finalize_score(session_id, device_num):
 def check_score(session_id, device_num):
     connection = connectDB()
     cursor = connection.cursor()
-    cursor.execute('''SELECT action FROM event WHERE session_id = ? AND device_number = ?)''',(session_id, device_num,))
+    cursor.execute('''SELECT action FROM event WHERE session_id = ? AND device_number = ?''',(session_id, device_num,))
     data = cursor.fetchall()
     if len(data) == 0:
         cursor.close()
