@@ -229,6 +229,7 @@ def guestLoginAuth():
       error = 'Incorrect Passcode!'
       return render_template("guestLogin.html", error=error)
   #else:
+  print("Successful Guest Login")
   session['sesionId'] = str(sessionId)
   session['deviceNum'] = str(deviceNum)
   return redirect("/guest/"+str(sessionId) + "/" +str(deviceNum))
@@ -236,13 +237,14 @@ def guestLoginAuth():
 @app.route("/guest/<sessionId>/<deviceNum>")
 def renderGuest(sessionId,deviceNum):
   try:
+    print("hi1")
     sessionId = int(session['sessionId'])
     deviceNum = int(session['deviceNum'])
   except:
       return redirect('/guest/login')
 
   points = str(check_score(sessionId, deviceNum))
-
+  print("hi2")
   connection = connectDB()
   cursor = connection.cursor()
   cursor.execute('''SELECT action,datetime FROM event WHERE session_id = ? AND device_number = ?''', (sessionId, deviceNum,))
