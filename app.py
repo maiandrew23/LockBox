@@ -23,7 +23,10 @@ def adminLogin():
 #Main Admin Page
 @app.route("/admin")
 def admin():
-  passcode = session['passcode'] #verify successful login
+  try:
+    passcode = session['passcode'] #verify successful login
+  except:
+      return redirect('/admin/login')
   print("Admin")
   #Pass list of events to table on page
   connection = connectDB()
@@ -55,13 +58,19 @@ def adminAuth():
 #Sends a form to the user to fill out
 @app.route("/admin/createEvent", methods = ["GET"])
 def createEvent():
-  passcode = session['passcode'] #verify successful login
+  try:
+    passcode = session['passcode'] #verify successful login
+  except:
+      return redirect('/admin/login')
   return render_template("createEvent.html")
 
 #User inputs from edit form
 @app.route("/admin/createEvent", methods = ["POST"])
 def createEventPOST():
-  passcode = session['passcode'] #verify successful login
+  try:
+    passcode = session['passcode'] #verify successful login
+  except:
+      return redirect('/admin/login')
   #Create an event. Sends user to form page where user enters Event name and date
   eventName = request.form["eventName"]
   date = request.form["date"]
@@ -74,7 +83,10 @@ def createEventPOST():
 #Deleting an event
 @app.route("/admin/deleteEvent/<sessionId>")
 def deleteEvent(sessionId):
-  passcode = session['passcode'] #verify successful login
+  try:
+    passcode = session['passcode'] #verify successful login
+  except:
+      return redirect('/admin/login')
   sessionId = int(sessionId)
 
   connection = connectDB()
@@ -88,7 +100,10 @@ def deleteEvent(sessionId):
 #Event Page
 @app.route("/admin/event/<sessionId>")
 def displayEvent(sessionId):
-  passcode = session['passcode'] #verify successful login
+  try:
+    passcode = session['passcode'] #verify successful login
+  except:
+      return redirect('/admin/login')
   connection = connectDB()
   cursor = connection.cursor()
   cursor.execute('''SELECT * FROM device WHERE session_id = ?''', (sessionId,))
@@ -108,13 +123,19 @@ def displayEvent(sessionId):
 
 @app.route("/admin/event/edit/<sessionId>", methods = ["GET"])
 def rename(sessionId):
-  passcode = session['passcode'] #verify successful login
+  try:
+    passcode = session['passcode'] #verify successful login
+  except:
+      return redirect('/admin/login')
   #Send form for user to enter new name
   return render_template("eventEdit.html",eventName="name",sessionId = sessionId )
 
 @app.route("/admin/event/edit/<sessionId>", methods = ["POST"])
 def renamePOST(sessionId):
-  passcode = session['passcode'] #verify successful login
+  try:
+    passcode = session['passcode'] #verify successful login
+  except:
+      return redirect('/admin/login')
   #TODO Edit session in database
   eventName = request.form["eventName"]
 
@@ -128,7 +149,10 @@ def renamePOST(sessionId):
 
 @app.route("/admin/event/deleteDevice/<sessionId>/<deviceNum>")
 def deleteDevice(sessionId,deviceNum):
-  passcode = session['passcode'] #verify successful login
+  try:
+    passcode = session['passcode'] #verify successful login
+  except:
+      return redirect('/admin/login')
   connection = connectDB()
   cursor = connection.cursor()
   cursor.execute('''DELETE FROM device WHERE session_id = ? AND device_number = ?''', (sessionId,deviceNum,))
@@ -138,13 +162,19 @@ def deleteDevice(sessionId,deviceNum):
 
 @app.route("/admin/event/editDevice/<sessionId>/<deviceNum>")
 def editDevice(sessionId,deviceNum):
-  passcode = session['passcode'] #verify successful login
+  try:
+    passcode = session['passcode'] #verify successful login
+  except:
+      return redirect('/admin/login')
     #TODO
   return redirect("/admin/event/" + str(sessionId))
 
 @app.route("/admin/event/checkout/<sessionId>/<deviceNum>")
 def checkout(sessionId,deviceNum):
-  passcode = session['passcode'] #verify successful login
+  try:
+    passcode = session['passcode'] #verify successful login
+  except:
+      return redirect('/admin/login')
   sessionId = int(sessionId)
   deviceNum = int(deviceNum)
   checkout_device(sessionId, deviceNum)
@@ -154,7 +184,10 @@ def checkout(sessionId,deviceNum):
 
 @app.route("/admin/event/devices/<int:sessionId>/<int:deviceNum>")
 def guestDevice(sessionId,deviceNum):
-  passcode = session['passcode'] #verify successful login
+  try:
+    passcode = session['passcode'] #verify successful login
+  except:
+      return redirect('/admin/login')
   sessionId = int(sessionId)
   deviceNum = int(deviceNum)
 
