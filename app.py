@@ -953,7 +953,7 @@ def menu():
 
                         connection = connectDB()
                         cursor = connection.cursor()
-                        cursor.execute('''SELECT points from score WHERE session_id = ? AND device_num = ?''', (session_id, device_num))
+                        cursor.execute('''SELECT points from score WHERE session_id = ? AND device_number = ?''', (session_id, device_num))
                         points = cursor.fetchone()[0]
                         cursor.close()
                         closeDB(connection)
