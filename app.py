@@ -137,7 +137,7 @@ def rename(sessionId):
   cursor = connection.cursor()
   cursor.execute('''SELECT name FROM session WHERE ID = ?''', (sessionId,))
   sessionName = cursor.fetchone()[0]
-  
+
   return render_template("eventEdit.html",sessionName=sessionName,sessionId = sessionId )
 
 @app.route("/admin/event/edit/<sessionId>", methods = ["POST"])
@@ -161,7 +161,7 @@ def renamePOST(sessionId):
     cursor.execute('''UPDATE session SET name = ? WHERE ID = ?''', (time, sessionId,))
   cursor.close()
   closeDB(connection)
-  return redirect("/admin/event/" + str(sessionId))
+  return redirect("/admin")
 
 @app.route("/admin/event/deleteDevice/<sessionId>/<deviceNum>")
 def deleteDevice(sessionId,deviceNum):
