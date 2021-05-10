@@ -5,18 +5,28 @@ import random
 import string
 import threading
 from itertools import cycle
-from flask import Flask, redirect, render_template, request
+from flask import Flask, redirect, render_template, request, session
 
 app = Flask(__name__,template_folder='templates', static_folder='static')
+app.secret_key = 'some key that you will never guess'
 
 @app.route("/")
 def home():
   print("Home page")
   return render_template('index.html')
 
+#Admin login page
+@app.route("/admin/login", methods = ['GET'])
+def adminLogin():
+    return render_template('adminLogin.html')
+
 #Main Admin Page
 @app.route("/admin")
 def admin():
+  try:
+    passcode = session['passcode'] #verify successful login
+  except:
+      return redirect('/admin/login')
   print("Admin")
   #Pass list of events to table on page
   connection = connectDB()
@@ -27,14 +37,40 @@ def admin():
   closeDB(connection)
   return render_template('admin.html',events = events)
 
+#Admin login authentication
+@app.route("/admin/auth", methods = ['POST'])
+def adminAuth():
+    passcode = request.form['passcode']
+    query = '''SELECT * from admin WHERE passcode = ?'''
+    connection = connectDB()
+    cursor = connection.cursor()
+    cursor.execute(query, (passcode,))
+    data = cursor.fetchone()
+    cursor.close()
+    closeDB(connection)
+
+    if not data:
+        error = 'Incorrect Passcode!'
+        return render_template('adminLogin.html', error=error)
+    session['passcode'] = passcode
+    return redirect('/admin')
+
 #Sends a form to the user to fill out
 @app.route("/admin/createEvent", methods = ["GET"])
 def createEvent():
+  try:
+    passcode = session['passcode'] #verify successful login
+  except:
+      return redirect('/admin/login')
   return render_template("createEvent.html")
 
 #User inputs from edit form
 @app.route("/admin/createEvent", methods = ["POST"])
 def createEventPOST():
+  try:
+    passcode = session['passcode'] #verify successful login
+  except:
+      return redirect('/admin/login')
   #Create an event. Sends user to form page where user enters Event name and date
   eventName = request.form["eventName"]
   date = request.form["date"]
@@ -47,6 +83,10 @@ def createEventPOST():
 #Deleting an event
 @app.route("/admin/deleteEvent/<sessionId>")
 def deleteEvent(sessionId):
+  try:
+    passcode = session['passcode'] #verify successful login
+  except:
+      return redirect('/admin/login')
   sessionId = int(sessionId)
 
   connection = connectDB()
@@ -60,7 +100,10 @@ def deleteEvent(sessionId):
 #Event Page
 @app.route("/admin/event/<sessionId>")
 def displayEvent(sessionId):
-
+  try:
+    passcode = session['passcode'] #verify successful login
+  except:
+      return redirect('/admin/login')
   connection = connectDB()
   cursor = connection.cursor()
   cursor.execute('''SELECT * FROM device WHERE session_id = ?''', (sessionId,))
@@ -80,11 +123,19 @@ def displayEvent(sessionId):
 
 @app.route("/admin/event/edit/<sessionId>", methods = ["GET"])
 def rename(sessionId):
+  try:
+    passcode = session['passcode'] #verify successful login
+  except:
+      return redirect('/admin/login')
   #Send form for user to enter new name
   return render_template("eventEdit.html",eventName="name",sessionId = sessionId )
 
 @app.route("/admin/event/edit/<sessionId>", methods = ["POST"])
 def renamePOST(sessionId):
+  try:
+    passcode = session['passcode'] #verify successful login
+  except:
+      return redirect('/admin/login')
   #TODO Edit session in database
   eventName = request.form["eventName"]
 
@@ -98,7 +149,10 @@ def renamePOST(sessionId):
 
 @app.route("/admin/event/deleteDevice/<sessionId>/<deviceNum>")
 def deleteDevice(sessionId,deviceNum):
-
+  try:
+    passcode = session['passcode'] #verify successful login
+  except:
+      return redirect('/admin/login')
   connection = connectDB()
   cursor = connection.cursor()
   cursor.execute('''DELETE FROM device WHERE session_id = ? AND device_number = ?''', (sessionId,deviceNum,))
@@ -108,11 +162,19 @@ def deleteDevice(sessionId,deviceNum):
 
 @app.route("/admin/event/editDevice/<sessionId>/<deviceNum>")
 def editDevice(sessionId,deviceNum):
+  try:
+    passcode = session['passcode'] #verify successful login
+  except:
+      return redirect('/admin/login')
     #TODO
   return redirect("/admin/event/" + str(sessionId))
 
 @app.route("/admin/event/checkout/<sessionId>/<deviceNum>")
 def checkout(sessionId,deviceNum):
+  try:
+    passcode = session['passcode'] #verify successful login
+  except:
+      return redirect('/admin/login')
   sessionId = int(sessionId)
   deviceNum = int(deviceNum)
   checkout_device(sessionId, deviceNum)
@@ -122,13 +184,17 @@ def checkout(sessionId,deviceNum):
 
 @app.route("/admin/event/devices/<int:sessionId>/<int:deviceNum>")
 def guestDevice(sessionId,deviceNum):
+  try:
+    passcode = session['passcode'] #verify successful login
+  except:
+      return redirect('/admin/login')
   sessionId = int(sessionId)
   deviceNum = int(deviceNum)
 
+  points = str(check_score(sessionId, deviceNum))
+  
   connection = connectDB()
-  cursor = connection.cursor()
-  cursor.execute('''SELECT points FROM score WHERE session_id = ? AND device_number = ?''', (sessionId, deviceNum,))
-  points = cursor.fetchone()[0]
+  cursor = connection.cursor()  
   cursor.execute('''SELECT action,datetime FROM event WHERE session_id = ? AND device_number = ?''', (sessionId, deviceNum,))
   actions = cursor.fetchall()
 
@@ -418,6 +484,19 @@ def finalize_score(session_id, device_num):
 def check_score(session_id, device_num):
     connection = connectDB()
     cursor = connection.cursor()
+    cursor.execute('''SELECT action FROM event WHERE session_id = ? AND device_number = ?''',(session_id, device_num,))
+    data = cursor.fetchall()
+    if len(data) == 0:
+        cursor.close()
+        closeDB(connection)
+        return 0
+    elif data[len(data) - 1][0] != 'Locked':
+        cursor.execute('''SELECT points FROM score WHERE session_id = ? AND device_number = ?''', (session_id, device_num,))
+        points = cursor.fetchone()[0]
+        cursor.close()
+        closeDB(connection)
+        return int(points)
+
     cursor.execute('''SELECT points FROM score WHERE session_id = ? AND device_number = ?''', (session_id, device_num,))
     points = cursor.fetchone()[0]
     cursor.execute('''SELECT ROUND((JULIANDAY(DATETIME()) - JULIANDAY(t)) * 86400)
