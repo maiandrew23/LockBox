@@ -9,6 +9,8 @@ from flask import Flask, redirect, render_template, request, session
 
 app = Flask(__name__,template_folder='templates', static_folder='static')
 app.secret_key = 'some key that you will never guess'
+lb = lockbox.Lockbox()
+
 
 @app.route("/")
 def home():
@@ -951,7 +953,7 @@ def menu():
 
                         connection = connectDB()
                         cursor = connection.cursor()
-                        cursor.execute('''SELECT points from score WHERE session_id = ? AND device_num = ?''', (session_id, device_number))
+                        cursor.execute('''SELECT points from score WHERE session_id = ? AND device_num = ?''', (session_id, device_num))
                         points = cursor.fetchone()[0]
                         cursor.close()
                         closeDB(connection)
@@ -1089,7 +1091,6 @@ def run_flask():
     app.run(host='0.0.0.0', port=80, debug= False, threaded=True)
 
 if __name__ == "__main__":
-    lb = lockbox.Lockbox()
     lb.solenoid.setup()
     lb.display.setup()
     lb.printer.setup()
