@@ -18,17 +18,17 @@
         <div class="container"><a class="navbar-brand text-dark js-scroll-trigger" href="/" style="font-size: 30px;">Lockbox</a></div>
     </nav>
     <header style="background: var(--primary);height: 210.2px;">
-        <h1 style="padding: 117px;color: var(--gray-dark);text-align: center;font-size: 36px;">Event Edit</h1>
+        <h1 style="padding: 117px;color: var(--gray-dark);text-align: center;font-size: 36px;">Session Edit</h1>
     </header>    <section id="portfolio" class="portfolio" style="transform: perspective(0px) translate(0px);transform-origin: top;height: 274.2px;padding: 9px 0px;">
-    <h1 style="font-size: 24;">Editing {{ eventName }}</h1>
+    <h1 style="font-size: 24;">Editing {{ sessionName }}</h1>
     <div class="form-group">
         <form action="/admin/event/edit/{{ sessionId }}" method="post">
           <label>Name of Event</label>
           <input class="form-control" type="text" name="eventName" style="width: 400px;">
           <label>Date of Event</label>
-          <input class="form-control" type="text" placeholder="YYYY-MM-DD" name="date" style="width: 400px;">
+          <input class="form-control" type="date" placeholder="YYYY-MM-DD" name="date" style="width: 400px;">
           <label>Time of Event</label>
-          <input class="form-control" placeholder="HH:MM:SS" type="text" name="time" style="width: 400px;">
+          <input class="form-control" placeholder="HH:MM:SS" type="time" name="time" style="width: 400px;">
           <button class="btn btn-primary" type="submit">Create</button>
           <a class="btn btn-primary" role="button" style="transform: translate(3px);" href="/admin">Cancel</a>
         </form>

@@ -124,8 +124,12 @@ def rename(sessionId):
     passcode = session['passcode'] #verify successful login
   except:
       return redirect('/admin/login')
-  #Send form for user to enter new name
-  return render_template("eventEdit.html",eventName="name",sessionId = sessionId )
+  connection = connectDB()
+  cursor = connection.cursor()
+  cursor.execute('''SELECT name FROM session WHERE session_id = ?''', (sessionId,))
+  sessionName = cursor.fetchone()[0]
+  
+  return render_template("eventEdit.html",sessionName=sessionName,sessionId = sessionId )
 
 @app.route("/admin/event/edit/<sessionId>", methods = ["POST"])
 def renamePOST(sessionId):
@@ -135,11 +139,17 @@ def renamePOST(sessionId):
       return redirect('/admin/login')
   #TODO Edit session in database
   eventName = request.form["eventName"]
+  date = request.form["date"]
+  time = request.form["time"]
 
-  print("editing" +eventName)
   connection = connectDB()
   cursor = connection.cursor()
-  cursor.execute('''UPDATE session SET name = ? WHERE ID = ?''', (eventName, sessionId,))
+  if eventName != "":
+    cursor.execute('''UPDATE session SET name = ? WHERE ID = ?''', (eventName, sessionId,))
+  if date != "":
+    cursor.execute('''UPDATE session SET date = ? WHERE ID = ?''', (date, sessionId,))
+  if time != "":
+    cursor.execute('''UPDATE session SET name = ? WHERE ID = ?''', (time, sessionId,))
   cursor.close()
   closeDB(connection)
   return redirect("/admin/event/" + str(sessionId))

@@ -18,7 +18,7 @@
         <div class="container"><a class="navbar-brand text-dark js-scroll-trigger" href="/" style="font-size: 30px;">Lockbox</a></div>
     </nav>
     <header style="background: var(--primary);height: 210.2px;">
-        <h1 style="padding: 117px;color: var(--gray-dark);text-align: center;font-size: 36px;">Event Information</h1>
+        <h1 style="padding: 117px;color: var(--gray-dark);text-align: center;font-size: 36px;">Session Information</h1>
     </header>    <section id="portfolio" class="portfolio" style="transform: perspective(0px) translate(0px);transform-origin: top;height: 274.2px;padding: 9px 0px;">
         <h1 style="font-size: 34px;padding: 10px;margin: -8px;height: 75.8px;">{{ eventName }}</h1>
         <div class="table-responsive">
@@ -47,7 +47,7 @@
             </table>
         </div><a class="btn btn-primary" role="button" style="margin: 10px;transform: translate(0px);" href="/admin">Back</a>
         <section style="padding: 39px 0px;">
-            <h1 style="font-size: 28px;">Event Feedbacks</h1>
+            <h1 style="font-size: 28px;">Session Feedback</h1>
         {% for commenter in comments %}
             <blockquote class="blockquote">
                 <p class="mb-0"> {{ commenter[1] }}</p>
