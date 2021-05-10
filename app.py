@@ -790,7 +790,7 @@ def menu():
                     lastAction = get_last_action(session_id, device_num)
                     if lastAction == 'Locked':
                         lb.display.clear()
-                        lb.display.show_text(" Already Unlocked ", 1)
+                        lb.display.show_text("  Already Locked ", 1)
                         lb.display.show_text("    * Main Menu    ", 2)
                         input = lb.keypad.read_key()
                         time.sleep(0.2) # To prevent bounce
