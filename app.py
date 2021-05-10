@@ -1015,6 +1015,8 @@ def menu():
                     cursor = connection.cursor()
                     cursor.execute('''SELECT device_number FROM device WHERE session_id = ?''', (session_id,))
                     data = cursor.fetchall()
+                    cursor.close()
+                    closeDB(connection)
                     for row in data:
                         if get_last_action(session_id,row[0]) != 'Checked out':
                             checkout_device(session_id,row[0])
@@ -1032,8 +1034,11 @@ def menu():
                         time.sleep(0.2) # To prevent bounce
                     menu = 0
                     
+                    connection = connectDB()
+                    cursor = connection.cursor()
                     cursor.execute('''UPDATE session SET active = ? WHERE ID = ?''', (0, session_id,))
                     cursor.execute('''UPDATE session SET sessionOPEN = ? WHERE ID = ?''', (0, session_id,))
+                    cursor.close()
                     closeDB(connection)
                     menu = 0
                 else:#Back to Main Menu
