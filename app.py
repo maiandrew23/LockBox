@@ -707,6 +707,35 @@ def validate_device(session_id,device_num_only=False):
                 continue
             elif input == "#":#Back to Main Menu
                 return None
+
+def print_registration(session_id, device_num, passcode):
+    lb.printer.print_text("Welcome to LockBox!")
+    lb.printer.print_text("Session ID: " + session_id)
+    lb.printer.print_text("Device Number: " + device_num)
+    lb.printer.print_text("Passcode: " + passcode)
+
+def print_checkout(session_id, device_num, points, name = False):
+    lb.printer.print_text("Thank you for using LockBox!")
+    lb.printer.print_text("Session ID: " + session_id)
+    lb.printer.print_text("Device Number: " + device_num)
+    if name:
+        lb.printer.print_text("Device Name: " + name)
+    lb.printer.print_text("Points: " + points)
+
+def print_display_all(session_id):
+    connection = connectDB()
+    cursor = connection.cursor()
+    cursor.execute('''SELECT * FROM score''')
+    devices = cursor.fetchall()
+    cursor.close()
+    close(connection)
+    lb.printer.print_text("All Registered Devices")
+    lb.printer.print_text("Session # " + str(devices[0][0]))
+    lb.printer.print_text("Device #  |  Points")
+    for device in devices:
+        lb.printer.print_text(str(device[1]) + "   " + str(device[2]))
+
+
 def connectDB():
     connection = sqlite3.connect("lockbox.db")
     return connection
@@ -786,12 +815,11 @@ def menu():
                 input = lb.keypad.read_key()
                 time.sleep(0.2) # To prevent bounce
                 if input == '*':#Yes
-                    #TODO: Print receipt
                     device_num, passcode = create_device(session_id, "N/A")
-                    lb.display.clear()
-                    lb.display.show_text("Device #: " + str(device_num), 1)
-                    lb.display.show_text("Passcode: " + passcode, 2)
-                    time.sleep(5)
+                    #lb.display.clear()
+                    #lb.display.show_text("Device #: " + str(device_num), 1)
+                    #lb.display.show_text("Passcode: " + passcode, 2)
+                    print_registration(session_id, device_num, passcode)
                     menu = 2
                 elif input == '#':#No
                     menu == 2
@@ -920,6 +948,15 @@ def menu():
                         #Checkout device and finalize score
                         checkout_device(session_id, device_num)
                         finalize_score(session_id, device_num)
+
+                        connection = connectDB()
+                        cursor = connection.cursor()
+                        cursor.execute('''SELECT points from score WHERE session_id = ? AND device_num = ?''', (session_id, device_number))
+                        points = cursor.fetchone()[0]
+                        cursor.close()
+                        closeDB(connection)
+                        print_checkout(str(session_id), str(device_num, str(points))
+
                         #TODO: Print receipt
                         lb.display.clear()
                         lb.display.show_text("Printing Receipt", 1)
