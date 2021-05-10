@@ -31,7 +31,7 @@ def admin():
   #Pass list of events to table on page
   connection = connectDB()
   cursor = connection.cursor()
-  cursor.execute('''SELECT * FROM session ''')
+  cursor.execute('''SELECT * FROM session ORDER BY start_date DESC,start_time DESC''')
   events = cursor.fetchall()
   cursor.close()
   closeDB(connection)
@@ -96,8 +96,11 @@ def deleteEvent(sessionId):
   if active:
       cursor.close()
       closeDB(connection)
-      return render_template("deleteError.html",sessionId)
+      return render_template("deleteError.html")
   cursor.execute('''DELETE FROM session WHERE ID = ?''', (sessionId,))
+  cursor.execute('''DELETE FROM device WHERE session_id = ?''', (sessionId,))
+  cursor.execute('''DELETE FROM score WHERE session_id = ?''', (sessionId,))
+  cursor.execute('''DELETE FROM event WHERE session_id = ?''', (sessionId,))
   cursor.close()
   closeDB(connection)
 
