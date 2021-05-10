@@ -792,7 +792,7 @@ def menu():
                     if lastAction == 'Locked':
                         lb.display.clear()
                         lb.display.show_text("  Already Locked ", 1)
-                        lb.display.show_text("    * Main Menu    ", 2)
+                        lb.display.show_text("  * Main Menu", 2)
                         input = lb.keypad.read_key()
                         time.sleep(0.2) # To prevent bounce
                         while input != "*":#Lock
@@ -802,7 +802,7 @@ def menu():
                     elif lastAction == 'Checked out':
                         lb.display.clear()
                         lb.display.show_text("  Checked Out   ", 1)
-                        lb.display.show_text("    * Main Menu    ", 2)
+                        lb.display.show_text("  * Main Menu", 2)
                         input = lb.keypad.read_key()
                         time.sleep(0.2) # To prevent bounce
                         while input != "*":#Lock
@@ -855,7 +855,7 @@ def menu():
                     elif lastAction == 'Checked out':
                         lb.display.clear()
                         lb.display.show_text("  Checked Out   ", 1)
-                        lb.display.show_text("    * Main Menu    ", 2)
+                        lb.display.show_text("  * Main Menu", 2)
                         input = lb.keypad.read_key()
                         time.sleep(0.2) # To prevent bounce
                         while input != "*":#Lock
@@ -890,7 +890,7 @@ def menu():
                     if lastAction == 'Checked out':
                         lb.display.clear()
                         lb.display.show_text("  Checked Out   ", 1)
-                        lb.display.show_text("    * Main Menu    ", 2)
+                        lb.display.show_text("  * Main Menu", 2)
                         input = lb.keypad.read_key()
                         time.sleep(0.2) # To prevent bounce
                         while input != "*":#Lock
