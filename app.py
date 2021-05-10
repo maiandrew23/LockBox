@@ -106,7 +106,7 @@ def displayEvent(sessionId):
       return redirect('/admin/login')
   connection = connectDB()
   cursor = connection.cursor()
-  cursor.execute('''SELECT session_id AS s,device_number AS d,name,IIF(x.action != \'Locked\', x.points, x.points + (ROUND((JULIANDAY(DATETIME()) - JULIANDAY(X.datetime)) * 86400))
+  cursor.execute('''SELECT session_id AS s,device_number AS d,name,IIF(x.action != \'Locked\', x.points, x.points + (ROUND((JULIANDAY(DATETIME()) - JULIANDAY(X.datetime)) * 86400))) points
                     FROM device NATURAL JOIN score NATURAL LEFT JOIN (SELECT session_id,device_number,action,MAX(datetime) AS datetime
                                                                       FROM event
                                                                       WHERE session_id = s AND device_number = d) AS x
