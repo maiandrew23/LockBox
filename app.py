@@ -212,71 +212,86 @@ def guestDevice(sessionId,deviceNum):
 
 #Guest
 
-@app.route("/guest/<sessionId>/<deviceNum>")
-def renderGuest(sessionId,deviceNum):
-  sessionId = int(sessionId)
-  deviceNum = int(deviceNum)
-
-  connection = connectDB()
-  cursor = connection.cursor()
-  cursor.execute('''SELECT points FROM score WHERE session_id = ? AND device_number = ?''', (sessionId, deviceNum,))
-  points = cursor.fetchone()[0]
-  cursor.execute('''SELECT action,datetime FROM event WHERE session_id = ? AND device_number = ?''', (sessionId, deviceNum,))
-  actions = cursor.fetchall()
-  cursor.close()
-  closeDB(connection)
-  return render_template("guestPage.html",sessionId = sessionId,deviceNum = deviceNum,points = points, actions=actions )
-
 @app.route("/guest/login", methods = ["GET"])
-def guestLoginGET():
-  #print("guest")
-  #Pass list of events to table on page
+def guestLogin():
   return render_template("guestLogin.html")
 
-@app.route("/guest/login", methods = ["POST"])
-def guestLoginPOST():
+@app.route("/guest/login/auth", methods = ["POST"])
+def guestLoginAuth():
   sessionId = int(request.form["sessionId"])
   deviceNum = int(request.form["deviceNum"])
   passcode = request.form["passcode"]
 
-  connection = connectDB()
-  if validate_device_number(sessionId,deviceNum) and validate_device_passcode(sessionId, deviceNum, passcode):
-    closeDB(connection)
-    return redirect("/guest/"+str(sessionId) + "/" +str(deviceNum))
-  else:
-    closeDB(connection)
-    return redirect("/guest/login")
+  if not validate_device_number(sessionId,deviceNum):
+      error = 'Unknown Device Number!'
+      return render_template("guestLogin.html", error=error)
+  elif not validate_device_passcode(sessionId, deviceNum, passcode):
+      error = 'Incorrect Passcode!'
+      return render_template("guestLogin.html", error=error)
+  #else:
+  session['sesionId'] = str(sessionId)
+  session['deviceNum'] = str(deviceNum)
+  return redirect("/guest/"+str(sessionId) + "/" +str(deviceNum))
 
+@app.route("/guest/<sessionId>/<deviceNum>")
+def renderGuest(sessionId,deviceNum):
+  try:
+    sessionId = int(session['sessionId'])
+    deviceNum = int(session['deviceNum'])
+  except:
+      return redirect('/guest/login')
+
+  points = str(check_score(sessionId, deviceNum))
+
+  connection = connectDB()
+  cursor = connection.cursor()
+  cursor.execute('''SELECT action,datetime FROM event WHERE session_id = ? AND device_number = ?''', (sessionId, deviceNum,))
+  actions = cursor.fetchall()
+  cursor.close()
+  closeDB(connection)
+
+  return render_template("guestPage.html",sessionId = sessionId,deviceNum = deviceNum,points = points, actions=actions )
 
 
 @app.route("/guest/edit/<sessionId>/<deviceNum>", methods = ["GET"])
 def guestEditGET(sessionId,deviceNum):
-  sessionId = int(sessionId)
-  deviceNum = int(deviceNum)
+  try:
+    sessionId = int(session['sessionId'])
+    deviceNum = int(session['deviceNum'])
+  except:
+      return redirect('/guest/login')
   return render_template("guestEdit.html", sessionId = sessionId, deviceNum = deviceNum)
 
 @app.route("/guest/edit/<sessionId>/<deviceNum>", methods = ["POST"])
 def guestEditPOST(sessionId,deviceNum):
+  try:
+    sessionId = int(session['sessionId'])
+    deviceNum = int(session['deviceNum'])
+  except:
+      return redirect('/guest/login')
+
   deviceName = request.form["deviceName"]
-  #TODO edit database
-  sessionId = int(sessionId)
-  deviceNum = int(deviceNum)
 
   connection = connectDB()
   cursor = connection.cursor()
-  cursor.execute('''UPDATE device set name = ? WHERE session_id = ?''', (deviceName,sessionId,))
+  cursor.execute('''UPDATE device SET name = ? WHERE session_id = ? AND device_number = ?''', (deviceName,sessionId,deviceNum,))
   cursor.close()
   closeDB(connection)
   return redirect("/guest/" + str(sessionId) + "/" + str(deviceNum))
 
 @app.route("/guest/comment/<sessionId>/<deviceNum>", methods = ["POST"])
 def guestCommentEdit(sessionId,deviceNum):
+  try:
+    sessionId = int(session['sessionId'])
+    deviceNum = int(session['deviceNum'])
+  except:
+      return redirect('/guest/login')
+
   comment = request.form["comment"]
 
   connection = connectDB()
   cursor = connection.cursor()
-  cursor.execute('''DELETE FROM device WHERE device_number = ?''', (sessionId,deviceNum,))
-  cursor.execute('''INSERT INTO feedback (session_id, device_number, comment)''', (sessionId, deviceNum, comment,))
+  cursor.execute('''INSERT OR REPLACE INTO feedback (session_id, device_number, comment)''', (sessionId, deviceNum, comment,))
   cursor.close()
   connection.commit()
   connection.close()

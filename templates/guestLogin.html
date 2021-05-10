@@ -15,10 +15,11 @@
 
 <body>
     <section class="login-dark">
-        <form class="bg-warning" method="post" style="opacity: 0.86;background: rgb(255, 193, 7);" action="/guest/login">
+        <form class="bg-warning" method="post" style="opacity: 0.86;background: rgb(255, 193, 7);" action="/guest/login/auth">
             <h2 class="sr-only">Login Form</h2>
             <div class="illustration"></div><label style="border-color: var(--gray-dark);border-top-color: rgb(255,;border-right-color: 255,;border-bottom-color: 255);border-left-color: 255,;opacity: 1;color: var(--secondary);font-size: 16px;font-family: Montserrat, sans-serif;">Session Number</label><input class="form-control" type="text" name="sessionId"><label style="border-color: var(--gray-dark);border-top-color: rgb(255,;border-right-color: 255,;border-bottom-color: 255);border-left-color: 255,;opacity: 1;color: var(--secondary);font-size: 16px;font-family: Montserrat, sans-serif;">Device Number</label><input class="form-control" type="text" name="deviceNum"><label style="color: var(--secondary);font-family: Montserrat, sans-serif;">Passcode</label><input class="form-control" type="text" name="passcode">
             <div class="form-group"><button class="btn btn-primary btn-block" type="submit">Enter</button></div>
+            <div class="illustration"></div><label style="border-color: var(--gray-dark);border-top-color: rgb(255,;border-right-color: 255,;border-bottom-color: 255);border-left-color: 255,;opacity: 1;color: var(--secondary);font-size: 16px;font-family: Montserrat, sans-serif;">{{error}}</label>
         </form>
     </section>
 </body>
