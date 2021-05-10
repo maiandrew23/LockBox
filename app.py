@@ -50,7 +50,7 @@ def adminAuth():
         error = 'Incorrect Passcode!'
         return render_template('adminLogin.html', error=error)
     session['passcode'] = passcode
-    redirect('/admin')
+    return redirect('/admin')
 
 #Sends a form to the user to fill out
 @app.route("/admin/createEvent", methods = ["GET"])
