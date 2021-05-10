@@ -957,7 +957,7 @@ def menu():
                         points = cursor.fetchone()[0]
                         cursor.close()
                         closeDB(connection)
-                        print_checkout(str(session_id), str(device_num, str(points)))
+                        print_checkout(str(session_id), str(device_num), str(points))
 
                         #TODO: Print receipt
                         lb.display.clear()
