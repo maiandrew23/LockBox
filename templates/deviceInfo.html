@@ -23,52 +23,30 @@
     <section id="portfolio" class="portfolio" style="transform: perspective(0px) translate(0px);transform-origin: top;height: 274.2px;padding: 30px 0px;text-align: left;">
         <h1 style="font-size: 19px;padding: 10px;margin: -8px;">Device # {{ deviceNum }}</h1>
         <h1 style="font-size: 24px;padding: 10px;margin: -8px;">Device Name: {{ deviceName }}</h1>
-        <div class="table-responsive" style="width: 138.6px;border-style: double;height: 119.2px;text-align: center;transform: translate(565px);">
+        <div class="container">
+                    <div class="row">
+                        <div class="col-md-6"><div class="table-responsive">
             <table class="table">
                 <thead>
                     <tr>
-                        <th style="transform-origin: center;height: 40.6px;width: 213.8px;padding: -25px;margin: -37px;">Points</th>
+                        <th>Action</th>
+                        <th>Time</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>{{ points }} pts</td>
-                    </tr>
+                  {% for action in actions%}
+                      <tr>
+                          <td> {{ action[0] }}</td>
+                          <td> {{ action[1] }}</td>
+                      </tr>
+                  {% endfor %}
                 </tbody>
             </table>
-        </div>
-        <div class="table-responsive" style="width: 230px;border-style: double;height: 119.2px;text-align: center;transform: translate(565px);">
-          <table class="table">
-              <thead>
-                  <tr>
-                      <th style="transform-origin: center;height: 40.6px;width: 213.8px;padding: -25px;margin: -37px;">Passcode</th>
-                    </tr>
-              </thead>
-              <tbody>
-                    <tr>
-                      <td>{{ passcode }}</td>
-                    </tr>
-              </tbody>
-          </table>
-        </div>
-        <div class="table-responsive" style="width: 450px;border-style: double;margin: 9px;">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th style="transform-origin: center;height: 40.6px;width: 213.8px;">Actions</th>
-                        <th style="width: 203px;">Time</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for action in actions%}
-                    <tr>
-                        <td> {{ action[0] }}</td>
-                        <td> {{ action[1] }}</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
+        </div></div>
+                        <div class="col-md-6">
+                            <p>Points: {{ x }} Pts</p>
+                            <p>Passcode: {{ passcode ]}</p></div></div></div>
+
         <a class="btn btn-primary" role="button" style="margin: 10px;transform: translate(0px);" href="/admin/event/{{sessionId}}">Back</a>
         <section style="padding: 39px 0px;">
             <h1 style="font-size: 28px;">Guest Feedback</h1>
