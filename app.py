@@ -719,7 +719,9 @@ def print_registration(session_id, device_num, passcode):
     lb.printer.print_text("")
     lb.printer.print_text("Please do not lose your receipt")
     lb.printer.print_text("")
-    lb.printer.print_text
+    lb.printer.print_text("")
+    lb.printer.print_text("\n \n")
+
 
 def print_checkout(session_id, device_num, points, name = False):
     lb.printer.print_text("Thank you for using LockBox!")
@@ -1080,7 +1082,7 @@ def menu():
                     print_display_all(session_id)
                     lb.display.clear()
                     if row:
-                        lb.display.show_text("*D#: " + str(row[0]) + " Pts: " + str(row[1]), 1)
+                        lb.display.show_text("D#: " + str(row[0]) + " Pts: " + str(row[1]), 1)
                     lb.display.show_text("  * Main Menu", 2)
                     input = ""
                     while input != "*":#Back to Main Menu
