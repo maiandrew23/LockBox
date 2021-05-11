@@ -766,7 +766,7 @@ def closeDB(connection):
 
 def menu():
     connection = connectDB()
-    drop_tables(connection)
+    #drop_tables(connection)
     create_tables(connection)
     cursor = connection.cursor()
     cursor.execute('''SELECT * FROM admin''')

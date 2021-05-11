@@ -114,6 +114,7 @@ class Display:
     #self.write_arr_4bit(LCD_CLEAR, LCD_CMD)
     print("Display setup finished")
     self.lcd = CharLCD(cols=16,rows=2,pin_rs=6,pin_e=5,pins_data=[13,19,26,1],numbering_mode=GPIO.BCM)
+    self.lcd.cursor_mode = 'hide'
   def on(self):
     self.write_arr_4bit(LCD_D_ON, LCD_CMD)
     print("Display is on")
@@ -159,6 +160,8 @@ class Display:
 
   def clear(self):
     #self.write_arr_4bit(LCD_CLEAR, LCD_CMD)
+    self.lcd.clear()
+    self.lcd.cursor_mode = 'hide'
     return
   def show_text(self, text, line=1):
     if line == 1:
