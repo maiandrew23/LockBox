@@ -77,7 +77,6 @@ def createEventPOST():
   eventName = request.form["eventName"]
   date = request.form["date"]
   time = request.form["time"]
-  print("time:",time)
   sessionId = create_session(eventName,date,time,True)
 
   return redirect("/admin")
@@ -463,8 +462,6 @@ def create_device(session_id, name):
     passcode = ''.join(random.choice(string.digits) for i in range(4))
     cursor.execute('''INSERT INTO device (session_id,name,passcode) VALUES (?,?,?)''', (session_id,name,str(passcode),))
     device_number = cursor.lastrowid
-    print("Device # = ", device_number)
-    print("Passcode = ", passcode)
     cursor.execute('''INSERT INTO score (session_id, device_number,points)
                         VALUES (?,?,0)''', (session_id,device_number))
     cursor.close()
@@ -776,8 +773,6 @@ def menu():
             cursor.execute('''SELECT ID,name FROM session WHERE sessionOpen = 1''')
             selections = cursor.fetchall()
             selections.insert(0,(0,"Create Event"))
-            print("TEST")
-            print(selections)
             closeDB(connection)
             selected = False
             ind = 0
