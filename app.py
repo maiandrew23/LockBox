@@ -833,7 +833,8 @@ def menu():
                     lb.display.clear()
                     lb.display.show_text("Device #: " + str(device_num), 1)
                     lb.display.show_text("Passcode: " + passcode, 2)
-                    #print_registration(session_id, device_num, passcode)
+                    print_registration(session_id, device_num, passcode)
+                    time.sleep(3)
                     menu = 2
                 elif input == '#':#No
                     menu == 2
@@ -970,7 +971,7 @@ def menu():
                         points = cursor.fetchone()[0]
                         cursor.close()
                         closeDB(connection)
-                        #print_checkout(str(session_id), str(device_num), str(points))
+                        print_checkout(str(session_id), str(device_num), str(points))
                         unlock_box(lb)
                         #TODO: Print receipt
                         lb.display.clear()
