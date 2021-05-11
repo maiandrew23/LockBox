@@ -709,17 +709,27 @@ def validate_device(session_id,device_num_only=False):
 
 def print_registration(session_id, device_num, passcode):
     lb.printer.print_text("Welcome to LockBox!")
+    lb.printer.print_text("")
     lb.printer.print_text("Session ID: " + str(session_id))
     lb.printer.print_text("Device Number: " + str(device_num))
     lb.printer.print_text("Passcode: " + passcode)
+    lb.printer.print_text("")
+    lb.printer.print_text("")
+    lb.printer.print_text(" ** Please do not lose your receipt **")
+    lb.printer.print_text("")
+    lb.printer.print_text("")
 
 def print_checkout(session_id, device_num, points, name = False):
     lb.printer.print_text("Thank you for using LockBox!")
+    lb.printer.print_text("")
+    lb.printer.print_text("")
     lb.printer.print_text("Session ID: " + str(session_id))
     lb.printer.print_text("Device Number: " + str(device_num))
     if name:
         lb.printer.print_text("Device Name: " + name)
     lb.printer.print_text("Points: " + str(points))
+    lb.printer.print_text("\n \n \n \n")
+
 
 def print_display_all(session_id):
     connection = connectDB()
@@ -729,11 +739,18 @@ def print_display_all(session_id):
     cursor.close()
     closeDB(connection)
     lb.printer.print_text("All Registered Devices")
+    lb.printer.print_text("")
     lb.printer.print_text("Session # " + str(session_id))
+    lb.printer.print_text("")
     lb.printer.print_text("Device #  |  Points")
+    lb.printer.print_text("")
     for device in devices:
         lb.printer.print_text(str(device[0]) + "   " + str(device[1]))
-
+    lb.printer.print_text("")
+    lb.printer.print_text("")
+    lb.printer.print_text("")
+    lb.printer.print_text("")
+    lb.printer.print_text("")
 
 def connectDB():
     connection = sqlite3.connect("lockbox.db")
