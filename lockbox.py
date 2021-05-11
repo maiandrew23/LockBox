@@ -163,6 +163,10 @@ class Display:
     self.lcd.clear()
     self.lcd.cursor_mode = 'hide'
     return
+
+  def refresh(self):
+      self.lcd.clear()
+      
   def show_text(self, text, line=1):
     if line == 1:
       self.lcd.cursor_pos = (0,0)
