@@ -24,9 +24,9 @@
         <h1 style="font-size: 19px;padding: 10px;margin: -8px;">Device # {{ deviceNum }}</h1>
         <h1 style="font-size: 24px;padding: 10px;margin: -8px;">Device Name: {{ deviceName }}</h1>
         <div class="container">
-                    <div class="row">
-                        <div class="col-md-6"><div class="table-responsive">
-            <table class="table">
+          <div class="row">
+              <div class="col-md-6"><div class="table-responsive">
+                <table class="table">
                 <thead>
                     <tr>
                         <th>Action</th>
@@ -41,11 +41,14 @@
                       </tr>
                   {% endfor %}
                 </tbody>
-            </table>
-        </div></div>
-                        <div class="col-md-6">
-                            <p>Points: {{ points }} Pts</p>
-                            <p>Passcode: {{ passcode }}</p></div></div></div>
+                </table>
+              </div>
+            </div>
+                <div class="col-md-6">
+                    <p>Points: {{ points }} Pts</p>
+                    <p>Passcode: {{ passcode }}</p></div>
+                </div>
+          </div>
 
         <a class="btn btn-primary" role="button" style="margin: 10px;transform: translate(0px);" href="/admin/event/{{sessionId}}">Back</a>
         <section style="padding: 39px 0px;">

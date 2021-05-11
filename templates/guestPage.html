@@ -22,20 +22,28 @@
     </header>    <section id="portfolio" class="portfolio" style="transform: perspective(0px) translate(0px);transform-origin: top;height: 274.2px;padding: 9px 0px;">
     <section id="portfolio" class="portfolio" style="transform: perspective(0px) translate(0px);transform-origin: top;height: 274.2px;padding: 30px 0px;text-align: left;">
         <h1 style="font-size: 24px;padding: 10px;margin: -8px;">Welcome {{deviceName}}!<a class="btn btn-primary" role="button" style="margin: 7px;transform: translate(235px);" href="/guest/edit/{{sessionId}}/{{deviceNum}}">Update Name</a></h1>
-        <div class="table-responsive" style="width: 138.6px;border-style: double;height: 119.2px;text-align: center;transform: translate(565px);">
-            <table class="table">
+        <div class="container">
+          <div class="row">
+              <div class="col-md-6"><div class="table-responsive">
+                <table class="table">
                 <thead>
                     <tr>
-                        <th style="transform-origin: center;height: 40.6px;width: 213.8px;padding: -25px;margin: -37px;">Points</th>
+                        <th>Action</th>
+                        <th>Time</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>{{ points }} pts</td>
-                    </tr>
+                  {% for action in actions%}
+                      <tr>
+                          <td> {{ action[0] }}</td>
+                          <td> {{ action[1] }}</td>
+                      </tr>
+                  {% endfor %}
                 </tbody>
-            </table>
-        </div>
+                </table>
+              </div>
+            </div>
+          </div>
         <div class="table-responsive" style="width: 321.6px;border-style: double;margin: 9px;">
             <table class="table">
                 <thead>
