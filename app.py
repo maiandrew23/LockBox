@@ -818,10 +818,10 @@ def menu():
                 time.sleep(0.2) # To prevent bounce
                 if input == '*':#Yes
                     device_num, passcode = create_device(session_id, "N/A")
-                    #lb.display.clear()
-                    #lb.display.show_text("Device #: " + str(device_num), 1)
-                    #lb.display.show_text("Passcode: " + passcode, 2)
-                    print_registration(session_id, device_num, passcode)
+                    lb.display.clear()
+                    lb.display.show_text("Device #: " + str(device_num), 1)
+                    lb.display.show_text("Passcode: " + passcode, 2)
+                    #print_registration(session_id, device_num, passcode)
                     menu = 2
                 elif input == '#':#No
                     menu == 2
@@ -914,6 +914,7 @@ def menu():
                     else:
                         #Unlock device and update score
                         unlock_device(session_id, device_num)
+                        unlock_box(lb)
                         update_score(session_id, device_num)
                         lb.display.clear()
                         lb.display.show_text("   Unlocked!", 1)
@@ -957,8 +958,8 @@ def menu():
                         points = cursor.fetchone()[0]
                         cursor.close()
                         closeDB(connection)
-                        print_checkout(str(session_id), str(device_num), str(points))
-
+                        #print_checkout(str(session_id), str(device_num), str(points))
+                        unlock_box(lb)
                         #TODO: Print receipt
                         lb.display.clear()
                         lb.display.show_text("Printing Receipt", 1)
@@ -1071,7 +1072,7 @@ def menu():
                         input = lb.keypad.read_key()
                         time.sleep(0.2) # To prevent bounce
                     menu = 0
-                    
+
                     connection = connectDB()
                     cursor = connection.cursor()
                     cursor.execute('''UPDATE session SET active = ? WHERE ID = ?''', (0, session_id,))
