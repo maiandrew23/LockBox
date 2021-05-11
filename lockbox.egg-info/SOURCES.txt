@@ -1,0 +1,8 @@
+README.md
+lockbox.py
+setup.py
+lockbox.egg-info/PKG-INFO
+lockbox.egg-info/SOURCES.txt
+lockbox.egg-info/dependency_links.txt
+lockbox.egg-info/requires.txt
+lockbox.egg-info/top_level.txt
