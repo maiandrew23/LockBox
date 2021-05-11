@@ -500,6 +500,8 @@ def update_score(session_id, device_num):
                             FROM event
                             WHERE session_id = ? AND device_number = ? AND action = \'Locked\')''', (session_id, device_num,))
     points = cursor.fetchone()[0]
+    if points == None:
+        points = 0
     cursor.execute('''UPDATE score SET points = points + ?
                       WHERE session_id = ? AND device_number = ?''', (points, session_id, device_num,))
     cursor.execute('''SELECT points FROM score WHERE session_id = ? AND device_number = ?''', (session_id, device_num,))
@@ -715,9 +717,9 @@ def print_registration(session_id, device_num, passcode):
     lb.printer.print_text("Passcode: " + passcode)
     lb.printer.print_text("")
     lb.printer.print_text("")
-    lb.printer.print_text(" ** Please do not lose your receipt **")
+    lb.printer.print_text("Please do not lose your receipt")
     lb.printer.print_text("")
-    lb.printer.print_text("")
+    lb.printer.print_text
 
 def print_checkout(session_id, device_num, points, name = False):
     lb.printer.print_text("Thank you for using LockBox!")
