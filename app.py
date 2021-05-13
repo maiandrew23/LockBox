@@ -123,8 +123,8 @@ def displayEvent(sessionId):
   updated_devices = []
   for device in devices:
       live_score = check_score(sessionId, device[1])
-      device.append(live_score)
-      updated_devices.append(device)
+      new_device = (device[0], device[1], device[2], device[3], live_score)
+      updated_devices.append(new_device)
   devices = updated_devices
   cursor.execute('''SELECT name,comment FROM device NATURAL JOIN feedback WHERE session_id = ? ''', (sessionId,))
   comments = cursor.fetchall()
@@ -842,7 +842,7 @@ def menu():
                     lb.display.clear()
                     lb.display.show_text("Device #: " + str(device_num), 1)
                     lb.display.show_text("Passcode: " + passcode, 2)
-                    print_registration(session_id, device_num, passcode)
+                   #print_registration(session_id, device_num, passcode)
                     time.sleep(3)
                     menu = 2
                 elif input == '#':#No
@@ -980,7 +980,7 @@ def menu():
                         points = cursor.fetchone()[0]
                         cursor.close()
                         closeDB(connection)
-                        print_checkout(str(session_id), str(device_num), str(points))
+                        #print_checkout(str(session_id), str(device_num), str(points))
                         unlock_box(lb)
                         #TODO: Print receipt
                         lb.display.clear()
@@ -1120,7 +1120,7 @@ if __name__ == "__main__":
     print("")
 
     lb.keypad.on()
-    lb.display.on()
+    #lb.display.on()
 
     t1 = threading.Thread(target=menu)
     t2 = threading.Thread(target=run_flask)
