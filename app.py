@@ -106,7 +106,7 @@ def deleteEvent(sessionId):
   closeDB(connection)
 
   return redirect("/admin")
-
+# Sample Query for * in session: [(1, 'Party', '2021-05-07', '17:57:06', None, None)]
 #Event Page
 @app.route("/admin/event/<sessionId>")
 def displayEvent(sessionId):
@@ -120,7 +120,12 @@ def displayEvent(sessionId):
                     FROM device NATURAL JOIN score
                     WHERE session_id = ?''', (sessionId,))
   devices = cursor.fetchall()
-
+  updated_devices = []
+  for device in devices:
+      live_score = check_score(sessionId, device[1])
+      device.append(live_score)
+      updated_devices.append(device)
+  devices = updated_devices
   cursor.execute('''SELECT name,comment FROM device NATURAL JOIN feedback WHERE session_id = ? ''', (sessionId,))
   comments = cursor.fetchall()
 
